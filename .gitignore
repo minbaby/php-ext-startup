@@ -36,3 +36,7 @@ tests/*/*.sh
 
 # minbaby
 .vscode
+tags
+GRTAGS
+GTAGS
+GPATH

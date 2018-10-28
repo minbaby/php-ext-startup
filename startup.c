@@ -16,15 +16,16 @@
   +----------------------------------------------------------------------+
 */
 
-/* $Id$ */
-
-#ifdef HAVE_CONFIG_H
+// [> $Id$ <]
+//
+/* #ifdef HAVE_CONFIG_H */
 #include "config.h"
 #endif
 
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
+#include "zend_types.h"
 #include "php_startup.h"
 
 /* If you declare any globals in php_startup.h uncomment this:
@@ -182,3 +183,6 @@ ZEND_GET_MODULE(startup)
  * vim600: noet sw=4 ts=4 fdm=marker
  * vim<600: noet sw=4 ts=4
  */
+
+
+// =========================================================

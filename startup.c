@@ -16,8 +16,8 @@
   +----------------------------------------------------------------------+
 */
 
-/* $Id$ */
-
+// [> $Id$ <]
+//
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -25,6 +25,7 @@
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
+#include "zend_types.h"
 #include "php_startup.h"
 
 /* If you declare any globals in php_startup.h uncomment this:
@@ -71,6 +72,28 @@ PHP_FUNCTION(confirm_startup_compiled)
    function definition, where the functions purpose is also documented. Please
    follow this convention for the convenience of others editing your code.
 */
+
+PHP_FUNCTION(fuck_you)
+{
+	zval *name;
+	int name_len;
+
+	char *greeting;
+	int greeting_len;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &name, &name_len, &greeting, &greeting_len) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	php_error_docref(NULL TSRMLS_CC, E_WARNING, name);
+	return;
+	php_printf("HELLO ");
+	php_write(name, name_len);
+	// php_write(greeting, greeting_len);
+	php_printf(" ");
+	php_printf("!\n");
+
+}
 
 
 /* {{{ php_startup_init_globals
@@ -148,6 +171,9 @@ PHP_MINFO_FUNCTION(startup)
  */
 const zend_function_entry startup_functions[] = {
 	PHP_FE(confirm_startup_compiled,	NULL)		/* For testing, remove later. */
+	PHP_FE(fuck_you, NULL)
+	PHP_NAMED_FE(xxx, ZEND_FN(fuck_you), NULL)
+	PHP_FALIAS(yyy, fuck_you, NULL)
 	PHP_FE_END	/* Must be the last line in startup_functions[] */
 };
 /* }}} */
@@ -183,3 +209,6 @@ ZEND_GET_MODULE(startup)
  * vim600: noet sw=4 ts=4 fdm=marker
  * vim<600: noet sw=4 ts=4
  */
+
+
+// =========================================================

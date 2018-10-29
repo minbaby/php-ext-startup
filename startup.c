@@ -133,6 +133,7 @@ PHP_MINFO_FUNCTION(startup)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "startup support", "enabled");
+	php_info_print_table_row(2, "version", PHP_STARTUP_VERSION);
 	php_info_print_table_end();
 
 	/* Remove comments if you have entries in php.ini

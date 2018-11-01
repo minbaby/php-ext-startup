@@ -1,3 +1,0 @@
-<?php
-
-method_exists

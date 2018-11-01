@@ -32,6 +32,12 @@
 ZEND_DECLARE_MODULE_GLOBALS(startup)
 */
 
+zend_class_entry *myclass_ce;
+
+static zend_function_entry myclass_method[] = {
+	{NULL, NULL, NULL}
+};
+
 /* True global resources - no need for thread safety here */
 static int le_startup;
 
@@ -114,6 +120,12 @@ PHP_MINIT_FUNCTION(startup)
 	/* If you have INI entries, uncomment these lines
 	REGISTER_INI_ENTRIES();
 	*/
+
+	zend_class_entry ce;
+
+	INIT_CLASS_ENTRY(ce, "myclass", myclass_method);
+	myclass_ce = zend_register_internal_class(&ce TSRMLS_CC);
+
 	return SUCCESS;
 }
 /* }}} */
@@ -193,6 +205,7 @@ zend_module_entry startup_module_entry = {
 	STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
+
 
 #ifdef COMPILE_DL_STARTUP
 #ifdef ZTS

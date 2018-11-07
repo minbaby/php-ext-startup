@@ -25,6 +25,7 @@ function handleClass()
 
      $class = new myclass();
      var_dump($class);
+     $class->abab();
 }
 
 function checkExt()

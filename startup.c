@@ -34,9 +34,6 @@ ZEND_DECLARE_MODULE_GLOBALS(startup)
 
 zend_class_entry *myclass_ce;
 
-static zend_function_entry myclass_method[] = {
-	{NULL, NULL, NULL}
-};
 
 /* True global resources - no need for thread safety here */
 static int le_startup;
@@ -91,7 +88,7 @@ PHP_FUNCTION(fuck_you)
 		RETURN_NULL();
 	}
 
-	php_error_docref(NULL TSRMLS_CC, E_WARNING, name);
+	// php_error_docref(NULL TSRMLS_CC, E_WARNING, name);
 	return;
 	php_printf("HELLO ");
 	php_write(name, name_len);
@@ -113,6 +110,18 @@ static void php_startup_init_globals(zend_startup_globals *startup_globals)
 */
 /* }}} */
 
+
+PHP_METHOD(myclass, abab)
+{
+	php_printf("我是public\n");
+}
+
+static zend_function_entry myclass_method[] = {
+	PHP_ME(myclass, abab, NULL, ZEND_ACC_PUBLIC)
+	{NULL, NULL, NULL}
+};
+
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(startup)
@@ -125,6 +134,8 @@ PHP_MINIT_FUNCTION(startup)
 
 	INIT_CLASS_ENTRY(ce, "myclass", myclass_method);
 	myclass_ce = zend_register_internal_class(&ce TSRMLS_CC);
+
+	zend_declare_property_null(myclass_ce, "pub_var", strlen("pub_var"), ZEND_ACC_PUBLIC TSRMLS_CC);
 
 	return SUCCESS;
 }

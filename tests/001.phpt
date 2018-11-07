@@ -3,7 +3,7 @@ Check for startup presence
 --SKIPIF--
 <?php if (!extension_loaded("startup")) print "skip"; ?>
 --FILE--
-<?php 
+<?php
 echo "startup extension is available";
 /*
 	you can add regression tests for your extension here

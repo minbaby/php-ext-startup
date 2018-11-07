@@ -27,6 +27,7 @@
 #include "ext/standard/info.h"
 #include "zend_types.h"
 #include "php_startup.h"
+#include "src/ext/test.class.h"
 
 /* If you declare any globals in php_startup.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(startup)
@@ -136,6 +137,8 @@ PHP_MINIT_FUNCTION(startup)
 	myclass_ce = zend_register_internal_class(&ce TSRMLS_CC);
 
 	zend_declare_property_null(myclass_ce, "pub_var", strlen("pub_var"), ZEND_ACC_PUBLIC TSRMLS_CC);
+
+	php_start_register_test();
 
 	return SUCCESS;
 }

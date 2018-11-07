@@ -1,22 +1,27 @@
-#include "test.cass.h"
+#include "test.class.h"
 
-zend_class_entry *test_ce
+zend_class_entry *test_ce;
 
 
-PHP_METHOD(Test, 'helloworld')
+PHP_METHOD(A, helloworld)
 {
-	return SUCCESS;
+	php_printf("afdsaf\n");
 }
+
+
 
 void php_start_register_test()
 {
 	zend_class_entry ce;
 
-	zend_function_entry methods[] = {
-		ZEND_ME(Test, helloworld, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	static zend_function_entry methods[] = {
+		PHP_ME(A, helloworld, NULL, ZEND_ACC_PUBLIC)
 		PHP_FE_END
 	};
 
-	INIT_CLASS_ENTRY(ce, PHP_STARTUP_NS("test"), methods);
-	test_ce = zend_register_internal_class(&ce);
+	INIT_CLASS_ENTRY(ce, "A", methods);
+
+	test_ce = zend_register_internal_class(&ce TSRMLS_CC);
+
+	zend_declare_property_null(test_ce, "pub_var", strlen("pub_var"), ZEND_ACC_PUBLIC TSRMLS_CC);
 }

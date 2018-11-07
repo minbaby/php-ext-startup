@@ -40,3 +40,5 @@ tags
 GRTAGS
 GTAGS
 GPATH
+
+/vendor/

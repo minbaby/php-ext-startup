@@ -1,5 +1,5 @@
 --TEST--
-Check for startup presence
+Check for startup presence1111
 --SKIPIF--
 <?php if (!extension_loaded("startup")) print "skip"; ?>
 --FILE--
@@ -18,4 +18,4 @@ echo "startup extension is available";
 */
 ?>
 --EXPECT--
-startup extension is available
+startup extension is available1

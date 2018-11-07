@@ -38,6 +38,8 @@ extern zend_module_entry startup_module_entry;
 #include "TSRM.h"
 #endif
 
+#include "src/ext/test.class.h"
+
 /*
   	Declare any global variables you may need between the BEGIN
 	and END macros here:

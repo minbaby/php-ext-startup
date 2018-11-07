@@ -1,0 +1,27 @@
+{
+    "name": "minbaby/php-ext-startup",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "minbaby.zhang",
+            "email": "zhangshaomin_1990@126.com"
+        }
+    ],
+    "require": {
+    
+    },
+    "autoload": {
+        "psr-4": {
+            "Minbaby\\Ext\\": "src/Minbaby/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Minbaby\\Ext\\Spec\\": "spec/"
+        }
+    },
+    "require-dev": {
+        "kahlan/kahlan": "^4.3"
+    }
+}

@@ -44,10 +44,10 @@ function checkExt()
 }
 
 function main() {
-    checkExt();
-
-    handleFunc();
-    handleClass();
+    $arr = get_declared_classes();
+    foreach ($arr as $value) {
+        var_dump($value);
+    }
 }
 
 

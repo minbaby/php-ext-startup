@@ -2,10 +2,12 @@
 
 namespace Minbbaby\Ext\Spec;
 
-describe('Check Test Ojbect', function () {
-    it('test hello world', function() {
-        expect( method_exists(\Minbaby\Ext\Test::class, 'helloworld'))->toBe(true);
+describe('Check Extension', function () {
+    it('Check Extison loaded', function() {
+        expect(extension_loaded('startup'))->toBe(true);
+    });
+
+    it('Check Extension Test Class Exists', function() {
+        expect(class_exists(\Minbaby\Ext\Test::class))->toBe(true);
     });
 });
-
-var_dump(get_declared_classes());

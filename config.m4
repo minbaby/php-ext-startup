@@ -45,7 +45,7 @@ if test "$PHP_STARTUP" != "no"; then
 
   dnl # --with-startup -> check for lib and symbol presence
   dnl LIBNAME=startup # you may want to change this
-  dnl LIBSYMBOL=startup # you most likely want to change this 
+  dnl LIBSYMBOL=startup # you most likely want to change this
 
   dnl PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   dnl [
@@ -59,5 +59,5 @@ if test "$PHP_STARTUP" != "no"; then
   dnl
   dnl PHP_SUBST(STARTUP_SHARED_LIBADD)
 
-  PHP_NEW_EXTENSION(startup, startup.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
+  PHP_NEW_EXTENSION(startup, startup.c src/ext/test.class.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi

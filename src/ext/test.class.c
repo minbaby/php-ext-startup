@@ -4,11 +4,17 @@ zend_class_entry *test_ce;
 
 PHP_METHOD(Test, helloworld)
 {
-	php_printf("test\n");
+	php_printf("hello world!");
+}
+
+PHP_METHOD(Test, echoHelloWorld)
+{
+	php_printf("hello world!!");
 }
 
 static zend_function_entry methods[] = {
 	PHP_ME(Test, helloworld, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Test, echoHelloWorld, NULL, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 

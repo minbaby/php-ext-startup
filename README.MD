@@ -2,6 +2,8 @@
 
 [TOC]
 
+[![CircleCI](https://circleci.com/gh/minbaby/php-ext-startup/tree/master.svg?style=svg)](https://circleci.com/gh/minbaby/php-ext-startup/tree/master)
+
 ## 基本思路
 
 1. 先写测试用例

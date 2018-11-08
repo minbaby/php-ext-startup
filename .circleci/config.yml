@@ -20,7 +20,9 @@ jobs:
       - checkout
 
       - run: gcc -v
-      - run: phpize && ./configure && make && make install
+      - run: phpize && ./configure && make && sudo make install
+      - run: composer install
+      - run: ./tools/test.sh
 
       # - restore_cache:
       #     keys:

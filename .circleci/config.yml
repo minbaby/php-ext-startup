@@ -19,57 +19,21 @@ jobs:
     steps:
       - checkout
 
-      - run: gcc -v
-      - run: phpize && ./configure && make && sudo make install
-      - run: composer install
-      - run: ./tools/test.sh
+      - run:
+          name: startup install
+          command:  phpize && ./configure && make && sudo make install
 
-      # - restore_cache:
-      #     keys:
-      #       - v1-phpbrew-{{ checksum "phpbrew"}}
-      #       - v1-phpbrew
-      # - run:
-      #     name: Download phpbrew
-      #     command: curl -L -O https://github.com/phpbrew/phpbrew/raw/master/phpbrew && chmod +x phpbrew
+      - run:
+          name: composer install
+          command: composer install
 
-      # - save_cache:
-      #     paths:
-      #       - ./phpbrew
-      #     key: v1-phpbrew-{{ checksum "phpbrew"}}
+      - run:
+          name: run test
+          command: ./vendor/bin/kahlan
 
-      # - run:
-      #     name: phpbrew init
-      #     command: ./phpbrew init && source ~/.phpbrew/bashrc
-
-      # - restore_cache:
-      #     keys:
-      #       - v1-phpbrew-php-{{ checksum "~/.phpbrew/php-releases.json"}}
-      #       - v1-phpbrew-php-
-
-      # - run:
-      #     name: install php7
-      #     command: ./phpbrew install 7.1 +default
-
-      # - save_cache:
-      #     paths:
-      #       - ~/.phpbrew
-      #     key: v1-phpbrew-php-{{ checksum "~/.phpbrew/php-releases.json"}}
-
-      # # Download and cache dependencies
-      # - restore_cache:
-      #     keys:
-      #     - v1-dependencies-{{ checksum "composer.json" }}
-      #     # fallback to using the latest cache if no exact match is found
-      #     - v1-dependencies-
-
-      # - run: composer install -n --prefer-dist
-
-      # - save_cache:
-      #     paths:
-      #       - ./vendor
-      #     key: v1-dependencies-{{ checksum "composer.json" }}
-
-      # # run tests!
-      # - run:
-      #     name: xx
-      #     command: ls
+      - run:
+          name: enable startup
+          command: sudo docker-php-ext-enable startup
+      - run:
+          name: run test
+          command: ./vendor/bin/kahlan

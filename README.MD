@@ -26,3 +26,10 @@
 1. 先看 `spec/` 这些文件的测试用例。
 2. 查看 `src/Minbaby/` 目录下的 php 实现
 3. 查看 `src/ext` 目录下的 c 实现
+
+## 其他
+
+### skip ci
+
+- `[skip ci]`
+- `[ci skip]`

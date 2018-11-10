@@ -37,12 +37,16 @@ PHP_METHOD(Test, __call)
 
 	zval *ret;
 	zend_string *delim;
-	delim = ZSTR_ALLOCA_ALLOC(",", 0, 0);
-	ZSTR_
+
+	delim = zend_string_init(",", sizeof(","), 0);
 
 	php_implode(delim, params, ret);
 
-	strg = strpprintf(0, "method:%s,args:%s", command, ret);
+	zend_string_release(delim);
+
+	php_printf("%s\n\n", ret);
+
+	strg = strpprintf(0, "method:%s,args:%s", command, Z_STRVAL_P(ret));
 
 	RETURN_STR(strg);
 }

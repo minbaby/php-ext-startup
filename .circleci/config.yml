@@ -5,6 +5,9 @@
 version: 2
 jobs:
   build:
+    branches:
+      only: master
+
     docker:
       # specify the version you desire here
       - image: circleci/php:7.1-browsers
@@ -37,3 +40,29 @@ jobs:
       - run:
           name: run test
           command: ./vendor/bin/kahlan
+  test:
+    docker:
+      # specify the version you desire here
+      - image: circleci/php:7.1-browsers
+    steps:
+      - run:
+          name: "run test"
+          command: sudo docker-php-ext-enable startup
+  test_with_startup_extension:
+    docker:
+      # specify the version you desire here
+      - image: circleci/php:7.1-browsers
+    steps:
+      - run:
+          name: enable startup extension
+          command: sudo docker-php-ext-enable startup
+      - run:
+          name: "run test loaded extension"
+          command: ./vendor/bin/kahlan
+workflows:
+    version: 2
+    build_and_test:
+      jobs:
+        - build
+        - test
+        - test_with_startup_extension

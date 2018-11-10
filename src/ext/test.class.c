@@ -35,18 +35,15 @@ PHP_METHOD(Test, __call)
         return;
     }
 
-	zval *ret;
-	zend_string *delim;
+	zend_string *delim = zend_string_init("-", sizeof("-"), 0);
 
-	delim = zend_string_init(",", sizeof(","), 0);
-
-	php_implode(delim, params, ret);
+	php_implode(delim, params, return_value);
 
 	zend_string_release(delim);
 
-	php_printf("%s\n\n", ret);
+	php_printf("%s\n\n", Z_STRVAL_P(return_value));
 
-	strg = strpprintf(0, "method:%s,args:%s", command, Z_STRVAL_P(ret));
+	strg = strpprintf(0, "method:%s,args:%s", command, Z_STRVAL_P(return_value));
 
 	RETURN_STR(strg);
 }

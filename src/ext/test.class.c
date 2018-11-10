@@ -26,11 +26,11 @@ PHP_METHOD(Test, echoHelloWorld)
 PHP_METHOD(Test, __call)
 {
     zval *params;
-    char *command;
-	size_t command_len;
+    char *method;
+	size_t method_len;
 	zend_string *strg;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "sz", &command, &command_len, &params) == FAILURE)
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "sz", &method, &method_len, &params) == FAILURE)
     {
         return;
     }
@@ -41,15 +41,29 @@ PHP_METHOD(Test, __call)
 
 	zend_string_release(delim);
 
-	php_printf("%s\n\n", Z_STRVAL_P(return_value));
+	char *msg;
 
-	strg = strpprintf(0, "method:%s,args:%s", command, Z_STRVAL_P(return_value));
+	spprintf(&msg, 0, "method:%s,args:%s", method, Z_STRVAL_P(return_value));
 
-	RETURN_STR(strg);
+	// strg = strpprintf(0, "method:%s,args:%s", method, Z_STRVAL_P(return_value));
+
+	// zend_string *args = Z_STRVAL_P(return_value);
+
+	// zend_string *newStr = zend_string_extend(strg, args->len, 0);
+
+    /* concatenates "bar" after the newly reallocated large enough "FOO" */
+    // memcpy(ZSTR_VAL(args) + ZSTR_LEN(args), ZSTR_VAL(strg), ZSTR_LEN(strg));
+
+	php_var_dump(return_value, 2);
+
+	PHPWRITE(Z_STRVAL_P(return_value), Z_STRLEN_P(return_value));
+
+	// RETURN_STR(strg);
+	RETURN_STRING(msg);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_call, 0, 0, 2)
-	ZEND_ARG_INFO(0, command)
+	ZEND_ARG_INFO(0, method)
 	ZEND_ARG_INFO(0, params)
 ZEND_END_ARG_INFO()
 

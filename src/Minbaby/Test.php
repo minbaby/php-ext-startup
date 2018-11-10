@@ -18,4 +18,9 @@ class Test
     {
         echo 'hello world!!';
     }
+
+    public function __call($method, $args)
+    {
+        return "method:{$method},args:" . \implode("-", $args);
+    }
 }

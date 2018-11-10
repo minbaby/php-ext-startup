@@ -26,4 +26,18 @@ describe('Test', function () {
     it('测试 const 属性', function () {
         expect(Test::PUBLIC_CONST)->toBe('hello world +const');
     });
+
+    it('测试方法不存在的逻辑', function () {
+        $instance = new Test();
+        $params = [
+            'a21212' => [1, 2, 3, 4],
+            '😊' => ['abab', 'cdcd', 'efef'],
+            'daba' => [],
+        ];
+
+        foreach($params as $method => $args) {
+            $ret = \call_user_func_array([$instance, $method], $args);;
+            \expect($ret)->toBe("method:$method,args:" . \implode("-", $args));
+        }
+    });
 });

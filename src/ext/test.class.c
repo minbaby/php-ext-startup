@@ -39,31 +39,27 @@ PHP_METHOD(Test, __call)
 
 	php_implode(delim, params, return_value);
 
+	smart_str str = {0};
+	smart_str_apppend();
+
 	zend_string_release(delim);
 
-	// char *msg;
+	zval *tmp = return_value;
 
-	// spprintf(&msg, 0, "method:%s,args:%s", method, Z_STRVAL_P(return_value));
+	int len = Z_STRLEN_P(tmp);
+	char *xy = estrndup(Z_STRVAL_P(tmp), len);
 
-	zend_string *str = zval_get_string(return_value);
-	strg = strpprintf(0, "method:%s,args:%s", method, str->val);
+	// if (tmp != return_value) {
+	// 	zval_ptr_dtor(&tmp);
+	// }
 
-	if (0 >= strcmp(, "abab-cdcd-efef")) {
-		php_error_docref("FUCK THE WORLD", E_ERROR, "eee");
-	}
+	PHPWRITE(xy, sizeof(xy));
 
-	// PHPWRITE(strcmp(str->val, "abab-cdcd-efef"), 1);
+	strg = strpprintf(0, "method:%s,args:-=-=-=- @@ %s @@\n", method, xy);
 
-	// zend_string *args = Z_STRVAL_P(return_value);
+	// php_var_dump(return_value, 1);
+	// PHPWRITE(Z_STRVAL_P(return_value), Z_STRLEN_P(return_value));
 
-	// zend_string *newStr = zend_string_extend(strg, args->len, 0);
-
-    /* concatenates "bar" after the newly reallocated large enough "FOO" */
-    // memcpy(ZSTR_VAL(args) + ZSTR_LEN(args), ZSTR_VAL(strg), ZSTR_LEN(strg));
-
-	// php_var_dump(return_value, 2);
-
-	PHPWRITE(str->val, str->len);
 
 	RETURN_STR(strg);
 	// RETURN_STRING(msg);

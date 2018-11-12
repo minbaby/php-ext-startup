@@ -43,3 +43,4 @@ GPATH
 
 /vendor/
 *.loT
+/nbproject/private/

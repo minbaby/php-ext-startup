@@ -37,7 +37,7 @@ describe('Test', function () {
 
         foreach($params as $method => $args) {
             $ret = \call_user_func_array([$instance, $method], $args);;
-            \expect($ret)->toBe("method:$method,args:" . \implode("-", $args));
+            \expect($ret)->toBe(sprintf('method:%s,count:%d,args:%s', $method, count($args), \implode("-", $args)));
         }
     });
 });

@@ -37,32 +37,23 @@ PHP_METHOD(Test, __call)
 
 	zend_string *delim = zend_string_init("-", sizeof("-"), 0);
 
-	php_implode(delim, params, return_value);
+	zval *tmp = malloc(sizeof(zval *));
+	ZVAL_EMPTY_STRING(tmp);
+	php_var_dump(tmp, 1);
 
-	smart_str str = {0};
-	smart_str_apppend();
+	php_implode(delim, params, tmp);
 
 	zend_string_release(delim);
 
-	zval *tmp = return_value;
+	php_var_dump(tmp, 1);
 
-	int len = Z_STRLEN_P(tmp);
-	char *xy = estrndup(Z_STRVAL_P(tmp), len);
+	// 似乎发现这里问题，但是问题怎么解决
 
-	// if (tmp != return_value) {
-	// 	zval_ptr_dtor(&tmp);
-	// }
+	php_printf(tmp->value.str->val);
 
-	PHPWRITE(xy, sizeof(xy));
-
-	strg = strpprintf(0, "method:%s,args:-=-=-=- @@ %s @@\n", method, xy);
-
-	// php_var_dump(return_value, 1);
-	// PHPWRITE(Z_STRVAL_P(return_value), Z_STRLEN_P(return_value));
-
+	strg = strpprintf(0, "method:%s,args:-=-=-=- @@ %d @@ %s @@\n", method, tmp->value.str->len, Z_STRVAL_P(tmp));
 
 	RETURN_STR(strg);
-	// RETURN_STRING(msg);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_call, 0, 0, 2)

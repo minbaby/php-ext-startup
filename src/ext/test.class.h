@@ -3,6 +3,7 @@
 
 #include "php.h"
 #include "common.h"
+#include "ext/standard/php_standard.h"
 
 extern zend_class_entry *test_ce;
 

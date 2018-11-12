@@ -16,8 +16,8 @@
 
 利用 php [自动加载](http://www.php.net/manual/zh/language.oop5.autoload.php)的逻辑。
 
-1. 默认禁用扩展执行一遍测试，这个时候执行的是　ＰＨＰ　逻辑
-2. 启用扩展再执行一次扩展，　这个时候执行的是　ＥＸＴ　逻辑
+1. 默认禁用扩展执行一遍测试，这个时候执行的是　PHP　逻辑
+2. 启用扩展再执行一次扩展，　这个时候执行的是　EXT　逻辑
 
 ## 学习方式
 
@@ -33,3 +33,8 @@
 
 - `[skip ci]`
 - `[ci skip]`
+
+### 参考
+
+- [phpbook](https://github.com/walu/phpbook)
+- [Kahlan](https://kahlan.github.io/docs/index.html)

@@ -44,10 +44,8 @@ function checkExt()
 }
 
 function main() {
-    $arr = get_declared_classes();
-    foreach ($arr as $value) {
-        var_dump($value);
-    }
+    $instance = new Minbaby\Ext\Test();
+    echo $instance->xab();
 }
 
 

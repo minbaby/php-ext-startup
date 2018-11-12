@@ -18,4 +18,9 @@ class Test
     {
         echo 'hello world!!';
     }
+
+    public function __call($method, $args)
+    {
+        return sprintf("method:%s,count:%s,args:%s", $method, count($args), \implode("-", $args));
+    }
 }

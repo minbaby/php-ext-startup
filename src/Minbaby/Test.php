@@ -21,6 +21,6 @@ class Test
 
     public function __call($method, $args)
     {
-        return "method:{$method},args:" . \implode("-", $args);
+        return sprintf("method:%s,count:%s,args:%s", $method, count($args), \implode("-", $args));
     }
 }

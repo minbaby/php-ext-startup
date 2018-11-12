@@ -37,39 +37,32 @@ PHP_METHOD(Test, __call)
 
 	zend_string *delim = zend_string_init("-", sizeof("-"), 0);
 
-	// ZVAL_EMPTY_STRING(tmp);
-	// php_var_dump(tmp, 1);
-
-	// php_implode(delim, params, tmp);
-
-	// zend_string_release(delim);
-
-	// php_var_dump(tmp, 1);
-
-	// 似乎发现这里问题，但是问题怎么解决
-
-	zend_string *str = ZSTR_EMPTY_ALLOC();
-
 	zval *tmp;
+	zval result = {};
+	zval delimPtr = {};
+	
+	ZVAL_STRINGL(&delimPtr, "-", 1);
+	ZVAL_EMPTY_STRING(&result);
 
-	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(params), tmp) {
-		zend_string *t = ZSTR_EMPTY_ALLOC();
+	// 初学者不知道这里有什么其他实现方式。这里以能用为准
 
-		zend_string *tmp_str = zval_get_string(tmp);
+	uint32_t count = zend_array_count(params->value.arr);
+	uint32_t index = 0;
 
-		t = zend_string_extend(str, ZSTR_LEN(str) + ZSTR_LEN(tmp_str) + 2, 0);
-		ZSTR_VAL(t)[ZSTR_LEN(str)+1] = ' ';
+	if (count > 0) {
+		ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(params), tmp) {
+			concat_function(&result, &result, tmp);
 
-		memcpy(ZSTR_VAL(str) + ZSTR_LEN(str) + 2, ZSTR_VAL(tmp_str), ZSTR_LEN(tmp_str));
+			if (index == count-1) {
+				break;
+			}
 
-		str = t;
+			concat_function(&result, &result, &delimPtr);
+			index ++;
+		} ZEND_HASH_FOREACH_END();
+	}
 
-		zend_string_release(t);
-		zend_string_release(tmp_str);
-	} ZEND_HASH_FOREACH_END();
-
-
-	strg = strpprintf(0, "method:%s,args:-=-=-=- @@ %d @@ %s @@\n", method, ZSTR_LEN(str), ZSTR_VAL(str));
+	strg = strpprintf(0, "method:%s,count:%d,args:%s", method, count, Z_STRVAL_P(&result));
 
 	RETURN_STR(strg);
 }

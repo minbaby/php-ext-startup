@@ -31,7 +31,7 @@ describe('Test', function () {
         $instance = new Test();
         $params = [
             'a21212' => [1, 2, 3, 4],
-            '😊' => ['abab', 'cdcd', 'efef'],
+            '😊☺😀' => ['abab', 'cdcd', 'efef'],
             'daba' => [],
         ];
 

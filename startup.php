@@ -45,7 +45,7 @@ function checkExt()
 
 function main() {
     $instance = new Minbaby\Ext\Test();
-    echo $instance->xab('abab', 'cdcd', 'efef');
+    echo $instance->xab();
 }
 
 

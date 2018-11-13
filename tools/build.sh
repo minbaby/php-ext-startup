@@ -9,7 +9,7 @@ echo "disabled startup"
 phpbrew ext disable startup
 
 echo "go..."
-phpize && ./configure && make && make install && phpize --clean
+phpize && ./configure && make && make install && make clean && phpize --clean
 
 echo "enabled startup"
 phpbrew ext enable startup

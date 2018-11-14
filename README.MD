@@ -11,7 +11,6 @@
 3. 再用 ext 实现
 4. 跑测试
 
-
 ## 测试思路
 
 利用 php [自动加载](http://www.php.net/manual/zh/language.oop5.autoload.php)的逻辑。
@@ -29,7 +28,7 @@
 
 ## TODO
 
-  - [ ] [stringy](https://github.com/danielstjules/Stringy)
+- [ ] [stringy](https://github.com/danielstjules/Stringy)
 
 ### skip ci
 

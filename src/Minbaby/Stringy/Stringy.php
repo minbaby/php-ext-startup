@@ -36,4 +36,9 @@ class Stringy
     {
         return $this->encoding;
     }
+
+    public static function create($str, $encoding)
+    {
+        return new static($str, $encoding);
+    }
 }

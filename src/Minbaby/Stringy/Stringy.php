@@ -41,4 +41,84 @@ class Stringy
     {
         return new static($str, $encoding);
     }
+
+    public function collapseWhiteSpace()
+    {
+        return $this->regexReplace('[[:space:]]+', ' ')->trim();
+    }
+
+    public function regexReplace($pattern, $replacement, $options = 'msr')
+    {
+        $regexEncoding = $this->regexEncoding();
+        $this->regexEncoding($this->encoding);
+
+        $str = $this->eregReplace($pattern, $replacement, $this->str, $options);
+        $this->regexEncoding($regexEncoding);
+
+        return static::create($str, $this->encoding);
+    }
+
+    protected function regexEncoding()
+    {
+        static $functionExists;
+
+        if ($functionExists === null) {
+            $functionExists = function_exists('\mb_regex_encoding');
+        }
+
+        if ($functionExists) {
+            $args = func_get_args();
+            return \call_user_func_array('\mb_regex_encoding', $args);
+        }
+    }
+
+    protected function eregReplace($pattern, $replacement, $string, $option = 'msr')
+    {
+        static $functionExists;
+        if ($functionExists === null) {
+            $functionExists = function_exists('\mb_split');
+        }
+        if ($functionExists) {
+            return \mb_ereg_replace($pattern, $replacement, $string, $option);
+        } else if ($this->supportsEncoding()) {
+            $option = str_replace('r', '', $option);
+            return \preg_replace("/$pattern/u$option", $replacement, $string);
+        }
+    }
+
+    public function trim($chars = null)
+    {
+        $chars = ($chars) ? preg_quote($chars) : '[:space:]';
+        return $this->regexReplace("^[$chars]+|[$chars]+\$", '');
+    }
+
+    public function swapCase()
+    {
+        $stringy = static::create($this->str, $this->encoding);
+        $encoding = $stringy->encoding;
+        $stringy->str = preg_replace_callback(
+            '/[\S]/u',
+            function ($match) use ($encoding) {
+                if ($match[0] == \mb_strtoupper($match[0], $encoding)) {
+                    return \mb_strtolower($match[0], $encoding);
+                }
+                return \mb_strtoupper($match[0], $encoding);
+            },
+            $stringy->str
+        );
+        return $stringy;
+    }
+
+    public function upperCaseFirst()
+    {
+        $first = \mb_substr($this->str, 0, 1, $this->encoding);
+        $rest = \mb_substr($this->str, 1, $this->length() - 1, $this->encoding);
+        $str = \mb_strtoupper($first, $this->encoding) . $rest;
+        return static::create($str, $this->encoding);
+    }
+    
+    public function length()
+    {
+        return \mb_strlen($this->str, $this->encoding);
+    }
 }

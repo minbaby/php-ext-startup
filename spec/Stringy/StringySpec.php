@@ -58,4 +58,10 @@ namespace Minbaby\Ext\Stringy;
         \expect('foo bar')->toBe((string) $stringy);
         \expect('UTF-8')->toBe($stringy->getEncoding());
     });
+
+    it('test chaining', function () {
+        $stringy = Stringy::create('Fòô     Bàř', 'UTF-8');
+        \expect($stringy)->toBeAnInstanceOf(Stringy::class);
+        \expect('FÒÔ bÀŘ')->toBe((string) $stringy->collapseWhiteSpace()->swapCase()->upperCaseFirst());
+    });
 });

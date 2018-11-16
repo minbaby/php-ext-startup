@@ -64,4 +64,53 @@ namespace Minbaby\Ext\Stringy;
         \expect($stringy)->toBeAnInstanceOf(Stringy::class);
         \expect('FÒÔ bÀŘ')->toBe((string) $stringy->collapseWhiteSpace()->swapCase()->upperCaseFirst());
     });
+
+    it('test count', function () {
+        $stringy = Stringy::create('Fòô', 'UTF-8');
+        \expect($stringy->count())->toBe(3);
+        \expect(count($stringy))->toBe(3);
+    });
+
+    it('test GetIterator', function () {
+        $stringy = Stringy::create('Fòô Bàř', 'UTF-8');
+        $valResult = [];
+        foreach ($stringy as $char) {
+            $valResult[] = $char;
+        }
+        $keyValResult = [];
+        foreach ($stringy as $pos => $char) {
+            $keyValResult[$pos] = $char;
+        }
+
+        \expect($valResult)->toBe(['F', 'ò', 'ô', ' ', 'B', 'à', 'ř']);
+        \expect($keyValResult)->toBe(['F', 'ò', 'ô', ' ', 'B', 'à', 'ř']);
+    });
+
+    it('test offsetExists', function () {
+        $data = [
+            [true, 0],
+            [true, 2],
+            [false, 3],
+            [true, -1],
+            [true, -3],
+            [false, -4]
+        ];
+
+        $stringy = Stringy::create('fòô', 'UTF-8');
+
+        foreach ($data as $value) {
+            [$expected, $offset] = $value;
+            \expect($stringy->offsetExists($offset))->toBe($expected);
+            \expect(isset($stringy[$offset]))->toBe($expected);
+        }
+    });
+
+    it('test OffsetGet', function () {
+        $stringy = Stringy::create('fòô', 'UTF-8');
+
+        \expect($stringy->offsetGet(0))->toBe('f');
+        \expect($stringy->offsetGet(1))->toBe('ò');
+
+        \expect($stringy[2])->toBe('ô');
+    });
 });

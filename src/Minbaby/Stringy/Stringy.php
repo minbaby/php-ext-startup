@@ -4,7 +4,7 @@ namespace Minbaby\Ext\Stringy;
 
 use InvalidArgumentException;
 
-class Stringy
+class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
 {
 
     protected $str;
@@ -120,5 +120,70 @@ class Stringy
     public function length()
     {
         return \mb_strlen($this->str, $this->encoding);
+    }
+
+    public function count()
+    {
+        return $this->length();
+    }
+
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->chars());
+    }
+
+    public function chars()
+    {
+        $chars = [];
+        for($i = 0, $l = $this->length();  $i < $l; $i++)
+        {
+            $chars[] = $this->at($i)->str;
+        }
+
+        return $chars;
+    }
+
+    public function at($index)
+    {
+        return $this->substr($index, 1);
+    }
+
+    public function substr($start, $length = null)
+    {
+        $length = $length === null ? $this->length() : $length;
+        $str = \mb_substr($this->str, $start, $length, $this->encoding);
+        return static::create($str, $this->encoding);
+    }
+
+    public function offsetExists($offset)
+    {
+        $length = $this->length();
+        $offset = (int) $offset;
+
+        if ($offset >= 0) {
+            return $length > $offset;
+        }
+
+        return $length >= abs($offset);
+    }
+    
+    public function offsetGet($offset)
+    {
+        $offset = (int) $offset;
+        $length = $this->length();
+        if (($offset >= 0 && $length <= $offset) || $length < abs($offset)) {
+            throw new OutOfBoundsException('No character exists at the index');
+        }
+        return \mb_substr($this->str, $offset, 1, $this->encoding);
+    }
+
+    public function offsetSet($offset, $value)
+    {
+
+    }
+
+    public function offsetUnset($offset)
+    {
+
     }
 }

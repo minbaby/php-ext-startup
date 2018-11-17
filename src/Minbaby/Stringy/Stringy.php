@@ -184,6 +184,6 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
 
     public function offsetUnset($offset)
     {
-
+        throw new \Exception('Stringy object is immutable, cannot unset char');
     }
 }

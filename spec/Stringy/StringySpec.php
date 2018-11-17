@@ -135,6 +135,6 @@ namespace Minbaby\Ext\Stringy;
         $callable = function () use ($stringy) {
             unset($stringy[1]);
         };
-        \expect($callable)->toThrow(new \Exception('Stringy object is immutable, cannot modify char'));
+        \expect($callable)->toThrow(new \Exception('Stringy object is immutable, cannot unset char'));
     });
 });

@@ -6,5 +6,16 @@
         "type_traits": "c",
         "typeinfo": "cpp",
         "stdarg.h": "c"
+    },
+    "files.autoSave": "afterDelay",
+    "editor.fontSize": 18,
+    "editor.renderWhitespace": "boundary",
+    "editor.cursorStyle": "line-thin",
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true
     }
 }

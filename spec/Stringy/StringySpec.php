@@ -129,4 +129,12 @@ namespace Minbaby\Ext\Stringy;
         };
         \expect($callable)->toThrow(new \Exception('Stringy object is immutable, cannot modify char'));
     });
+
+    it('test OffsetUnset', function () {
+        $stringy = Stringy::create('fòô', 'UTF-8');
+        $callable = function () use ($stringy) {
+            unset($stringy[1]);
+        };
+        \expect($callable)->toThrow(new \Exception('Stringy object is immutable, cannot modify char'));
+    });
 });

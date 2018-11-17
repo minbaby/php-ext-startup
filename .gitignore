@@ -35,7 +35,7 @@ tests/*/*.log
 tests/*/*.sh
 
 # minbaby
-.vscode
+# .vscode
 tags
 GRTAGS
 GTAGS

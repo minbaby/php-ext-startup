@@ -172,14 +172,14 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $offset = (int) $offset;
         $length = $this->length();
         if (($offset >= 0 && $length <= $offset) || $length < abs($offset)) {
-            throw new OutOfBoundsException('No character exists at the index');
+            throw new \OutOfBoundsException('No character exists at the index');
         }
         return \mb_substr($this->str, $offset, 1, $this->encoding);
     }
 
     public function offsetSet($offset, $value)
     {
-
+        throw new \Exception('Stringy object is immutable, cannot modify char');
     }
 
     public function offsetUnset($offset)

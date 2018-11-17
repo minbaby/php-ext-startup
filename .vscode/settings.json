@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "php.h": "c",
+        "php_ini.h": "c",
+        "zend.h": "c",
+        "type_traits": "c",
+        "typeinfo": "cpp",
+        "stdarg.h": "c"
+    }
+}

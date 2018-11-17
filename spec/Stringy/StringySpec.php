@@ -113,4 +113,20 @@ namespace Minbaby\Ext\Stringy;
 
         \expect($stringy[2])->toBe('ô');
     });
+
+    it('test OffsetGet out of bounds', function () {
+        $stringy = Stringy::create('fòô', 'UTF-8');
+        $callable = function () use ($stringy) {
+            $test = $stringy[3];
+        };
+        \expect($callable)->toThrow(new \OutOfBoundsException('No character exists at the index'));
+    });
+
+    it('test OffsetSet', function () {
+        $stringy = Stringy::create('fòô', 'UTF-8');
+        $callable = function () use ($stringy) {
+            $stringy[1] = 'invalid';
+        };
+        \expect($callable)->toThrow(new \Exception('Stringy object is immutable, cannot modify char'));
+    });
 });

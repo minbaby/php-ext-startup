@@ -38,8 +38,13 @@ jobs:
           command: ./vendor/bin/kahlan
 
       - run:
+          name: cp docker-php-ext-start.ini
+          command: sudo cp .circleci/docker-php-ext-startup.ini /usr/local/etc/php/conf.d/
+
+      - run:
           name: enable startup
           command: sudo docker-php-ext-enable startup
+      
       - run:
           name: run test
           command: ./vendor/bin/kahlan

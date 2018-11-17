@@ -186,4 +186,24 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
     {
         throw new \Exception('Stringy object is immutable, cannot unset char');
     }
+
+    public function indexOf($needle, $offset = 0)
+    {
+        return \mb_strpos(
+            $this->str, 
+            (string) $needle,
+            (int) $offset, 
+            $this->encoding
+        );
+    }
+
+    public function indexOfLast($needle, $offset = 0)
+    {
+        return \mb_strrpos(
+            $this->str, 
+            (string) $needle,
+            (int) $offset, 
+            $this->encoding
+        );
+    }
 }

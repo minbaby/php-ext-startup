@@ -5,6 +5,8 @@
 #include "common.h"
 #include "ext/standard/php_standard.h"
 
+#define PHP_STARTUP_TEST_NS(cls) PHP_STARTUP_NS_NAME "Test\\" #cls
+
 extern zend_class_entry *test_ce;
 
 void php_start_register_test();

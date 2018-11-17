@@ -59,5 +59,9 @@ if test "$PHP_STARTUP" != "no"; then
   dnl
   dnl PHP_SUBST(STARTUP_SHARED_LIBADD)
 
-  PHP_NEW_EXTENSION(startup, startup.c src/ext/test.class.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
+  $source = "startup.c \
+              src/ext/test.class.c \ 
+              src/ext/stringy/stringy.c";
+
+  PHP_NEW_EXTENSION(startup, $source, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi

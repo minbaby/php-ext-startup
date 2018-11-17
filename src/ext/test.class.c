@@ -83,7 +83,7 @@ void php_start_register_test()
 {
 	zend_class_entry ce;
 
-	INIT_CLASS_ENTRY(ce, PHP_STARTUP_NS(Test), methods);
+	INIT_CLASS_ENTRY(ce, PHP_STARTUP_TEST_NS(Test), methods);
 
 	test_ce = zend_register_internal_class(&ce);
 

@@ -11,14 +11,14 @@ namespace Minbaby\Ext\Stringy;
         \expect($stringy->getEncoding())->toBe('UTF-8');
     });
 
-    it("test empty construct", function () {
+    xit("test empty construct", function () {
         $stringy = new Stringy();
 
         \expect($stringy instanceof Stringy)->toBe(true);
         \expect((string) $stringy)->toBe('');
     });
 
-    it("test construct with array", function () {
+    xit("test construct with array", function () {
         $closure = function () {
             (string) new Stringy([]);
         };
@@ -26,7 +26,7 @@ namespace Minbaby\Ext\Stringy;
         \expect($closure)->toThrow(new \InvalidArgumentException('Passed value cannot be an array'));
     });
 
-    it("test missing to string", function () {
+    xit("test missing to string", function () {
         $closure = function () {
             (string) new Stringy(new \stdClass());
         };
@@ -34,7 +34,7 @@ namespace Minbaby\Ext\Stringy;
         \expect($closure)->toThrow(new \InvalidArgumentException('Passed object must have a __toString method'));
     });
 
-    it("test __toString", function () {
+    xit("test __toString", function () {
         $data = [
             ['', null],
             ['', false],
@@ -51,7 +51,7 @@ namespace Minbaby\Ext\Stringy;
         }
     });
 
-    it("test create", function () {
+    xit("test create", function () {
         $stringy = Stringy::create('foo bar', 'UTF-8');
 
         \expect($stringy)->toBeAnInstanceOf(Stringy::class);
@@ -59,19 +59,19 @@ namespace Minbaby\Ext\Stringy;
         \expect('UTF-8')->toBe($stringy->getEncoding());
     });
 
-    it('test chaining', function () {
+    xit('test chaining', function () {
         $stringy = Stringy::create('Fòô     Bàř', 'UTF-8');
         \expect($stringy)->toBeAnInstanceOf(Stringy::class);
         \expect('FÒÔ bÀŘ')->toBe((string) $stringy->collapseWhiteSpace()->swapCase()->upperCaseFirst());
     });
 
-    it('test count', function () {
+    xit('test count', function () {
         $stringy = Stringy::create('Fòô', 'UTF-8');
         \expect($stringy->count())->toBe(3);
         \expect(count($stringy))->toBe(3);
     });
 
-    it('test GetIterator', function () {
+    xit('test GetIterator', function () {
         $stringy = Stringy::create('Fòô Bàř', 'UTF-8');
         $valResult = [];
         foreach ($stringy as $char) {
@@ -86,7 +86,7 @@ namespace Minbaby\Ext\Stringy;
         \expect($keyValResult)->toBe(['F', 'ò', 'ô', ' ', 'B', 'à', 'ř']);
     });
 
-    it('test offsetExists', function () {
+    xit('test offsetExists', function () {
         $data = [
             [true, 0],
             [true, 2],
@@ -105,7 +105,7 @@ namespace Minbaby\Ext\Stringy;
         }
     });
 
-    it('test OffsetGet', function () {
+    xit('test OffsetGet', function () {
         $stringy = Stringy::create('fòô', 'UTF-8');
 
         \expect($stringy->offsetGet(0))->toBe('f');
@@ -114,7 +114,7 @@ namespace Minbaby\Ext\Stringy;
         \expect($stringy[2])->toBe('ô');
     });
 
-    it('test OffsetGet out of bounds', function () {
+    xit('test OffsetGet out of bounds', function () {
         $stringy = Stringy::create('fòô', 'UTF-8');
         $callable = function () use ($stringy) {
             $test = $stringy[3];
@@ -122,7 +122,7 @@ namespace Minbaby\Ext\Stringy;
         \expect($callable)->toThrow(new \OutOfBoundsException('No character exists at the index'));
     });
 
-    it('test OffsetSet', function () {
+    xit('test OffsetSet', function () {
         $stringy = Stringy::create('fòô', 'UTF-8');
         $callable = function () use ($stringy) {
             $stringy[1] = 'invalid';
@@ -130,11 +130,53 @@ namespace Minbaby\Ext\Stringy;
         \expect($callable)->toThrow(new \Exception('Stringy object is immutable, cannot modify char'));
     });
 
-    it('test OffsetUnset', function () {
+    xit('test OffsetUnset', function () {
         $stringy = Stringy::create('fòô', 'UTF-8');
         $callable = function () use ($stringy) {
             unset($stringy[1]);
         };
         \expect($callable)->toThrow(new \Exception('Stringy object is immutable, cannot unset char'));
+    });
+
+    xit('test IndexOf', function () {
+        $data = [
+            [6, 'foo & bar', 'bar'],
+            [6, 'foo & bar', 'bar', 0],
+            [false, 'foo & bar', 'baz'],
+            [false, 'foo & bar', 'baz', 0],
+            [0, 'foo & bar & foo', 'foo', 0],
+            [12, 'foo & bar & foo', 'foo', 5],
+            [6, 'fòô & bàř', 'bàř', 0, 'UTF-8'],
+            [false, 'fòô & bàř', 'baz', 0, 'UTF-8'],
+            [0, 'fòô & bàř & fòô', 'fòô', 0, 'UTF-8'],
+            [12, 'fòô & bàř & fòô', 'fòô', 5, 'UTF-8']
+        ];
+
+        foreach ($data as $value) {
+            @list($expectd, $str, $subStr, $offset, $encoding) = $value;
+            $result = Stringy::create($str, $encoding)->indexOf($subStr, $offset);
+            \expect($result)->toBe($expectd);
+        }
+    });
+
+    xit('test IndexOfLast', function () {
+        $data = [
+            [6, 'foo & bar', 'bar'],
+            [6, 'foo & bar', 'bar', 0],
+            [false, 'foo & bar', 'baz'],
+            [false, 'foo & bar', 'baz', 0],
+            [12, 'foo & bar & foo', 'foo', 0],
+            [0, 'foo & bar & foo', 'foo', -5],
+            [6, 'fòô & bàř', 'bàř', 0, 'UTF-8'],
+            [false, 'fòô & bàř', 'baz', 0, 'UTF-8'],
+            [12, 'fòô & bàř & fòô', 'fòô', 0, 'UTF-8'],
+            [0, 'fòô & bàř & fòô', 'fòô', -5, 'UTF-8']
+        ];
+
+        foreach ($data as $value) {
+            @list($expectd, $str, $subStr, $offset, $encoding) = $value;
+            $result = Stringy::create($str, $encoding)->indexOfLast($subStr, $offset);
+            \expect($result)->toBe($expectd);
+        }
     });
 });

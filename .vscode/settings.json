@@ -5,9 +5,10 @@
         "zend.h": "c",
         "type_traits": "c",
         "typeinfo": "cpp",
-        "stdarg.h": "c"
+        "stdarg.h": "c",
+        "common.h": "c"
     },
-    "files.autoSave": "afterDelay",
+    "files.autoSave": "onFocusChange",
     "editor.fontSize": 18,
     "editor.renderWhitespace": "boundary",
     "editor.cursorStyle": "line-thin",

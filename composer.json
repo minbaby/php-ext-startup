@@ -2,6 +2,7 @@
     "name": "minbaby/php-ext-startup",
     "type": "project",
     "license": "MIT",
+    "description": "",
     "authors": [
         {
             "name": "minbaby.zhang",
@@ -13,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Minbaby\\Ext\\": "src/Minbaby/"
+            "Minbaby\\Ext\\": "src/Minbaby/Ext"
         }
     },
     "autoload-dev": {

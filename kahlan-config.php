@@ -1,3 +1,7 @@
 <?php
+use Kahlan\Cli\CommandLine;
 
-use Kahlan\Filter\Filters;
+/**@var \Kahlan\Cli\CommandLine $commandLine */
+$commandLine = $this->commandLine();
+$commandLine->option('reporter', 'default', 'verbose');
+$commandLine->option('ff', 'default', 1);

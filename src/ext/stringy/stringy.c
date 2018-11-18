@@ -13,6 +13,7 @@ PHP_METHOD(Stringy, __toString)
 
 
 static zend_function_entry methods[] = {
+    PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 
@@ -24,6 +25,6 @@ void php_startup_register_stringy()
 
     stringy_ce = zend_register_internal_class(&ce);
 
-    zend_declare_property_string(&ce, "str", sizeof("str"), "", ZEND_ACC_PROTECTED);
-    zend_declare_property_string(&ce, "encoding", sizeof("encoding"), "", ZEND_ACC_PROTECTED);
+    zend_declare_property_string(stringy_ce, "str", sizeof("str"), "", ZEND_ACC_PROTECTED);
+    zend_declare_property_string(stringy_ce, "encoding", sizeof("encoding"), "", ZEND_ACC_PROTECTED);
 }

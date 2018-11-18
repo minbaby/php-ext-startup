@@ -6,7 +6,9 @@
         "type_traits": "c",
         "typeinfo": "cpp",
         "stdarg.h": "c",
-        "common.h": "c"
+        "common.h": "c",
+        "config.h": "c",
+        "stringy.h": "c"
     },
     "files.autoSave": "onFocusChange",
     "editor.fontSize": 18,

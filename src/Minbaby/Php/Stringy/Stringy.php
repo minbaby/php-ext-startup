@@ -1,6 +1,6 @@
 <?php
 
-namespace Minbaby\Ext\Stringy;
+namespace Minbaby\Startup\Php\Stringy;
 
 use InvalidArgumentException;
 

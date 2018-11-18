@@ -10,17 +10,21 @@
         }
     ],
     "require": {
-    
+      "php": "^7.1"
     },
     "autoload": {
         "psr-4": {
-            "Minbaby\\Ext\\": "src/Minbaby/Ext"
+            "Minbaby\\Startup\\Php\\": "src/Minbaby/Php"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Minbaby\\Ext\\Spec\\": "spec/"
-        }
+            "Minbaby\\Startup\\Spec\\": "spec/"
+        },
+        "files": [
+          "spec/const.php",
+          "spec/functions.php"
+        ]
     },
     "require-dev": {
         "kahlan/kahlan": "^4.3"

@@ -44,8 +44,8 @@ function checkExt()
 }
 
 function main() {
-    $instance = new Minbaby\Ext\Test();
-    echo $instance->xab();
+    var_dump(extension_loaded('startup'));
+    var_dump(get_declared_classes());
 }
 
 

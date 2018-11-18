@@ -1,40 +1,45 @@
 <?php
 
-namespace Minbaby\Ext\Stringy;
+namespace Minbaby\Startup\Spec\Stringy;
 
 \describe("Stringy Test", function () {
-    it("test construct", function () {
-        $stringy = new Stringy('test test2 test3', 'UTF-8');
+    \beforeAll(function () {
+        _ns(NS_STRINGY);
+        $this->class = 'Stringy';
+        $this->className = __($this->class);
+    });
 
-        \expect($stringy)->toBeAnInstanceOf(Stringy::class);
+    it("test construct", function () {
+        $stringy = _('Stringy', ['test test2 test3', 'UTF-8']);
+
+        \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
         \expect((string) $stringy)->toBe('test test2 test3');
         \expect($stringy->getEncoding())->toBe('UTF-8');
     });
 
-    xit("test empty construct", function () {
-        $stringy = new Stringy();
+    it("test empty construct", function () {
+        $stringy = _('Stringy');
 
-        \expect($stringy instanceof Stringy)->toBe(true);
+        \expect($stringy instanceof $this->className)->toBe(true);
         \expect((string) $stringy)->toBe('');
     });
 
-    xit("test construct with array", function () {
+    it("test construct with array", function () {
         $closure = function () {
-            (string) new Stringy([]);
+            (string)_($this->class, [[]]);
         };
-
         \expect($closure)->toThrow(new \InvalidArgumentException('Passed value cannot be an array'));
     });
 
-    xit("test missing to string", function () {
+    it("test missing to string", function () {
         $closure = function () {
-            (string) new Stringy(new \stdClass());
+            (string)_($this->class, [new \stdClass()]);
         };
 
         \expect($closure)->toThrow(new \InvalidArgumentException('Passed object must have a __toString method'));
     });
 
-    xit("test __toString", function () {
+    it("test __toString", function () {
         $data = [
             ['', null],
             ['', false],
@@ -47,7 +52,7 @@ namespace Minbaby\Ext\Stringy;
 
         foreach($data as $v) {
             [$key, $value] = $v;
-            \expect($key)->toBe((string) new Stringy($value));
+            \expect($key)->toBe((string) _($this->class, [$value]));
         }
     });
 

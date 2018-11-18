@@ -59,7 +59,7 @@ if test "$PHP_STARTUP" != "no"; then
   dnl
   dnl PHP_SUBST(STARTUP_SHARED_LIBADD)
 
-  $source = "startup.c \
+  source="startup.c \
               src/ext/test.class.c \ 
               src/ext/stringy/stringy.c";
 

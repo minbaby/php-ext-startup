@@ -79,7 +79,7 @@ static zend_function_entry methods[] = {
 	PHP_FE_END
 };
 
-void php_start_register_test()
+void php_startup_register_test()
 {
 	zend_class_entry ce;
 

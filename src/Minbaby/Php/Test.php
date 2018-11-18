@@ -1,5 +1,5 @@
 <?php
-namespace Minbaby\Ext;
+namespace Minbaby\Startup\Php;
 
 class Test
 {

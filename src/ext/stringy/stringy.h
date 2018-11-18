@@ -4,6 +4,8 @@
 #include "php.h"
 #include "../common.h"
 #include "ext/standard/php_standard.h"
+#include "Zend/zend_exceptions.h"
+#include "ext/spl/spl_exceptions.h"
 
 #define PHP_STARTUP_STRINGY_NS(cls) PHP_STARTUP_NS_NAME "Stringy\\" #cls
 

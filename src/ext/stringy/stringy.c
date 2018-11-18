@@ -12,17 +12,33 @@ PHP_METHOD(Stringy, __toString)
 PHP_METHOD(Stringy, __construct)
 {
     char *str, *encoding;
+    zval *val;
     size_t str_len, encoding_len;
 
     if (EX_NUM_ARGS() == 0) {
         RETURN_NULL();
     }
 
-     ZEND_PARSE_PARAMETERS_START(0, 2)
-        Z_PARAM_OPTIONAL
-        Z_PARAM_STRING(str, str_len)
-        Z_PARAM_STRING(encoding, encoding_len)
-     ZEND_PARSE_PARAMETERS_END();
+    ZEND_PARSE_PARAMETERS_START(0, 2)
+    Z_PARAM_OPTIONAL
+    // Z_PARAM_STRING(str, str_len)
+    Z_PARAM_ZVAL(val)
+    Z_PARAM_STRING(encoding, encoding_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (Z_TYPE_P(val) == IS_ARRAY) {
+        zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "%s", "Passed value cannot be an array");
+        return;
+    }
+
+    if (Z_TYPE_P(val) == IS_OBJECT) {
+        zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "%s", "Passed object must have a __toString method");
+        return;
+    }
+
+    convert_to_string(val)
+
+    str = Z_STRVAL_P(val);
 
     if (str == NULL) {
         str = "";

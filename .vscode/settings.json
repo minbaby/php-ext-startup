@@ -8,7 +8,13 @@
         "stdarg.h": "c",
         "common.h": "c",
         "config.h": "c",
-        "stringy.h": "c"
+        "stringy.h": "c",
+        "php_standard.h": "c",
+        "spl_exceptions.h": "c",
+        "php_spl.h": "c",
+        "zend_exceptions.h": "c",
+        "zend_interfaces.h": "c",
+        "php_mt_rand.h": "c"
     },
     "files.autoSave": "onFocusChange",
     "editor.fontSize": 18,

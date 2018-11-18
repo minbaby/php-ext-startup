@@ -24,14 +24,14 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect((string) $stringy)->toBe('');
     });
 
-    xit("test construct with array", function () {
+    it("test construct with array", function () {
         $closure = function () {
             (string)_($this->class, [[]]);
         };
         \expect($closure)->toThrow(new \InvalidArgumentException('Passed value cannot be an array'));
     });
 
-    xit("test missing to string", function () {
+    it("test missing to string", function () {
         $closure = function () {
             (string)_($this->class, [new \stdClass()]);
         };
@@ -39,7 +39,7 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect($closure)->toThrow(new \InvalidArgumentException('Passed object must have a __toString method'));
     });
 
-    xit("test __toString", function () {
+    it("test __toString", function () {
         $data = [
             ['', null],
             ['', false],
@@ -57,9 +57,9 @@ namespace Minbaby\Startup\Spec\Stringy;
     });
 
     xit("test create", function () {
-        $stringy = Stringy::create('foo bar', 'UTF-8');
+        $stringy = __('Stringy')::create('foo bar', 'UTF-8');
 
-        \expect($stringy)->toBeAnInstanceOf(Stringy::class);
+        \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
         \expect('foo bar')->toBe((string) $stringy);
         \expect('UTF-8')->toBe($stringy->getEncoding());
     });

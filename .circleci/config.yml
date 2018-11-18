@@ -38,12 +38,8 @@ jobs:
           command:  phpize && ./configure && make && sudo make install
 
       - run:
-          name: cp docker-php-ext-start.ini
-          command: sudo cp .circleci/docker-php-ext-startup.ini /usr/local/etc/php/conf.d/
-
-      - run:
           name: enable startup
-          command: sudo docker-php-ext-enable startup
+          command: sudo cp .circleci/docker-php-ext-startup.ini /usr/local/etc/php/conf.d/
       
       - run:
           name: run test

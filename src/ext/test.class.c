@@ -20,7 +20,7 @@ PHP_METHOD(Test, echoHelloWorld)
 
 	php_printf("hello world!!");
 
-	RETVAL_NULL();
+	RETURN_NULL();
 }
 
 PHP_METHOD(Test, __call)

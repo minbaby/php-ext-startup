@@ -43,9 +43,26 @@ function checkExt()
     echo "$br\n";
 }
 
+include __DIR__ . "/spec/const.php";
+include __DIR__ . "/spec/functions.php";
+
+class X
+{
+    public function __construct()
+    {
+        var_dump(func_get_args(), func_num_args());
+    }
+}
+
 function main() {
-    var_dump(extension_loaded('startup'));
-    var_dump(get_declared_classes());
+    _ns(NS_STRINGY);
+    $x = _('Stringy');
+    $i = __('Stringy');
+    var_dump($x instanceof $i, $i);
+
+    // _ns('\\');
+    // $xy = _('X');
+    // $xyz = new X();
 }
 
 

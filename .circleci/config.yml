@@ -26,16 +26,16 @@ jobs:
       - checkout
 
       - run:
-          name: startup install
-          command:  phpize && ./configure && make && sudo make install
-
-      - run:
           name: composer install
           command: composer install
 
       - run:
           name: run test
           command: ./vendor/bin/kahlan
+
+      - run:
+          name: startup install
+          command:  phpize && ./configure && make && sudo make install
 
       - run:
           name: cp docker-php-ext-start.ini

@@ -48,9 +48,7 @@ include __DIR__ . "/spec/functions.php";
 
 function main() {
     _ns(NS_STRINGY);
-    $x = _('Stringy', [new stdClass()]);
-    $i = __('Stringy');
-    var_dump($x instanceof $i, (string) $x);
+    $i = __('Stringy')::create(1, 'UTF-8');
 }
 
 

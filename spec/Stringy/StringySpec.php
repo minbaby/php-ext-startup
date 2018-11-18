@@ -56,7 +56,7 @@ namespace Minbaby\Startup\Spec\Stringy;
         }
     });
 
-    xit("test create", function () {
+    it("test create", function () {
         $stringy = __('Stringy')::create('foo bar', 'UTF-8');
 
         \expect($stringy)->toBeAnInstanceOf(__('Stringy'));

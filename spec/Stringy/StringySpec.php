@@ -31,7 +31,7 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect($closure)->toThrow(new \InvalidArgumentException('Passed value cannot be an array'));
     });
 
-    xit("test missing __toString", function () {
+    it("test missing __toString", function () {
         $closure = function () {
             (string)_($this->class, [new \stdClass()]);
         };
@@ -70,8 +70,8 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect('FÒÔ bÀŘ')->toBe((string) $stringy->collapseWhiteSpace()->swapCase()->upperCaseFirst());
     });
 
-    xit('test count', function () {
-        $stringy = Stringy::create('Fòô', 'UTF-8');
+    it('test count', function () {
+        $stringy = __('Stringy')::create('Fòô', 'UTF-8');
         \expect($stringy->count())->toBe(3);
         \expect(count($stringy))->toBe(3);
     });
@@ -143,7 +143,7 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect($callable)->toThrow(new \Exception('Stringy object is immutable, cannot unset char'));
     });
 
-    xit('test IndexOf', function () {
+    it('test IndexOf', function () {
         $data = [
             [6, 'foo & bar', 'bar'],
             [6, 'foo & bar', 'bar', 0],
@@ -159,12 +159,12 @@ namespace Minbaby\Startup\Spec\Stringy;
 
         foreach ($data as $value) {
             @list($expectd, $str, $subStr, $offset, $encoding) = $value;
-            $result = Stringy::create($str, $encoding)->indexOf($subStr, $offset);
+            $result = __('Stringy')::create($str, $encoding)->indexOf($subStr, $offset);
             \expect($result)->toBe($expectd);
         }
     });
 
-    xit('test IndexOfLast', function () {
+    it('test IndexOfLast', function () {
         $data = [
             [6, 'foo & bar', 'bar'],
             [6, 'foo & bar', 'bar', 0],
@@ -180,7 +180,7 @@ namespace Minbaby\Startup\Spec\Stringy;
 
         foreach ($data as $value) {
             @list($expectd, $str, $subStr, $offset, $encoding) = $value;
-            $result = Stringy::create($str, $encoding)->indexOfLast($subStr, $offset);
+            $result = __('Stringy')::create($str, $encoding)->indexOfLast($subStr, $offset);
             \expect($result)->toBe($expectd);
         }
     });

@@ -14,7 +14,13 @@
         "php_spl.h": "c",
         "zend_exceptions.h": "c",
         "zend_interfaces.h": "c",
-        "php_mt_rand.h": "c"
+        "php_mt_rand.h": "c",
+        "spl_array.h": "c",
+        "mbstring.h": "c",
+        "__locale": "c",
+        "__string": "c",
+        "string": "c",
+        "string_view": "c"
     },
     "files.autoSave": "onFocusChange",
     "editor.fontSize": 18,

@@ -31,7 +31,7 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect($closure)->toThrow(new \InvalidArgumentException('Passed value cannot be an array'));
     });
 
-    it("test missing to string", function () {
+    xit("test missing __toString", function () {
         $closure = function () {
             (string)_($this->class, [new \stdClass()]);
         };

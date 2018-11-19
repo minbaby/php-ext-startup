@@ -4,7 +4,7 @@ zend_class_entry *stringy_ce;
 
 PHP_METHOD(Stringy, __toString)
 {
-    zval rv, *value;
+    zval rv = {}, *value;
     value = zend_read_property(stringy_ce, getThis(), "str", strlen("str"), 0, &rv);
     RETURN_STRING(Z_STRVAL_P(value));
 }
@@ -21,9 +21,9 @@ PHP_METHOD(Stringy, __construct)
     }
 
     ZEND_PARSE_PARAMETERS_START(0, 2)
-    Z_PARAM_OPTIONAL
-    Z_PARAM_ZVAL(str)
-    Z_PARAM_STRING(encoding, encoding_len)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(str)
+        Z_PARAM_STRING(encoding, encoding_len)
     ZEND_PARSE_PARAMETERS_END();
 
     if (Z_TYPE_P(str) == IS_ARRAY) {

@@ -58,7 +58,7 @@ PHP_METHOD(Stringy, __construct)
 
     // 这里需要加一下了逻辑， 如果这里需要判断 encoding 是否支持, 不支持话，就用默认的编码
     ZVAL_STRING(&func, "mb_list_encodings");  
-    call_user_function_ex(NULL, NULL, &func, return_value, 0, NULL, 0, NULL);
+    call_user_function(NULL, NULL, &func, return_value, 0, NULL);
 
     zval *tmp;
     size_t count = 0;
@@ -72,7 +72,7 @@ PHP_METHOD(Stringy, __construct)
 
     if (count == 0) {
         ZVAL_STRING(&func, "mb_internal_encoding");  
-        call_user_function_ex(NULL, NULL, &func, return_value, 0, NULL, 0, NULL);
+        call_user_function(NULL, NULL, &func, return_value, 0, NULL);
 
         encoding = Z_STRVAL_P(return_value);
     } 
@@ -111,7 +111,7 @@ PHP_METHOD(Stringy, create)
 
     ZVAL_STRING(&func, "__construct");
 
-    call_user_function_ex(NULL, &instance, &func, &retval, 2, args, 0, NULL);
+    call_user_function(NULL, &instance, &func, &retval, 2, args);
 
     RETURN_ZVAL(&instance, 0, 1);
 }
@@ -128,7 +128,7 @@ PHP_METHOD(Stringy, count)
 
     ZVAL_STRING(&func, "length");
 
-    call_user_function_ex(NULL, getThis(), &func, return_value, 0, NULL, 0, NULL);
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
 }
 
 /* {{{ int length(): int
@@ -144,7 +144,7 @@ PHP_METHOD(Stringy, length)
 
     args[0] = *value;
 
-    call_user_function_ex(NULL, NULL, &func, return_value, 1, args, 0, NULL);
+    call_user_function(NULL, NULL, &func, return_value, 1, args);
 }
 
 /*{{{ int indexOfLast($needle, $offset = 0)

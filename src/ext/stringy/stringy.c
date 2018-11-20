@@ -12,6 +12,7 @@
 zend_class_entry *stringy_ce;
 
 // @TODO: 这个地方似乎用法有问题，全是动态调用本类的方法，这个思路是是面向对象的用法，理论上这个地方应该把公用的地方提取成公共方法。
+// @TODO: 先把这个写完，然后去学习一下其他项目，然后再来优化这个地方的代码，先跑起来
 
 // zval* substr(zval *str, zval *start, zval *length, zval *encoding)
 // {
@@ -234,14 +235,17 @@ PHP_METHOD(Stringy, getIterator)
     zval func = {}, ret = {};
     ZVAL_STRING(&func, "chars");
     call_user_function(NULL, getThis(), &func, &ret, 0, NULL);
-    php_var_dump(&ret, 1);
 
-    zval args[1] = {};
+    zval x = {}, flags = {};
+    
     ZVAL_STRING(&func, "__construct");
-    args[0] = ret;
-    call_user_function(NULL, &instance, &func, NULL, 1, args);
-    // php_var_dump(&instance, 1);
-
+    zval args[2] = {};
+    ZVAL_ARR(&x, Z_ARRVAL(ret));
+    ZVAL_LONG(&flags, 0);
+    args[0] = x;
+    args[1] = flags;
+    call_user_function(NULL, &instance, &func, return_value, 2, args);
+    
     RETURN_ZVAL(&instance, 0, 1);
 }
 
@@ -253,7 +257,6 @@ PHP_METHOD(Stringy, chars)
     ZVAL_STRING(&func, "length");
 
     call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
-    // php_var_dump(return_value, 1);
 
     str_len = (size_t) Z_LVAL_P(return_value);
     

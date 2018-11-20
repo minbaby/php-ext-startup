@@ -48,7 +48,16 @@ include __DIR__ . "/spec/functions.php";
 
 function main() {
     _ns(NS_STRINGY);
-    $i = __('Stringy')::create(1, 'UTF-8');
+    $stringy = __('Stringy')::create('Fòô Bàř', 'UTF-8');
+    $stringy->at(1);
+    // $valResult = [];
+    // foreach ($stringy as $char) {
+    //     $valResult[] = $char;
+    // }
+    // $keyValResult = [];
+    // foreach ($stringy as $pos => $char) {
+    //     $keyValResult[$pos] = $char;
+    // }
 }
 
 

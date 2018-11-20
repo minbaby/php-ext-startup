@@ -76,8 +76,8 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect(count($stringy))->toBe(3);
     });
 
-    xit('test GetIterator', function () {
-        $stringy = Stringy::create('Fòô Bàř', 'UTF-8');
+    it('test GetIterator', function () {
+        $stringy = __('Stringy')::create('Fòô Bàř', 'UTF-8');
         $valResult = [];
         foreach ($stringy as $char) {
             $valResult[] = $char;

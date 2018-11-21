@@ -346,6 +346,90 @@ ZEND_BEGIN_ARG_INFO(arginfo_substr, 2)
     ZEND_ARG_TYPE_INFO(0, length, IS_LONG, 1)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, offsetExists)
+{
+    zval *offset;
+    int offset_int = 0, length = 0;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(offset)
+    ZEND_PARSE_PARAMETERS_END();
+
+    convert_to_long(offset);
+
+    offset_int = Z_LVAL_P(offset);
+
+    zval func = {};
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+    length = Z_LVAL_P(return_value);
+
+    if (offset_int >= 0) {
+        RETURN_BOOL(length > offset_int);
+    }
+
+    RETURN_BOOL(length >= abs(offset_int));
+}
+ZEND_BEGIN_ARG_INFO(arginfo_offsetExists, 1)
+    ZEND_ARG_INFO(0, offset)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, offsetGet)
+{
+    zval *offset;
+    int offset_int = 0, length = 0;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(offset)
+    ZEND_PARSE_PARAMETERS_END();
+
+    convert_to_long(offset);
+
+    offset_int = Z_LVAL_P(offset);
+    
+    zval func = {};
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+    length = Z_LVAL_P(return_value);
+
+    if ((offset_int >= 0 && length <= offset_int) || length < abs(offset_int)) {
+        zend_throw_exception(spl_ce_OutOfBoundsException, "No character exists at the index", 0);
+        return;
+    }
+
+    zval args[4] = {}, substrLen = {}, rv = {};
+    ZVAL_LONG(&substrLen, 1);
+    ZVAL_STRING(&func, "mb_substr");
+    zval *string = zend_read_property(stringy_ce, getThis(), "str", strlen("str"), 1, &rv);
+    zval *encoding = zend_read_property(stringy_ce, getThis(), "encoding", strlen("encoding"), 1, &rv);
+    args[0] = *string;
+    args[1] = *offset;
+    args[2] = substrLen;
+    args[3] = *encoding;
+    call_user_function(NULL, NULL, &func, return_value, 4 , args);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_offsetGet, 1)
+    ZEND_ARG_INFO(0, offset)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, offsetSet)
+{
+    zend_throw_exception_ex(zend_ce_exception, 0, "%s", "Stringy object is immutable, cannot modify char");
+}
+ZEND_BEGIN_ARG_INFO(arginfo_offsetSet, 2)
+    ZEND_ARG_INFO(0, offset)
+    ZEND_ARG_INFO(0, value)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, offsetUnset)
+{
+     zend_throw_exception_ex(zend_ce_exception, 0, "%s", "Stringy object is immutable, cannot unset char");
+}
+ZEND_BEGIN_ARG_INFO(arginfo_offsetUnset, 1)
+    ZEND_ARG_INFO(0, offset)
+ZEND_END_ARG_INFO();
+
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -359,6 +443,10 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, chars, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, at, arginfo_at, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, substr, arginfo_substr, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, offsetExists, arginfo_offsetExists, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, offsetGet, arginfo_offsetGet, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, offsetSet, arginfo_offsetSet, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, offsetUnset, arginfo_offsetUnset, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 
@@ -375,8 +463,9 @@ void php_startup_register_stringy()
     
     zend_class_implements(
         stringy_ce, 
-        2, 
+        3, 
         spl_ce_Countable, 
-        spl_ce_Aggregate
+        spl_ce_Aggregate,
+        spl_ce_ArrayAccess
     );
 }

@@ -97,6 +97,7 @@ PHP_METHOD(Stringy, __construct)
         encoding = Z_STRVAL_P(return_value);
     } 
 
+    // PHPWRITE(encoding, strlen(encoding));
     zend_update_property_string(stringy_ce, getThis(), "str", strlen("str"), string);
     zend_update_property_string(stringy_ce, getThis(), "encoding", strlen("encoding"), encoding);
 }
@@ -429,6 +430,138 @@ ZEND_BEGIN_ARG_INFO(arginfo_offsetUnset, 1)
     ZEND_ARG_INFO(0, offset)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, collapseWhiteSpace)
+{
+    zval instance = {}, retval = {}, func = {}, args[3] = {}, args_trim[1] = {};
+    zval pattern, replacement, options = {}, chars = {};
+
+    object_init_ex(&instance, stringy_ce);
+    
+    // call regexReplace
+
+    ZVAL_STRING(&pattern, "[[:space:]]+");
+    ZVAL_STRING(&replacement, " ");
+
+    args[0] = pattern;
+    args[1] = replacement;
+    args[2] = options;
+
+    ZVAL_STRING(&func, "regexReplace");
+    call_user_function(NULL, getThis(), &func, &retval, 3, args);
+
+    // call trim()
+
+    ZVAL_STRING(&func, "trim");
+    args_trim[0] = chars;
+    call_user_function(NULL, &retval, &func, return_value, 1, args_trim);
+
+    RETURN_ZVAL(return_value, 0, 1);
+}
+
+PHP_METHOD(Stringy, regexReplace)
+{
+    zval *pattern, *replacement, *options, rv = {};
+    zval func = {};
+
+    ZEND_PARSE_PARAMETERS_START(2, 3)
+        Z_PARAM_ZVAL(pattern)
+        Z_PARAM_ZVAL(replacement)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(options)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval *encoding = zend_read_property(stringy_ce, getThis(), "encoding", strlen("encoding"), 0, &rv);
+    zval *str = zend_read_property(stringy_ce, getThis(), "str", strlen("str"), 1, &rv);
+
+    zval regexEncoding = {};
+    ZVAL_STRING(&func, "regexEncoding");
+    call_user_function(NULL, getThis(), &func, &regexEncoding, 0, NULL);
+
+    zval args[1] = {};
+    ZVAL_STRING(&func, "regexEncoding");
+    args[0] = *encoding;
+    call_user_function(NULL, getThis(), &func, return_value, 1, args);
+
+//TODO: 实现　eregReplace
+    zval args_eregReplace[1] = {}, retStr = {};
+    ZVAL_STRING(&func, "eregReplace");
+    args_eregReplace[0] = *pattern;
+    args_eregReplace[1] = *replacement;
+    args_eregReplace[2] = *str;
+    args_eregReplace[3] = *options;
+    call_user_function(NULL, getThis(), &func, &retStr, 1, args);
+
+    ZVAL_STRING(&func, "regexEncoding");
+    args[0] = regexEncoding;
+    call_user_function(NULL, getThis(), &func, return_value, 1, args);
+
+    zval instance = {};
+    object_init_ex(&instance, stringy_ce);
+    
+    args[0] = retStr;
+    args[1] = *encoding;
+
+    php_var_dump(&retStr, 1);
+    php_var_dump(encoding, 1);
+
+    ZVAL_STRING(&func, "__construct");
+
+    call_user_function(NULL, &instance, &func, return_value, 2, args);
+
+    RETURN_ZVAL(&instance, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_regexReplace, 3)
+    ZEND_ARG_INFO(0, pattern)
+    ZEND_ARG_INFO(0, replacement)
+    ZEND_ARG_INFO(0, options)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, trim)
+{
+    zval *chars;
+    ZEND_PARSE_PARAMETERS_START(0, 1)
+        Z_PARAM_ZVAL(chars)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (Z_TYPE_P(chars) != IS_NULL) {
+        zval func = {}, args[2] = {}, delimiter = {};
+        ZVAL_STRING(&func, "preg_quote");
+        args[0] = *chars;
+        args[1] = delimiter;
+        call_user_function(NULL, NULL, &func, return_value, 2, args);
+    } else {
+        ZVAL_STRING(chars, "[:space:]");
+    }
+
+    zval func_regexReplace = {}, args[3] = {}, pattern = {}, replacement = {}, options = {};
+    ZVAL_STRING(&func_regexReplace, "regexReplace");
+    ZVAL_STRING(&pattern, "^[$chars]+|[$chars]+$");
+    ZVAL_STRING(&replacement, "");
+    args[0] = pattern;
+    args[1] = replacement;
+    args[2] = options;
+    call_user_function(NULL, getThis(), &func_regexReplace, return_value, 3, args);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_trim, 1)
+    ZEND_ARG_INFO(0, chars)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, regexEncoding)
+{
+    zval *encoding;
+    ZEND_PARSE_PARAMETERS_START(0, 1)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(encoding)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval func = {}, args[1] = {};
+    ZVAL_STRING(&func, "mb_regex_encoding");
+    args[0] = *encoding;
+    call_user_function(NULL, NULL, &func, return_value, 0, NULL);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_regexEncoding, 1)
+    ZEND_ARG_INFO(0, encoding)
+ZEND_END_ARG_INFO();
 
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -447,6 +580,9 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, offsetGet, arginfo_offsetGet, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, offsetSet, arginfo_offsetSet, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, offsetUnset, arginfo_offsetUnset, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, collapseWhiteSpace, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, regexReplace, arginfo_regexReplace, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, regexEncoding, arginfo_regexEncoding, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

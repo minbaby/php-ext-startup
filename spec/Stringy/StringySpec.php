@@ -64,10 +64,11 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect('UTF-8')->toBe($stringy->getEncoding());
     });
 
-    xit('test chaining', function () {
-        $stringy = Stringy::create('Fòô     Bàř', 'UTF-8');
-        \expect($stringy)->toBeAnInstanceOf(Stringy::class);
-        \expect('FÒÔ bÀŘ')->toBe((string) $stringy->collapseWhiteSpace()->swapCase()->upperCaseFirst());
+    it('test chaining', function () {
+        $stringy = __('Stringy')::create('x    y', 'UTF-8');
+        \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+        var_dump((string)$stringy->regexReplace('[[:space:]]+', ' '));die();
+        \expect("x y")->toBe((string) $stringy->collapseWhiteSpace());//->swapCase()->upperCaseFirst());
     });
 
     it('test count', function () {

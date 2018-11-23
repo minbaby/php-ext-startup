@@ -64,10 +64,11 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect('UTF-8')->toBe($stringy->getEncoding());
     });
 
-    xit('test chaining', function () {
-        $stringy = Stringy::create('Fòô     Bàř', 'UTF-8');
-        \expect($stringy)->toBeAnInstanceOf(Stringy::class);
-        \expect('FÒÔ bÀŘ')->toBe((string) $stringy->collapseWhiteSpace()->swapCase()->upperCaseFirst());
+    it('test chaining', function () {
+        $stringy = __('Stringy')::create('x    y', 'UTF-8');
+        \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+        var_dump((string)$stringy->regexReplace('[[:space:]]+', ' '));die();
+        \expect("x y")->toBe((string) $stringy->collapseWhiteSpace());//->swapCase()->upperCaseFirst());
     });
 
     it('test count', function () {
@@ -76,8 +77,8 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect(count($stringy))->toBe(3);
     });
 
-    xit('test GetIterator', function () {
-        $stringy = Stringy::create('Fòô Bàř', 'UTF-8');
+    it('test GetIterator', function () {
+        $stringy = __('Stringy')::create('Fòô Bàř', 'UTF-8');
         $valResult = [];
         foreach ($stringy as $char) {
             $valResult[] = $char;
@@ -91,7 +92,7 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect($keyValResult)->toBe(['F', 'ò', 'ô', ' ', 'B', 'à', 'ř']);
     });
 
-    xit('test offsetExists', function () {
+    it('test offsetExists', function () {
         $data = [
             [true, 0],
             [true, 2],
@@ -101,7 +102,7 @@ namespace Minbaby\Startup\Spec\Stringy;
             [false, -4]
         ];
 
-        $stringy = Stringy::create('fòô', 'UTF-8');
+        $stringy = __('Stringy')::create('fòô', 'UTF-8');
 
         foreach ($data as $value) {
             [$expected, $offset] = $value;
@@ -110,8 +111,8 @@ namespace Minbaby\Startup\Spec\Stringy;
         }
     });
 
-    xit('test OffsetGet', function () {
-        $stringy = Stringy::create('fòô', 'UTF-8');
+    it('test OffsetGet', function () {
+        $stringy = __('Stringy')::create('fòô', 'UTF-8');
 
         \expect($stringy->offsetGet(0))->toBe('f');
         \expect($stringy->offsetGet(1))->toBe('ò');
@@ -119,24 +120,24 @@ namespace Minbaby\Startup\Spec\Stringy;
         \expect($stringy[2])->toBe('ô');
     });
 
-    xit('test OffsetGet out of bounds', function () {
-        $stringy = Stringy::create('fòô', 'UTF-8');
+    it('test OffsetGet out of bounds', function () {
+        $stringy = __('Stringy')::create('fòô', 'UTF-8');
         $callable = function () use ($stringy) {
             $test = $stringy[3];
         };
         \expect($callable)->toThrow(new \OutOfBoundsException('No character exists at the index'));
     });
 
-    xit('test OffsetSet', function () {
-        $stringy = Stringy::create('fòô', 'UTF-8');
+    it('test OffsetSet', function () {
+        $stringy = __('Stringy')::create('fòô', 'UTF-8');
         $callable = function () use ($stringy) {
             $stringy[1] = 'invalid';
         };
         \expect($callable)->toThrow(new \Exception('Stringy object is immutable, cannot modify char'));
     });
 
-    xit('test OffsetUnset', function () {
-        $stringy = Stringy::create('fòô', 'UTF-8');
+    it('test OffsetUnset', function () {
+        $stringy = __('Stringy')::create('fòô', 'UTF-8');
         $callable = function () use ($stringy) {
             unset($stringy[1]);
         };

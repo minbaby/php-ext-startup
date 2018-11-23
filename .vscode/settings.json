@@ -20,8 +20,10 @@
         "__locale": "c",
         "__string": "c",
         "string": "c",
-        "string_view": "c"
+        "string_view": "c",
+        "spl_iterators.h": "c"
     },
+    "editor.mouseWheelZoom": false,
     "files.autoSave": "onFocusChange",
     "editor.fontSize": 18,
     "editor.renderWhitespace": "boundary",

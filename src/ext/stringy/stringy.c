@@ -452,10 +452,10 @@ PHP_METHOD(Stringy, collapseWhiteSpace)
     // call trim()
 
     ZVAL_STRING(&func, "trim");
-    args_trim[0] = chars;
-    call_user_function(NULL, &retval, &func, return_value, 1, args_trim);
+    args_trim[0] = retval;
+    call_user_function(NULL, getThis(), &func, return_value, 1, args_trim);
 
-    RETURN_ZVAL(return_value, 0, 1);
+    RETURN_ZVAL(getThis(), 0, 1);
 }
 
 PHP_METHOD(Stringy, regexReplace)
@@ -482,14 +482,13 @@ PHP_METHOD(Stringy, regexReplace)
     args[0] = *encoding;
     call_user_function(NULL, getThis(), &func, return_value, 1, args);
 
-//TODO: 实现　eregReplace
-    zval args_eregReplace[1] = {}, retStr = {};
+    zval args_eregReplace[4] = {}, retStr = {};
     ZVAL_STRING(&func, "eregReplace");
     args_eregReplace[0] = *pattern;
     args_eregReplace[1] = *replacement;
     args_eregReplace[2] = *str;
     args_eregReplace[3] = *options;
-    call_user_function(NULL, getThis(), &func, &retStr, 1, args);
+    call_user_function(NULL, getThis(), &func, &retStr, 4, args_eregReplace);
 
     ZVAL_STRING(&func, "regexEncoding");
     args[0] = regexEncoding;
@@ -498,15 +497,13 @@ PHP_METHOD(Stringy, regexReplace)
     zval instance = {};
     object_init_ex(&instance, stringy_ce);
     
-    args[0] = retStr;
-    args[1] = *encoding;
-
-    php_var_dump(&retStr, 1);
-    php_var_dump(encoding, 1);
+    zval args_construct[2] = {};
+    args_construct[0] = retStr;
+    args_construct[1] = *encoding;
 
     ZVAL_STRING(&func, "__construct");
 
-    call_user_function(NULL, &instance, &func, return_value, 2, args);
+    call_user_function(NULL, &instance, &func, return_value, 2, args_construct);
 
     RETURN_ZVAL(&instance, 0, 1);
 }
@@ -563,6 +560,36 @@ ZEND_BEGIN_ARG_INFO(arginfo_regexEncoding, 1)
     ZEND_ARG_INFO(0, encoding)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, eregReplace)
+{
+    zval *pattern, *replace, *string, *option;
+    ZEND_PARSE_PARAMETERS_START(3, 4)
+        Z_PARAM_ZVAL(pattern)
+        Z_PARAM_ZVAL(replace)
+        Z_PARAM_ZVAL(string)
+        Z_PARAM_ZVAL(option)
+    ZEND_PARSE_PARAMETERS_END();
+
+    convert_to_string(replace);
+    convert_to_string(pattern);
+    convert_to_string(string);
+    convert_to_string(option);
+
+    zval func = {}, args[4] = {};
+    ZVAL_STRING(&func, "mb_ereg_replace");
+    args[0] = *pattern;
+    args[1] = *replace;
+    args[2] = *string;
+    args[3] = *option;
+    call_user_function(NULL, NULL, &func, return_value, 4, args);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_eregReplace, 4)
+    ZEND_ARG_INFO(0, pattern)
+    ZEND_ARG_INFO(0, replacement)
+    ZEND_ARG_INFO(0, string)
+    ZEND_ARG_INFO(0, option)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -583,6 +610,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, collapseWhiteSpace, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, regexReplace, arginfo_regexReplace, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, regexEncoding, arginfo_regexEncoding, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, eregReplace, arginfo_eregReplace, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

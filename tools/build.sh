@@ -10,7 +10,9 @@ echo "disabled startup"
 rm -f $PHPBREW_ROOT/php/$PHPBREW_PHP/var/db/start.ini
 
 echo "go..."
-phpize && ./configure --enable-debug && make && make install && make clean && phpize --clean
+# phpize && ./configure --enable-debug && make && make install && make clean && phpize --clean
+
+make && make install
 
 echo "enabled startup"
 phpbrew ext enable startup

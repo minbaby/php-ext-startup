@@ -7,6 +7,7 @@
 #include "ext/spl/spl_iterators.h"
 #include "ext/mbstring/mbstring.h"
 #include "zend_interfaces.h"
+#include "zend_closures.h"
 #include "ext/spl/spl_array.h"
 
 zend_class_entry *stringy_ce;
@@ -453,9 +454,9 @@ PHP_METHOD(Stringy, collapseWhiteSpace)
 
     ZVAL_STRING(&func, "trim");
     args_trim[0] = retval;
-    call_user_function(NULL, getThis(), &func, return_value, 1, args_trim);
+    call_user_function(NULL, &retval, &func, return_value, 1, args_trim);
 
-    RETURN_ZVAL(getThis(), 0, 1);
+    RETURN_ZVAL(&retval, 0, 1);
 }
 
 PHP_METHOD(Stringy, regexReplace)
@@ -567,6 +568,7 @@ PHP_METHOD(Stringy, eregReplace)
         Z_PARAM_ZVAL(pattern)
         Z_PARAM_ZVAL(replace)
         Z_PARAM_ZVAL(string)
+        Z_PARAM_OPTIONAL
         Z_PARAM_ZVAL(option)
     ZEND_PARSE_PARAMETERS_END();
 
@@ -589,6 +591,22 @@ ZEND_BEGIN_ARG_INFO(arginfo_eregReplace, 4)
     ZEND_ARG_INFO(0, string)
     ZEND_ARG_INFO(0, option)
 ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, swapCase)
+{
+    zval rv = {};
+    zval *encoding = zend_read_property(stringy_ce, getThis(), "encoding", strlen("encoding"), 1, &rv);
+    zval *string = zend_read_property(stringy_ce, getThis(), "str", strlen("str"), 1, &rv);
+
+    zval func = {}, args[5] = {}, pattern = {}, callback = {}, subject = {}, limit = {}, count = {};
+    ZVAL_STRING(&pattern, "/[\S]/u");
+    
+    zend_create_closure(&callback, "")
+
+    ZVAL_STRING(&func, "preg_repace_callback");
+    // args[0] = ;
+    call_user_function(NULL, NULL, &func, return_value, 5, args);
+}
 
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)

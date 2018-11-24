@@ -49,12 +49,13 @@ include __DIR__ . "/spec/functions.php";
 function main() {
     _ns(NS_STRINGY);
     $stringy = __('Stringy')::create('Fòô Bàř', 'UTF-8');
+    $stringy = $stringy->swapCase();
     // var_dump($stringy->test());
     $valResult = [];
     foreach ($stringy as $char) {
         $valResult[] = $char;
     }
-    var_dump($valResult);
+    // var_dump($valResult, function($a){});
     // $keyValResult = [];
     // foreach ($stringy as $pos => $char) {
     //     $keyValResult[$pos] = $char;

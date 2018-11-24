@@ -67,7 +67,7 @@ namespace Minbaby\Startup\Spec\Stringy;
     it('test chaining', function () {
         $stringy = __('Stringy')::create('x    y', 'UTF-8');
         \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
-        \expect("X Y")->toBe((string) $stringy->collapseWhiteSpace()->swapCase());//->upperCaseFirst());
+        \expect("X Y")->toBe((string) $stringy->swapCase());//->upperCaseFirst());
     });
 
     it('test count', function () {

@@ -30,7 +30,11 @@ $data = [
 $path = sprintf("%s/build/%s/ext", $_SERVER['PHPBREW_ROOT'], $_SERVER['PHPBREW_PHP']);
 
 foreach($data as $key => $value) {
-    echo "clone repo:[", $key, "]", PHP_EOL;
-    echo "path:[", $path, "]", PHP_EOL;
-    `cd $path && git clone $value && cd -`;
+    if (file_exists("{$path}/{$key}")) {
+        echo "[INFO] 有了 {$path}/{$key}", PHP_EOL;
+        continue;
+    }
+    echo "[INFO] clone repo:[", $key, "]", PHP_EOL;
+    echo "[INFO] path:[", $path, "]", PHP_EOL;
+    `cd $path && git clone $value $key && cd -`;
 }

@@ -618,24 +618,24 @@ static void once_listener_handler(INTERNAL_FUNCTION_PARAMETERS)
     // HashTable *static_variables = EX(func)->internal_function.prototype->op_array.static_variables;
     // zval *handler = zend_hash_str_find(static_variables, ZEND_STRL("handler"));
 
-    // zval *request,*options;
+    zval *request,*options;
 
     // if (zend_parse_parameters(ZEND_NUM_ARGS(), "zz", &request, &options) == FAILURE) {
     //     RETURN_FALSE;
     // }
 
-    // zval arr;
+    zval *arr;
 
-    // ZEND_PARSE_PARAMETERS_START(1, 1)
-    //     Z_PARAM_ARRAY(*arr)
-    // ZEND_PARSE_PARAMETERS_END();
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ARRAY(arr)
+    ZEND_PARSE_PARAMETERS_END();
     // if (zend_parse_parameters(ZEND_NUM_ARGS(), "zz", &arr) == FAILURE) {
     //     RETURN_FALSE;
     // }
 
     printf("%d-aa\n\n\n", ZEND_NUM_ARGS());
 
-    // php_var_dump(request, 1);
+    php_var_dump(arr, 1);
 
     RETURN_STRING("FUCK");
 }
@@ -651,25 +651,36 @@ PHP_METHOD(Stringy, swapCase)
     
     subject = *zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
 
-    //mixed preg_replace_callback ( mixed $pattern , callable $callback , mixed $subject [, int $limit = -1 [, int &$count ]] )
     zend_function zendFunction;
+
+    zend_arg_info zai[1];
+    zai[0].name = zend_string_init(ZEND_STRL("matches"), 0);
+    zai[0].pass_by_reference = 0;
+    zai[0].allow_null = 0;
+    zai[0].is_variadic = 0;
+    zai[0].type_hint = IS_STRING;
+
     zendFunction.type = ZEND_INTERNAL_FUNCTION;
-
-    zend_arg_info zai;
-    zai.name = zend_string_init(ZEND_STRL("matches"), 0);
-    zai.pass_by_reference = 0;
-    zai.allow_null = 0;
-    zai.is_variadic = 0;
-    zai.type_hint = IS_STRING;
-
     zendFunction.common.num_args = 1;
-    zendFunction.common.arg_info = &zai;
+    zendFunction.common.required_num_args = 1;
+    zendFunction.common.arg_info = zai;
+    zendFunction.common.prototype = NULL;
+    zendFunction.common.scope = NULL;
     zendFunction.internal_function.handler = once_listener_handler;
 
     zend_create_closure(&callback, &zendFunction, NULL, NULL, NULL);
 
-    call_user_function(NULL, NULL , &callback, return_value, 0, NULL);
-php_var_dump(return_value, 1);
+    zval x[1] = {};
+    zval y;
+    ZVAL_STRING(&y, "abab");
+    x[0] = y;
+
+zval yyy;
+zval *yyy_func = zend_string_init(ZEND_STRL("abab"), 0);
+    zend_closure_bind_var(&callback, yyy_func, &yyy);
+    
+    call_user_function(NULL, NULL, &yyy_func, return_value, 0, NULL);
+
     zval ret;
     ZVAL_MAKE_REF(&count);
     ZVAL_STRING(&func, "preg_replace_callback");
@@ -680,8 +691,9 @@ php_var_dump(return_value, 1);
     args[4] = count;
     call_user_function(NULL, NULL, &func, &ret, 5, args);
 
-    zend_update_property_string(stringy_ce, getThis(), ZEND_STRL("str"), Z_STRVAL_P(return_value));
-php_var_dump(&ret, 1);
+    convert_to_string(&ret);
+    zend_update_property_string(stringy_ce, getThis(), ZEND_STRL("str"), Z_STRVAL(ret));
+
     RETURN_ZVAL(getThis(), 1, 0);
 }
 

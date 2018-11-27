@@ -29,6 +29,7 @@
 #include "php_startup.h"
 #include "src/ext/test.class.h"
 #include "src/ext/stringy/stringy.h"
+#include "zend_closures.h"
 
 /* If you declare any globals in php_startup.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(startup)
@@ -59,17 +60,17 @@ PHP_INI_END()
    Return a string to confirm that the module is compiled in */
 PHP_FUNCTION(confirm_startup_compiled)
 {
-	char *arg = NULL;
-	size_t arg_len, len;
-	zend_string *strg;
+    char *arg = NULL;
+    size_t arg_len, len;
+    zend_string *strg;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_len) == FAILURE) {
-		return;
-	}
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_len) == FAILURE) {
+        return;
+    }
 
-	strg = strpprintf(0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "startup", arg);
+    strg = strpprintf(0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "startup", arg);
 
-	RETURN_STR(strg);
+    RETURN_STR(strg);
 }
 /* }}} */
 /* The previous line is meant for vim and emacs, so it can correctly fold and
@@ -83,21 +84,74 @@ PHP_FUNCTION(confirm_startup_compiled)
 /* Uncomment this function if you have INI entries
 static void php_startup_init_globals(zend_startup_globals *startup_globals)
 {
-	startup_globals->global_value = 0;
-	startup_globals->global_string = NULL;
+    startup_globals->global_value = 0;
+    startup_globals->global_string = NULL;
 }
 */
 /* }}} */
 
 
+static void once_listener_handler(INTERNAL_FUNCTION_PARAMETERS)
+{
+    // How to get variables from syntax `use(&$onceListener, $event, $listener)` here.
+    // And use these variables like `php_var_dump(zval);`.
+    
+    // HashTable *static_variables = EX(func)->internal_function.prototype->op_array.static_variables;
+    // zval *handler = zend_hash_str_find(static_variables, ZEND_STRL("handler"));
+
+    zval *request,*options;
+
+    // if (zend_parse_parameters(ZEND_NUM_ARGS(), "zz", &request, &options) == FAILURE) {
+    //     RETURN_FALSE;
+    // }
+
+    zval *arr;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ARRAY(arr)
+    ZEND_PARSE_PARAMETERS_END();
+    // if (zend_parse_parameters(ZEND_NUM_ARGS(), "zz", &arr) == FAILURE) {
+    //     RETURN_FALSE;
+    // }
+
+    printf("%d-aa\n\n\n", ZEND_NUM_ARGS());
+
+    php_var_dump(arr, 1);
+
+    RETURN_STRING("FUCK");
+}
 PHP_METHOD(myclass, abab)
 {
-	php_printf("我是public\n");
+    zend_function zendFunction;
+
+    zend_arg_info zai[1];
+    zai[0].name = zend_string_init(ZEND_STRL("matches"), 0);
+    zai[0].pass_by_reference = 0;
+    zai[0].allow_null = 0;
+    zai[0].is_variadic = 0;
+    zai[0].type_hint = IS_STRING;
+
+    zendFunction.type = ZEND_INTERNAL_FUNCTION;
+    zendFunction.common.num_args = 1;
+    zendFunction.common.required_num_args = 1;
+    zendFunction.common.arg_info = zai;
+    zendFunction.common.prototype = NULL;
+    zendFunction.common.scope = NULL;
+    zendFunction.internal_function.handler = once_listener_handler;
+
+    zval callback;
+
+    zend_create_closure(&callback, &zendFunction, NULL, NULL, NULL);
+
+    zval arr;
+    array_init(&arr);
+    
+    call_user_function(NULL, NULL, &callback, return_value, 1, &arr);
 }
 
 static zend_function_entry myclass_method[] = {
-	PHP_ME(myclass, abab, NULL, ZEND_ACC_PUBLIC)
-	{NULL, NULL, NULL}
+    PHP_ME(myclass, abab, NULL, ZEND_ACC_PUBLIC)
+    {NULL, NULL, NULL}
 };
 
 
@@ -105,21 +159,21 @@ static zend_function_entry myclass_method[] = {
  */
 PHP_MINIT_FUNCTION(startup)
 {
-	/* If you have INI entries, uncomment these lines
-	REGISTER_INI_ENTRIES();
-	*/
+    /* If you have INI entries, uncomment these lines
+    REGISTER_INI_ENTRIES();
+    */
 
-	zend_class_entry ce;
+    zend_class_entry ce;
 
-	INIT_CLASS_ENTRY(ce, "myclass", myclass_method);
-	myclass_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    INIT_CLASS_ENTRY(ce, "myclass", myclass_method);
+    myclass_ce = zend_register_internal_class(&ce TSRMLS_CC);
 
-	zend_declare_property_null(myclass_ce, "pub_var", strlen("pub_var"), ZEND_ACC_PUBLIC TSRMLS_CC);
+    zend_declare_property_null(myclass_ce, "pub_var", strlen("pub_var"), ZEND_ACC_PUBLIC TSRMLS_CC);
 
-	php_startup_register_test();
+    php_startup_register_test();
     php_startup_register_stringy();
 
-	return SUCCESS;
+    return SUCCESS;
 }
 /* }}} */
 
@@ -127,10 +181,10 @@ PHP_MINIT_FUNCTION(startup)
  */
 PHP_MSHUTDOWN_FUNCTION(startup)
 {
-	/* uncomment this line if you have INI entries
-	UNREGISTER_INI_ENTRIES();
-	*/
-	return SUCCESS;
+    /* uncomment this line if you have INI entries
+    UNREGISTER_INI_ENTRIES();
+    */
+    return SUCCESS;
 }
 /* }}} */
 
@@ -140,9 +194,9 @@ PHP_MSHUTDOWN_FUNCTION(startup)
 PHP_RINIT_FUNCTION(startup)
 {
 #if defined(COMPILE_DL_STARTUP) && defined(ZTS)
-	ZEND_TSRMLS_CACHE_UPDATE();
+    ZEND_TSRMLS_CACHE_UPDATE();
 #endif
-	return SUCCESS;
+    return SUCCESS;
 }
 /* }}} */
 
@@ -151,7 +205,7 @@ PHP_RINIT_FUNCTION(startup)
  */
 PHP_RSHUTDOWN_FUNCTION(startup)
 {
-	return SUCCESS;
+    return SUCCESS;
 }
 /* }}} */
 
@@ -159,14 +213,14 @@ PHP_RSHUTDOWN_FUNCTION(startup)
  */
 PHP_MINFO_FUNCTION(startup)
 {
-	php_info_print_table_start();
-	php_info_print_table_header(2, "startup support", "enabled");
-	php_info_print_table_row(2, "version", PHP_STARTUP_VERSION);
-	php_info_print_table_end();
+    php_info_print_table_start();
+    php_info_print_table_header(2, "startup support", "enabled");
+    php_info_print_table_row(2, "version", PHP_STARTUP_VERSION);
+    php_info_print_table_end();
 
-	/* Remove comments if you have entries in php.ini
-	DISPLAY_INI_ENTRIES();
-	*/
+    /* Remove comments if you have entries in php.ini
+    DISPLAY_INI_ENTRIES();
+    */
 }
 /* }}} */
 
@@ -175,24 +229,24 @@ PHP_MINFO_FUNCTION(startup)
  * Every user visible function must have an entry in startup_functions[].
  */
 const zend_function_entry startup_functions[] = {
-	PHP_FE(confirm_startup_compiled,	NULL)		/* For testing, remove later. */
-	PHP_FE_END	/* Must be the last line in startup_functions[] */
+    PHP_FE(confirm_startup_compiled,	NULL)		/* For testing, remove later. */
+    PHP_FE_END	/* Must be the last line in startup_functions[] */
 };
 /* }}} */
 
 /* {{{ startup_module_entry
  */
 zend_module_entry startup_module_entry = {
-	STANDARD_MODULE_HEADER,
-	"startup",
-	startup_functions,
-	PHP_MINIT(startup),
-	PHP_MSHUTDOWN(startup),
-	PHP_RINIT(startup),		/* Replace with NULL if there's nothing to do at request start */
-	PHP_RSHUTDOWN(startup),	/* Replace with NULL if there's nothing to do at request end */
-	PHP_MINFO(startup),
-	PHP_STARTUP_VERSION,
-	STANDARD_MODULE_PROPERTIES
+    STANDARD_MODULE_HEADER,
+    "startup",
+    startup_functions,
+    PHP_MINIT(startup),
+    PHP_MSHUTDOWN(startup),
+    PHP_RINIT(startup),		/* Replace with NULL if there's nothing to do at request start */
+    PHP_RSHUTDOWN(startup),	/* Replace with NULL if there's nothing to do at request end */
+    PHP_MINFO(startup),
+    PHP_STARTUP_VERSION,
+    STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
 

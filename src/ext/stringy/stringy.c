@@ -128,7 +128,7 @@ PHP_METHOD(Stringy, getEncoding)
 
 PHP_METHOD(Stringy, create)
 {
-    zval instance, retval, func, args[2];
+    zval instance;
     zval *str, *encoding;
 
     ZEND_PARSE_PARAMETERS_START(0, 2)
@@ -139,12 +139,7 @@ PHP_METHOD(Stringy, create)
 
     object_init_ex(&instance, stringy_ce);
 
-    args[0] = *str;
-    args[1] = *encoding;
-
-    ZVAL_STRING(&func, "__construct");
-
-    call_user_function(NULL, &instance, &func, &retval, 2, args);
+    zend_call_method(&instance, stringy_ce, NULL, ZEND_STRL("__construct"), return_value, 2, str, encoding);
 
     RETURN_ZVAL(&instance, 0, 1);
 }
@@ -643,10 +638,10 @@ static void once_listener_handler(INTERNAL_FUNCTION_PARAMETERS)
 PHP_METHOD(Stringy, swapCase)
 {
     zval rv;
-    zval *encoding = zend_read_property(stringy_ce, getThis(), "encoding", strlen("encoding"), 1, &rv);
-    zval *string = zend_read_property(stringy_ce, getThis(), "str", strlen("str"), 1, &rv);
+    // zval *encoding = zend_read_property(stringy_ce, getThis(), "encoding", strlen("encoding"), 1, &rv);
+    // zval *string = zend_read_property(stringy_ce, getThis(), "str", strlen("str"), 1, &rv);
 
-    zval func, args[5], pattern, callback, subject, limit, count;
+    zval func, args[5], pattern, subject, limit, count;
     ZVAL_STRING(&pattern, "/[\\S]/u");
     
     subject = *zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
@@ -668,18 +663,13 @@ PHP_METHOD(Stringy, swapCase)
     zendFunction.common.scope = NULL;
     zendFunction.internal_function.handler = once_listener_handler;
 
+    zval callback;
     zend_create_closure(&callback, &zendFunction, NULL, NULL, NULL);
 
-    zval x[1] = {};
-    zval y;
-    ZVAL_STRING(&y, "abab");
-    x[0] = y;
-
-zval yyy;
-zval *yyy_func = zend_string_init(ZEND_STRL("abab"), 0);
-    zend_closure_bind_var(&callback, yyy_func, &yyy);
+    zval arr;
+    array_init(&arr);
     
-    call_user_function(NULL, NULL, &yyy_func, return_value, 0, NULL);
+    call_user_function(NULL, NULL, &callback, return_value, 1, &arr);
 
     zval ret;
     ZVAL_MAKE_REF(&count);

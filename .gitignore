@@ -43,4 +43,4 @@ GPATH
 
 /vendor/
 *.loT
-/nbproject/private/
+core

@@ -46,21 +46,26 @@ function checkExt()
 include __DIR__ . "/spec/const.php";
 include __DIR__ . "/spec/functions.php";
 
-function main() {
-    _ns(NS_STRINGY);
-    $stringy = __('Stringy')::create('Fòô Bàř', 'UTF-8');
-    $stringy = $stringy->swapCase();
-    // var_dump($stringy->test());
-    $valResult = [];
-    foreach ($stringy as $char) {
-        $valResult[] = $char;
-    }
-    // var_dump($valResult, function($a){});
-    // $keyValResult = [];
-    // foreach ($stringy as $pos => $char) {
-    //     $keyValResult[$pos] = $char;
-    // }
-}
+// function main() {
+//     _ns(NS_STRINGY);
+//     $stringy = __('Stringy')::create('Fòô Bàř', 'UTF-8');
+//     $stringy = $stringy->swapCase();
+//     // var_dump($stringy->test());
+//     $valResult = [];
+//     foreach ($stringy as $char) {
+//         $valResult[] = $char;
+//     }
+//     // var_dump($valResult, function($a){});
+//     // $keyValResult = [];
+//     // foreach ($stringy as $pos => $char) {
+//     //     $keyValResult[$pos] = $char;
+//     // }
+// }
 
 
-main();
+// main();
+
+
+_ns(NS_STRINGY);
+_('Stringy', ['Fòô Bàř', 'UTF-8'])->swapCase();
+echo (string)__('Stringy')::create('Fòô Bàř', 'UTF-8');

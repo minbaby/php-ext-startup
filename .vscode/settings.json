@@ -22,7 +22,8 @@
         "string": "c",
         "string_view": "c",
         "spl_iterators.h": "c",
-        "iosfwd": "c"
+        "iosfwd": "c",
+        "functions.h": "c"
     },
     "editor.mouseWheelZoom": false,
     "files.autoSave": "onFocusChange",

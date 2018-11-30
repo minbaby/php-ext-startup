@@ -1,9 +1,9 @@
-#ifndef STARTUP_TEST_H
-#define STARTUP_TEST_H
+#ifndef STARTUP_FUNCTIONS_H
+#define STARTUP_FUNCTIONS_H
 
 #include "php.h"
 #include "common.h"
 #include "ext/standard/php_standard.h"
 
-void php_startup_register_test();
+// void php_startup_register_functions(zend_function_entry *zend_function_entry);
 #endif

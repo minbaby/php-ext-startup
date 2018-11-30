@@ -68,4 +68,4 @@ include __DIR__ . "/spec/functions.php";
 
 _ns(NS_STRINGY);
 _('Stringy', ['Fòô Bàř', 'UTF-8'])->swapCase();
-echo (string)__('Stringy')::create('Fòô Bàř', 'UTF-8');
+// var_dump(tttt_test($_SERVER));

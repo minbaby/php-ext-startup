@@ -637,7 +637,7 @@ static void once_listener_handler(INTERNAL_FUNCTION_PARAMETERS)
 
 PHP_METHOD(Stringy, swapCase)
 {
-    zval rv, func, args[5], pattern, subject, limit, count, ret;
+    zval rv, func, pattern, subject, limit, count, ret;
     
     ZVAL_STRING(&pattern, "/[\\S]/u");
     
@@ -663,6 +663,10 @@ PHP_METHOD(Stringy, swapCase)
     zval callback;
     zend_create_closure(&callback, &zendFunction, NULL, NULL, NULL);
 
+#if ZEND_DEBUG
+        ZEND_ASSERT(false);
+#endif
+
     zval arr;
     array_init(&arr);
     
@@ -671,14 +675,14 @@ PHP_METHOD(Stringy, swapCase)
     ZVAL_MAKE_REF(&count);
     ZVAL_STRING(&func, "preg_replace_callback");
     
-    // ZVAL_LONG(&limit, 1);
+    zval args[] ={
+        pattern,
+        callback,
+        subject,
+        limit,
+        count,
+    };
 
-    
-    args[0] = pattern;
-    args[1] = callback;
-    args[2] = subject;
-    args[3] = limit;
-    args[4] = count;
     call_user_function(NULL, NULL, &func, &ret, 5, args);
 
     convert_to_string(&ret);

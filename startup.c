@@ -29,14 +29,12 @@
 #include "php_startup.h"
 #include "src/ext/test.class.h"
 #include "src/ext/stringy/stringy.h"
+#include "src/ext/functions.h"
 #include "zend_closures.h"
 
 /* If you declare any globals in php_startup.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(startup)
 */
-
-zend_class_entry *myclass_ce;
-
 
 /* True global resources - no need for thread safety here */
 static int le_startup;
@@ -90,71 +88,6 @@ static void php_startup_init_globals(zend_startup_globals *startup_globals)
 */
 /* }}} */
 
-
-static void once_listener_handler(INTERNAL_FUNCTION_PARAMETERS)
-{
-    // How to get variables from syntax `use(&$onceListener, $event, $listener)` here.
-    // And use these variables like `php_var_dump(zval);`.
-    
-    // HashTable *static_variables = EX(func)->internal_function.prototype->op_array.static_variables;
-    // zval *handler = zend_hash_str_find(static_variables, ZEND_STRL("handler"));
-
-    zval *request,*options;
-
-    // if (zend_parse_parameters(ZEND_NUM_ARGS(), "zz", &request, &options) == FAILURE) {
-    //     RETURN_FALSE;
-    // }
-
-    zval *arr;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_ARRAY(arr)
-    ZEND_PARSE_PARAMETERS_END();
-    // if (zend_parse_parameters(ZEND_NUM_ARGS(), "zz", &arr) == FAILURE) {
-    //     RETURN_FALSE;
-    // }
-
-    printf("%d-aa\n\n\n", ZEND_NUM_ARGS());
-
-    php_var_dump(arr, 1);
-
-    RETURN_STRING("FUCK");
-}
-PHP_METHOD(myclass, abab)
-{
-    zend_function zendFunction;
-
-    zend_arg_info zai[1];
-    zai[0].name = zend_string_init(ZEND_STRL("matches"), 0);
-    zai[0].pass_by_reference = 0;
-    zai[0].allow_null = 0;
-    zai[0].is_variadic = 0;
-    zai[0].type_hint = IS_STRING;
-
-    zendFunction.type = ZEND_INTERNAL_FUNCTION;
-    zendFunction.common.num_args = 1;
-    zendFunction.common.required_num_args = 1;
-    zendFunction.common.arg_info = zai;
-    zendFunction.common.prototype = NULL;
-    zendFunction.common.scope = NULL;
-    zendFunction.internal_function.handler = once_listener_handler;
-
-    zval callback;
-
-    zend_create_closure(&callback, &zendFunction, NULL, NULL, NULL);
-
-    zval arr;
-    array_init(&arr);
-    
-    call_user_function(NULL, NULL, &callback, return_value, 1, &arr);
-}
-
-static zend_function_entry myclass_method[] = {
-    PHP_ME(myclass, abab, NULL, ZEND_ACC_PUBLIC)
-    {NULL, NULL, NULL}
-};
-
-
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(startup)
@@ -162,14 +95,6 @@ PHP_MINIT_FUNCTION(startup)
     /* If you have INI entries, uncomment these lines
     REGISTER_INI_ENTRIES();
     */
-
-    zend_class_entry ce;
-
-    INIT_CLASS_ENTRY(ce, "myclass", myclass_method);
-    myclass_ce = zend_register_internal_class(&ce TSRMLS_CC);
-
-    zend_declare_property_null(myclass_ce, "pub_var", strlen("pub_var"), ZEND_ACC_PUBLIC TSRMLS_CC);
-
     php_startup_register_test();
     php_startup_register_stringy();
 
@@ -224,11 +149,25 @@ PHP_MINFO_FUNCTION(startup)
 }
 /* }}} */
 
+PHP_FUNCTION(tttt_test)
+{
+    zval *arr;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ARRAY(arr)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_ZVAL(arr, 1, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_tttt_test, 1)
+    ZEND_ARG_INFO(0, matches)
+ZEND_END_ARG_INFO();
+
 /* {{{ startup_functions[]
  *
  * Every user visible function must have an entry in startup_functions[].
  */
-const zend_function_entry startup_functions[] = {
+zend_function_entry startup_functions[] = {
+    PHP_FE(tttt_test,	arginfo_tttt_test)
     PHP_FE(confirm_startup_compiled,	NULL)		/* For testing, remove later. */
     PHP_FE_END	/* Must be the last line in startup_functions[] */
 };

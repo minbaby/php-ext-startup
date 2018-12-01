@@ -39,9 +39,10 @@
             "prefix": "cufa",
             "scope": "c,h",
             "body": [
-                "zval ${1:func} = {}, args[$2] = {};",
+                "zval ${1:func}, args[] = {",
+                "    $4",
+                "};",
                 "ZVAL_STRING(&${1:func}, \"$0\");",
-                "args[0] = $4;",
                 "call_user_function(NULL, NULL, &${1:func}, ${3:return_value}, $2, args);"
             ],
             "description": "args"

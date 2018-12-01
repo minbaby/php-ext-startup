@@ -67,5 +67,5 @@ include __DIR__ . "/spec/functions.php";
 
 
 _ns(NS_STRINGY);
-// var_dump((string)_('Stringy', ['Fòô Bàř', 'UTF-8'])->swapCase());
-// var_dump(tttt_test($_SERVER));
+// $x = _('Stringy', ['test test2 test3', 'UTF-8']);
+$x = __('Stringy')::create('test test2 test3', 'UTF-8')->swapCase();

@@ -149,25 +149,25 @@ PHP_MINFO_FUNCTION(startup)
 }
 /* }}} */
 
-PHP_FUNCTION(tttt_test)
-{
-    zval *arr;
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_ARRAY(arr)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_ZVAL(arr, 1, 1);
-}
-ZEND_BEGIN_ARG_INFO(arginfo_tttt_test, 1)
-    ZEND_ARG_INFO(0, matches)
-ZEND_END_ARG_INFO();
+// zval* check_ext_load(char* name)
+// {
+//     zval return_value, z_name;
+//     ZVAL_STRING(&z_name, name);
+//     zval func, args[] = {
+//         z_name,
+//     };
+//     ZVAL_STRING(&func, "extension_loaded");
+//     call_user_function(NULL, NULL, &func, &return_value, 1, args);
+//     // convert_to_boolean(&return_value);
+//     // return zval_is_true(&return_value);
+//     return &return_value;
+// }
 
 /* {{{ startup_functions[]
  *
  * Every user visible function must have an entry in startup_functions[].
  */
 zend_function_entry startup_functions[] = {
-    PHP_FE(tttt_test,	arginfo_tttt_test)
     PHP_FE(confirm_startup_compiled,	NULL)		/* For testing, remove later. */
     PHP_FE_END	/* Must be the last line in startup_functions[] */
 };

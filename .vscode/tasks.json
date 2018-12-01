@@ -6,7 +6,7 @@
       {
         "label": "run build",
         "type": "shell",
-        "command": "./tools/build.sh",
+        "command": "./scripts/build.sh",
         "group": {
           "kind": "build",
           "isDefault": true
@@ -26,7 +26,7 @@
       {
         "label": "run test",
         "type": "shell",
-        "command": "./tools/test.sh",
+        "command": "./scripts/test.sh",
         "group": {
           "kind": "test",
           "isDefault": true

@@ -607,37 +607,35 @@ ZEND_END_ARG_INFO();
 
 static void once_listener_handler(INTERNAL_FUNCTION_PARAMETERS)
 {
-    // How to get variables from syntax `use(&$onceListener, $event, $listener)` here.
-    // And use these variables like `php_var_dump(zval);`.
-    
-    // HashTable *static_variables = EX(func)->internal_function.prototype->op_array.static_variables;
-    // zval *handler = zend_hash_str_find(static_variables, ZEND_STRL("handler"));
-
-    zval *request,*options;
-
-    // if (zend_parse_parameters(ZEND_NUM_ARGS(), "zz", &request, &options) == FAILURE) {
-    //     RETURN_FALSE;
-    // }
-
     zval *arr;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
         Z_PARAM_ARRAY(arr)
     ZEND_PARSE_PARAMETERS_END();
-    // if (zend_parse_parameters(ZEND_NUM_ARGS(), "zz", &arr) == FAILURE) {
-    //     RETURN_FALSE;
-    // }
 
-    printf("%d-aa\n\n\n", ZEND_NUM_ARGS());
+    zval *ret = zend_hash_index_find(Z_ARRVAL_P(arr), 0);
 
-    php_var_dump(arr, 1);
+    zval func = {};
+    ZVAL_STRING(&func, "mb_strtoupper");
+    zval args[] = {
+        *ret,
+    };
+    call_user_function(NULL, NULL, &func, return_value, 1, args);
 
-    RETURN_STRING("FUCK");
+    if (zend_string_equals(Z_STR_P(return_value), Z_STR_P(ret)) == 1) {
+        ZVAL_STRING(&func, "mb_strtolower");
+        zval args[] = {
+            *ret,
+        };
+        call_user_function(NULL, NULL, &func, return_value, 1, args);
+    }
+
+    RETURN_ZVAL(return_value, 0, 1);
 }
 
 PHP_METHOD(Stringy, swapCase)
 {
-    zval rv, func, pattern, subject, limit, count, ret;
+    zval rv, func, pattern, subject, limit, count, ret, encoding;
     
     ZVAL_STRING(&pattern, "/[\\S]/u");
     
@@ -664,16 +662,12 @@ PHP_METHOD(Stringy, swapCase)
     zend_create_closure(&callback, &zendFunction, NULL, NULL, NULL);
 
 #if ZEND_DEBUG
-        ZEND_ASSERT(false);
+        ZEND_ASSERT(1);
 #endif
-
-    zval arr;
-    array_init(&arr);
-    
-    call_user_function(NULL, NULL, &callback, return_value, 0, NULL);
 
     ZVAL_MAKE_REF(&count);
     ZVAL_STRING(&func, "preg_replace_callback");
+    ZVAL_LONG(&limit, -1);
     
     zval args[] ={
         pattern,
@@ -688,7 +682,22 @@ PHP_METHOD(Stringy, swapCase)
     convert_to_string(&ret);
     zend_update_property_string(stringy_ce, getThis(), ZEND_STRL("str"), Z_STRVAL(ret));
 
-    RETURN_ZVAL(getThis(), 1, 0);
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+
+    encoding = *zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval args_construct[] = {
+        ret,
+        encoding,
+    };
+
+    ZVAL_STRING(&func, "__construct");
+
+    call_user_function(NULL, &instance, &func, return_value, 2, args_construct);
+
+    RETURN_ZVAL(&instance, 0, 1);
+
 }
 
 static zend_function_entry methods[] = {

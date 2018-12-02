@@ -68,4 +68,6 @@ include __DIR__ . "/spec/functions.php";
 
 _ns(NS_STRINGY);
 // $x = _('Stringy', ['test test2 test3', 'UTF-8']);
-$x = __('Stringy')::create('test test2 test3', 'UTF-8')->swapCase();
+$x = __('Stringy')::create('foo\r\nbar', 'UTF-8')->lines();
+
+var_dump($x);

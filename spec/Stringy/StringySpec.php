@@ -158,9 +158,9 @@ namespace Minbaby\Startup\Spec\Stringy;
         ];
 
         foreach ($data as $value) {
-            @list($expectd, $str, $subStr, $offset, $encoding) = $value;
+            @list($expectedd, $str, $subStr, $offset, $encoding) = $value;
             $result = __('Stringy')::create($str, $encoding)->indexOf($subStr, $offset);
-            \expect($result)->toBe($expectd);
+            \expect($result)->toBe($expectedd);
         }
     });
 
@@ -179,9 +179,9 @@ namespace Minbaby\Startup\Spec\Stringy;
         ];
 
         foreach ($data as $value) {
-            @list($expectd, $str, $subStr, $offset, $encoding) = $value;
+            @list($expectedd, $str, $subStr, $offset, $encoding) = $value;
             $result = __('Stringy')::create($str, $encoding)->indexOfLast($subStr, $offset);
-            \expect($result)->toBe($expectd);
+            \expect($result)->toBe($expectedd);
         }
     });
 
@@ -191,10 +191,10 @@ namespace Minbaby\Startup\Spec\Stringy;
             ['fòôbàř', 'fòô', 'bàř', 'UTF-8']
         ];
         foreach($data as $value) {
-            @list($expect, $str, $string, $encoding) = $value;
+            @list($expected, $str, $string, $encoding) = $value;
             $result = __('Stringy')::create($str, $encoding)->append($string);
             \expect($result)->toBeAnInstanceOf(__('Stringy'));
-            \expect((string)$result)->toBe($expect);
+            \expect((string)$result)->toBe($expected);
         }
     });
 
@@ -204,10 +204,10 @@ namespace Minbaby\Startup\Spec\Stringy;
             ['fòôbàř', 'bàř', 'fòô', 'UTF-8']
         ];
         foreach($data as $value) {
-            @list($expect, $str, $string, $encoding) = $value;
+            @list($expected, $str, $string, $encoding) = $value;
             $result = __('Stringy')::create($str, $encoding)->prepend($string);
             \expect($result)->toBeAnInstanceOf(__('Stringy'));
-            \expect((string)$result)->toBe($expect);
+            \expect((string)$result)->toBe($expected);
         }
     });
 
@@ -219,7 +219,7 @@ namespace Minbaby\Startup\Spec\Stringy;
         ];
 
         foreach($data as $value) {
-            @list($expect, $str, $encoding) = $value;
+            @list($expected, $str, $encoding) = $value;
 
             $result = __('Stringy')::create($str, $encoding)->chars();
             \expect($result)->toBeA('array');
@@ -228,7 +228,42 @@ namespace Minbaby\Startup\Spec\Stringy;
                 \expect($char)->toBeA('string');
             }
             
-            \expect($result)->toBe($expect);
+            \expect($result)->toBe($expected);
+        }
+    });
+
+    it('test lines', function () {
+        $data = [
+            [[], ""],
+            [[''], "\r\n"],
+            [['foo', 'bar'], "foo\nbar"],
+            [['foo', 'bar'], "foo\rbar"],
+            [['foo', 'bar'], "foo\r\nbar"],
+            [['foo', '', 'bar'], "foo\r\n\r\nbar"],
+            [['foo', 'bar', ''], "foo\r\nbar\r\n"],
+            [['', 'foo', 'bar'], "\r\nfoo\r\nbar"],
+            [['fòô', 'bàř'], "fòô\nbàř", 'UTF-8'],
+            [['fòô', 'bàř'], "fòô\rbàř", 'UTF-8'],
+            [['fòô', 'bàř'], "fòô\n\rbàř", 'UTF-8'],
+            [['fòô', 'bàř'], "fòô\r\nbàř", 'UTF-8'],
+            [['fòô', '', 'bàř'], "fòô\r\n\r\nbàř", 'UTF-8'],
+            [['fòô', 'bàř', ''], "fòô\r\nbàř\r\n", 'UTF-8'],
+            [['', 'fòô', 'bàř'], "\r\nfòô\r\nbàř", 'UTF-8'],
+        ];
+
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+
+            $result = __('Stringy')::create($str, $encoding)->lines();
+            \expect($result)->toBeA('array');
+            
+            foreach ($result as $char) {
+                \expect($char)->toBeAnInstanceOf(__('Stringy'));
+            }
+            
+            for ($i = 0; $i < count($expected); $i++) {
+                \expect((string)$result[$i])->toBe($expected[$i]);
+            }
         }
     });
 });

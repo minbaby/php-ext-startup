@@ -616,6 +616,11 @@ static void once_listener_handler(INTERNAL_FUNCTION_PARAMETERS)
 
     zval *ret = zend_hash_index_find(Z_ARRVAL_P(arr), 0);
 
+    zval *ret = zend_hash_index_find(ht, 0);
+    if (ret == NULL) {
+        RETURN_EMPTY_STRING();
+    }
+
     zval func = {};
     ZVAL_STRING(&func, "mb_strtoupper");
     zval args[] = {
@@ -646,12 +651,11 @@ PHP_METHOD(Stringy, swapCase)
 
     zend_function zendFunction;
 
-    zend_arg_info zai[1];
-    zai[0].name = zend_string_init(ZEND_STRL("matches"), 0);
-    zai[0].pass_by_reference = 0;
-    zai[0].allow_null = 0;
-    zai[0].is_variadic = 0;
-    zai[0].type_hint = IS_STRING;
+    zend_internal_arg_info zai[] = {
+        ZEND_ARG_ARRAY_INFO(0, "matches", 0)
+    };
+
+    zend_string *f = zend_string_init(ZEND_STRL("callback"), 0);
 
     zendFunction.type = ZEND_INTERNAL_FUNCTION;
     zendFunction.common.num_args = 1;
@@ -659,10 +663,27 @@ PHP_METHOD(Stringy, swapCase)
     zendFunction.common.arg_info = zai;
     zendFunction.common.prototype = NULL;
     zendFunction.common.scope = NULL;
+    zendFunction.common.fn_flags = ZEND_ACC_CLOSURE;
+    zendFunction.common.function_name = f;
     zendFunction.internal_function.handler = once_listener_handler;
+    zendFunction.internal_function.type = ZEND_INTERNAL_FUNCTION;
+    zendFunction.internal_function.fn_flags = ZEND_ACC_CLOSURE;
+    zendFunction.internal_function.arg_info = zai;
+    zendFunction.internal_function.required_num_args =1;
+    zendFunction.internal_function.num_args = 1;
     
     zval callback;
     zend_create_closure(&callback, &zendFunction, NULL, NULL, NULL);
+
+    zval arr;
+    array_init(&arr);
+    add_assoc_string(&arr, "1", "b");
+    zval args1[] = {
+        arr
+    };
+
+    call_user_function(NULL, NULL, &callback, return_value, 1, args1);
+
 
 #if ZEND_DEBUG
         ZEND_ASSERT(1);
@@ -729,10 +750,6 @@ PHP_METHOD(Stringy, upperCaseFirst)
     call_user_function(NULL, NULL, &func, &first, 2, args_upper);
 
     concat_function(&ret, &first,  &rest);
-
-    php_var_dump(&first, 1);
-    php_var_dump(&rest, 1);
-    php_var_dump(&ret, 1);
 
     RETURN_ZVAL(getThis(), 1, 0);
 }

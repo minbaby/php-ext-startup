@@ -27,7 +27,7 @@
     },
     "editor.mouseWheelZoom": false,
     "files.autoSave": "onFocusChange",
-    "editor.fontSize": 18,
+    "editor.fontSize": 16,
     "editor.renderWhitespace": "boundary",
     "editor.cursorStyle": "line-thin",
     "files.exclude": {

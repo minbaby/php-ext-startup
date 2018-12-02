@@ -44,3 +44,5 @@ GPATH
 /vendor/
 *.loT
 core
+.gdb_history
+peda-session-php.txt

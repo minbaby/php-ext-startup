@@ -206,4 +206,9 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
             $this->encoding
         );
     }
+
+    public function append($string) 
+    {
+        return static::create($this->str . $string, $this->encoding);
+    }
 }

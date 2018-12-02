@@ -753,6 +753,27 @@ PHP_METHOD(Stringy, upperCaseFirst)
     RETURN_ZVAL(getThis(), 1, 0);
 }
 
+PHP_METHOD(Stringy, append)
+{
+    zval *str_param;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(str_param)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 1, &rv);
+
+    concat_function(return_value, str, str_param);
+
+    zend_update_property_string(stringy_ce, getThis(), ZEND_STRL("str"), Zzzz_STRVAL_P(return_value));
+
+    RETURN_ZVAL(getThis(), 1, 0);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_append, 1)
+    ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 0)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -776,6 +797,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, eregReplace, arginfo_eregReplace, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, swapCase, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, upperCaseFirst, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, append, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

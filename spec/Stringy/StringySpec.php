@@ -197,4 +197,17 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect((string)$result)->toBe($expect);
         }
     });
+
+    it('test prepend', function () {
+        $data = [
+            ['foobar', 'bar', 'foo'],
+            ['fòôbàř', 'bàř', 'fòô', 'UTF-8']
+        ];
+        foreach($data as $value) {
+            @list($expect, $str, $string, $encoding) = $value;
+            $result = __('Stringy')::create($str, $encoding)->prepend($string);
+            \expect($result)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string)$result)->toBe($expect);
+        }
+    });
 });

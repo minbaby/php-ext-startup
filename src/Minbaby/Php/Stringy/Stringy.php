@@ -211,4 +211,9 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
     {
         return static::create($this->str . $string, $this->encoding);
     }
+
+    public function prepend($string) 
+    {
+        return static::create($string . $this->str, $this->encoding);
+    }
 }

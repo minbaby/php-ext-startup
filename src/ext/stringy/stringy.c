@@ -766,7 +766,7 @@ PHP_METHOD(Stringy, append)
 
     concat_function(return_value, str, str_param);
 
-    zend_update_property_string(stringy_ce, getThis(), ZEND_STRL("str"), Zzzz_STRVAL_P(return_value));
+    zend_update_property_string(stringy_ce, getThis(), ZEND_STRL("str"), Z_STRVAL_P(return_value));
 
     RETURN_ZVAL(getThis(), 1, 0);
 }

@@ -616,7 +616,6 @@ static void once_listener_handler(INTERNAL_FUNCTION_PARAMETERS)
 
     zval *ret = zend_hash_index_find(Z_ARRVAL_P(arr), 0);
 
-    zval *ret = zend_hash_index_find(ht, 0);
     if (ret == NULL) {
         RETURN_EMPTY_STRING();
     }

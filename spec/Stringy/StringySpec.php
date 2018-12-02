@@ -210,4 +210,25 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect((string)$result)->toBe($expect);
         }
     });
+
+    it('test chars', function () {
+        $data = [
+            [[], ''],
+            [['T', 'e', 's', 't'], 'Test'],
+            [['F', 'ò', 'ô', ' ', 'B', 'à', 'ř'], 'Fòô Bàř', 'UTF-8']
+        ];
+
+        foreach($data as $value) {
+            @list($expect, $str, $encoding) = $value;
+
+            $result = __('Stringy')::create($str, $encoding)->chars();
+            \expect($result)->toBeA('array');
+            
+            foreach ($result as $char) {
+                \expect($char)->toBeA('string');
+            }
+            
+            \expect($result)->toBe($expect);
+        }
+    });
 });

@@ -215,5 +215,48 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
     public function prepend($string) 
     {
         return static::create($string . $this->str, $this->encoding);
+}
+
+    public function lines()
+    {
+        $array = $this->split('[\r\n]{1,2}', $this->str);
+        for ($i = 0; $i < count($array); $i++) {
+            $array[$i] = static::create($array[$i], $this->encoding);
+        }
+        return $array;
+    }
+
+    public function split($pattern, $limit = null)
+    {
+        if ($limit === 0) {
+            return [];
+        }
+        // mb_split errors when supplied an empty pattern in < PHP 5.4.13
+        // and HHVM < 3.8
+        if ($pattern === '') {
+            return [static::create($this->str, $this->encoding)];
+        }
+        $regexEncoding = $this->regexEncoding();
+        $this->regexEncoding($this->encoding);
+        // mb_split returns the remaining unsplit string in the last index when
+        // supplying a limit
+        $limit = ($limit > 0) ? $limit += 1 : -1;
+        static $functionExists;
+        if ($functionExists === null) {
+            $functionExists = function_exists('\mb_split');
+        }
+        if ($functionExists) {
+            $array = \mb_split($pattern, $this->str, $limit);
+        } else if ($this->supportsEncoding()) {
+            $array = \preg_split("/$pattern/", $this->str, $limit);
+        }
+        $this->regexEncoding($regexEncoding);
+        if ($limit > 0 && count($array) === $limit) {
+            array_pop($array);
+        }
+        for ($i = 0; $i < count($array); $i++) {
+            $array[$i] = static::create($array[$i], $this->encoding);
+        }
+        return $array;
     }
 }

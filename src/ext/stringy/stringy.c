@@ -92,15 +92,13 @@ PHP_METHOD(Stringy, __construct)
     zval *tmp;
     size_t count = 0;
     zend_string *encoding_str = zend_string_init(encoding, strlen(encoding), 0);
-    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(return_value), tmp)
-    {
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(return_value), tmp) {
         if (encoding == Z_STRVAL_P(tmp))
         {
             count++;
             break;
         }
-    }
-    ZEND_HASH_FOREACH_END();
+    } ZEND_HASH_FOREACH_END();
 
     if (count == 0)
     {
@@ -442,12 +440,8 @@ ZEND_END_ARG_INFO();
 
 PHP_METHOD(Stringy, collapseWhiteSpace)
 {
-    zval instance, retval, func, args[3], args_trim[1];
+    zval retval, func, args[3], args_trim[1];
     zval pattern, replacement, options, chars;
-
-    object_init_ex(&instance, stringy_ce);
-
-    // call regexReplace
 
     ZVAL_STRING(&pattern, "[[:space:]]+");
     ZVAL_STRING(&replacement, " ");
@@ -503,19 +497,6 @@ PHP_METHOD(Stringy, regexReplace)
     ZVAL_STRING(&func, "regexEncoding");
     args[0] = regexEncoding;
     call_user_function(NULL, getThis(), &func, return_value, 1, args);
-
-    // zval instance;
-    // object_init_ex(&instance, stringy_ce);
-
-    // zval args_construct[2];
-    // args_construct[0] = retStr;
-    // args_construct[1] = *encoding;
-
-    // ZVAL_STRING(&func, "__construct");
-
-    // call_user_function(NULL, &instance, &func, return_value, 2, args_construct);
-
-    // RETURN_ZVAL(&instance, 0, 1);
 
     RETURN_ZVAL(getThis(), 1, 0);
 }
@@ -640,7 +621,7 @@ static void once_listener_handler(INTERNAL_FUNCTION_PARAMETERS)
 
 PHP_METHOD(Stringy, swapCase)
 {
-    zval rv, func, pattern={}, subject, limit, count, ret, encoding;
+    zval rv, func, pattern={}, subject, limit_str, count, ret, encoding;
     
     ZVAL_STRING(&pattern, "/[\\S]/u");
     
@@ -688,13 +669,13 @@ PHP_METHOD(Stringy, swapCase)
 
     ZVAL_MAKE_REF(&count);
     ZVAL_STRING(&func, "preg_replace_callback");
-    ZVAL_LONG(&limit, -1);
+    ZVAL_LONG(&limit_str, -1);
     
     zval args[] ={
         pattern,
         callback,
         subject,
-        limit,
+        limit_str,
         count,
     };
 
@@ -793,6 +774,107 @@ ZEND_BEGIN_ARG_INFO(arginfo_prepend, 1)
     ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 0)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, lines)
+{
+    zval array, pattern, *str, rv;
+
+    ZVAL_STRING(&pattern, "[\r\n]{1,2}");
+    str =zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 1, &rv);
+
+    array_init(&array);
+
+    zval func, args[] = {
+        pattern,
+        *str,
+    };
+    ZVAL_STRING(&func, "split");
+    call_user_function(NULL, getThis(), &func, &array, 2, args); 
+
+    zval ret_arr;
+    array_init(&ret_arr);
+
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+    zval *tmp;
+    
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL(array), tmp){
+        zval instance;
+        object_init_ex(&instance, stringy_ce);
+        convert_to_string(tmp);
+        zend_call_method(&instance, stringy_ce, NULL, ZEND_STRL("__construct"), return_value, 2, tmp, encoding);
+        add_next_index_zval(&ret_arr, &instance);
+    }ZEND_HASH_FOREACH_END();
+
+    RETURN_ZVAL(&ret_arr, 0, 1);   
+}
+
+PHP_METHOD(Stringy, split)
+{
+    zend_string *empty = zend_string_init(ZEND_STRL(""), 0);
+    zend_string *pattern;
+    zval *limit_zval;
+
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_STR(pattern)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(limit_zval)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval arr;
+    array_init(&arr);
+
+    if (Z_TYPE_P(limit_zval) == IS_LONG && Z_LVAL_P(limit_zval) == 0) {
+        RETURN_ZVAL(&arr, 1, 0);
+    }
+    
+    if (zend_string_equals(pattern, empty)) {
+        zval *this;
+        ZVAL_COPY(this, getThis());
+        add_index_zval(&arr, 0, this);
+        RETURN_ZVAL(&arr, 1, 0);
+    }
+
+    convert_to_long(limit_zval);
+    zend_long limit_long = Z_LVAL_P(limit_zval);
+
+    zend_long limit = (limit_long > 0) ? limit_long += 1 : -1;
+
+    zval pattern_zval, str_zval, rv;
+
+    str_zval = *zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    ZVAL_STR(&pattern_zval, pattern);
+
+    ZVAL_LONG(limit_zval, limit);
+    zval func, args[] = {
+        pattern_zval,
+        str_zval,
+        *limit_zval,
+    };
+    ZVAL_STRING(&func, "mb_split");
+    call_user_function(NULL, NULL, &func, &arr, 3, args);
+
+    zend_long array_len = zend_array_count(Z_ARRVAL(arr));
+
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval *tmp;
+    zend_long index;
+    zval ret_arr;
+    array_init(&ret_arr);
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL(arr), tmp){
+        zval instance;
+        object_init_ex(&instance, stringy_ce);
+        zend_call_method(&instance, stringy_ce, NULL, ZEND_STRL("__construct"), return_value, 2, tmp, encoding);
+        add_next_index_zval(&ret_arr, &instance);
+    }ZEND_HASH_FOREACH_END();
+
+
+    RETURN_ZVAL(&ret_arr, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_split, 2)
+    ZEND_ARG_TYPE_INFO(0, pattern, IS_STRING, 0)
+    ZEND_ARG_INFO(0, limit_str)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -818,6 +900,8 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, upperCaseFirst, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, append, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, prepend, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, lines, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, split, arginfo_split, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

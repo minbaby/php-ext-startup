@@ -259,4 +259,13 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         }
         return $array;
     }
+
+    public function lowerCaseFirst()
+    {
+        $first = \mb_substr($this->str, 0, 1, $this->encoding);
+        $rest = \mb_substr($this->str, 1, $this->length() - 1,
+            $this->encoding);
+        $str = \mb_strtolower($first, $this->encoding) . $rest;
+        return static::create($str, $this->encoding);
+    }
 }

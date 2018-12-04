@@ -23,6 +23,7 @@ $data = [
     'runkit'        => 'https://github.com/zenovich/runkit',
     'php-git'       => 'https://github.com/libgit2/php-git',
     'AOP'           => 'https://github.com/AOP-PHP/AOP',
+    'xdeubg'        => 'https://github.com/xdebug/xdebug.git'
 ];
 
 // PHPBREW_ROOT/build/php-7.1.17/ext/

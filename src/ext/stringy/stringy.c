@@ -735,6 +735,55 @@ PHP_METHOD(Stringy, upperCaseFirst)
     RETURN_ZVAL(getThis(), 1, 0);
 }
 
+PHP_METHOD(Stringy, lowerCaseFirst)
+{
+    zval instance, encoding, str, func, ret, start, len, first, rest, rv;
+
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+    size_t length = Z_LVAL_P(return_value);
+
+    str = *zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    encoding = *zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    ZVAL_LONG(&start, 0);
+    ZVAL_LONG(&len, 1);
+    zval args[] = {
+        str,
+        start,
+        len,
+        encoding,
+    };
+    ZVAL_STRING(&func, "mb_substr");
+    call_user_function(NULL, NULL, &func, &first, 4, args);
+
+    ZVAL_LONG(&start, 1);
+    ZVAL_LONG(&len, length-1);
+    zval args_rest[] = {
+        str,
+        start,
+        len,
+        encoding,
+    };
+    ZVAL_STRING(&func, "mb_substr");
+    call_user_function(NULL, NULL, &func, &rest, 4, args_rest);
+
+    zval args_upper[] = {
+        first,
+        encoding,
+    };
+    ZVAL_STRING(&func, "mb_strtolower");
+    call_user_function(NULL, NULL, &func, &first, 2, args_upper);
+
+    concat_function(&ret, &first,  &rest);
+
+    zval this;
+    object_init_ex(&this, stringy_ce);
+    zend_call_method(&this, stringy_ce, NULL, ZEND_STRL("__construct"), return_value, 2, &ret, &encoding);
+
+    RETURN_ZVAL(&this, 0, 1);
+}
+
 PHP_METHOD(Stringy, append)
 {
     zval *str_param;
@@ -901,6 +950,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, eregReplace, arginfo_eregReplace, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, swapCase, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, upperCaseFirst, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, lowerCaseFirst, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, append, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, prepend, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, lines, NULL, ZEND_ACC_PUBLIC)

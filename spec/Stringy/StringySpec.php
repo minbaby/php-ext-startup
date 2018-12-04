@@ -282,4 +282,25 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect((string)$result)->toBe($expected);
         }
     });
+
+    it('test lowerCaseFirst', function () {
+        $data = [
+            ['test', 'Test'],
+            ['test', 'test'],
+            ['1a', '1a'],
+            ['σ test', 'Σ test', 'UTF-8'],
+            [' Σ test', ' Σ test', 'UTF-8']
+        ];
+
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            \expect((string)$stringy)->toBe($str);
+            $result = $stringy->lowerCaseFirst();
+            \expect($result)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string)$stringy)->toBe($str);
+            \expect((string)$result)->toBe($expected);
+        }
+
+    });
 });

@@ -266,4 +266,20 @@ namespace Minbaby\Startup\Spec\Stringy;
             }
         }
     });
+
+    it('test upperCaseFirst', function () {
+        $data = [
+            ['Test', 'Test'],
+            ['Test', 'test'],
+            ['1a', '1a'],
+            ['Σ test', 'σ test', 'UTF-8'],
+            [' σ test', ' σ test', 'UTF-8']
+        ];
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $result = __('Stringy')::create($str, $encoding)->upperCaseFirst();
+            \expect($result)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string)$result)->toBe($expected);
+        }
+    });
 });

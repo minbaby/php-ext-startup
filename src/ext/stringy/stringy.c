@@ -729,6 +729,9 @@ PHP_METHOD(Stringy, upperCaseFirst)
 
     concat_function(&ret, &first,  &rest);
 
+    zend_string *str_string = Z_STR(ret);
+    zend_update_property_str(stringy_ce, getThis(), ZEND_STRL("str"), str_string);
+
     RETURN_ZVAL(getThis(), 1, 0);
 }
 

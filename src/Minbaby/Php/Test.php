@@ -7,7 +7,7 @@ class Test
 
     public static $publicPropertyStatic = 'hello world +property +static';
 
-    public const PUBLIC_CONST = 'hello world +const';
+    const PUBLIC_CONST = 'hello world +const';
 
     public static function helloWorld()
     {

@@ -51,7 +51,7 @@ namespace Minbaby\Startup\Spec\Stringy;
         ];
 
         foreach($data as $v) {
-            [$key, $value] = $v;
+            list($key, $value) = $v;
             \expect($key)->toBe((string) _($this->class, [$value]));
         }
     });
@@ -104,7 +104,7 @@ namespace Minbaby\Startup\Spec\Stringy;
         $stringy = __('Stringy')::create('fòô', 'UTF-8');
 
         foreach ($data as $value) {
-            [$expected, $offset] = $value;
+            list($expected, $offset) = $value;
             \expect($stringy->offsetExists($offset))->toBe($expected);
             \expect(isset($stringy[$offset]))->toBe($expected);
         }

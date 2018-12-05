@@ -464,7 +464,7 @@ PHP_METHOD(Stringy, collapseWhiteSpace)
 
 PHP_METHOD(Stringy, regexReplace)
 {
-    zval *pattern, *replacement, *options, rv;
+    zval *pattern, *replacement, *options = NULL, rv;
     zval func;
 
     ZEND_PARSE_PARAMETERS_START(2, 3)
@@ -473,6 +473,11 @@ PHP_METHOD(Stringy, regexReplace)
     Z_PARAM_OPTIONAL
     Z_PARAM_ZVAL(options)
     ZEND_PARSE_PARAMETERS_END();
+
+    if (options == NULL) {
+        options = malloc(sizeof(zval));
+        ZVAL_STRING(options, "msr");
+    }
 
     zval *encoding = zend_read_property(stringy_ce, getThis(), "encoding", strlen("encoding"), 0, &rv);
     zval *str = zend_read_property(stringy_ce, getThis(), "str", strlen("str"), 1, &rv);
@@ -498,7 +503,12 @@ PHP_METHOD(Stringy, regexReplace)
     args[0] = regexEncoding;
     call_user_function(NULL, getThis(), &func, return_value, 1, args);
 
-    RETURN_ZVAL(getThis(), 1, 0);
+    zend_update_property(stringy_ce, getThis(), ZEND_STRL("str"), &retStr);
+    zval this;
+    object_init_ex(&this, stringy_ce);
+    zend_call_method(&this, stringy_ce, NULL, ZEND_STRL("__construct"), return_value, 2, &retStr, encoding);
+
+    RETURN_ZVAL(&this, 0, 1);
 }
 ZEND_BEGIN_ARG_INFO(arginfo_regexReplace, 3)
 ZEND_ARG_INFO(0, pattern)

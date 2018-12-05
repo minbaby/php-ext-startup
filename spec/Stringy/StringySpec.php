@@ -303,4 +303,28 @@ namespace Minbaby\Startup\Spec\Stringy;
         }
 
     });
+
+    it('test regexReplce', function () {
+
+        $data = [
+            ['', '', '', ''],
+            ['bar', 'foo', 'f[o]+', 'bar'],
+            ['o bar', 'foo bar', 'f(o)o', '\1'],
+            ['bar', 'foo bar', 'f[O]+\s', '', 'i'],
+            ['foo', 'bar', '[[:alpha:]]{3}', 'foo'],
+            ['', '', '', '', 'msr', 'UTF-8'],
+            ['bàř', 'fòô ', 'f[òô]+\s', 'bàř', 'msr', 'UTF-8'],
+            ['fòô', 'fò', '(ò)', '\\1ô', 'msr', 'UTF-8'],
+            ['fòô', 'bàř', '[[:alpha:]]{3}', 'fòô', 'msr', 'UTF-8']
+        ];
+
+        foreach($data as $value) {
+            @list($expected, $str, $pattern, $replacement, $options, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->regexReplace($pattern, $replacement, $options);
+            \expect($result)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string)$stringy)->toBe($str);
+            \expect((string)$result)->toBe($expected);
+        }
+    });
 });

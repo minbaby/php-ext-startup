@@ -69,6 +69,6 @@ include __DIR__ . '/vendor/autoload.php';
 
 _ns(NS_STRINGY);
 // $x = _('Stringy', ['test test2 test3', 'UTF-8']);
-$x = __('Stringy')::create("foo\nbar", 'UTF-8')->lines();
+$x = __('Stringy')::create("bàř", 'UTF-8')->regexReplce('[[:alpha:]]{3}', 'fòô', 'msr');
 
 var_dump($x);

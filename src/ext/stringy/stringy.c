@@ -503,7 +503,6 @@ PHP_METHOD(Stringy, regexReplace)
     args[0] = regexEncoding;
     call_user_function(NULL, getThis(), &func, return_value, 1, args);
 
-    zend_update_property(stringy_ce, getThis(), ZEND_STRL("str"), &retStr);
     zval this;
     object_init_ex(&this, stringy_ce);
     zend_call_method(&this, stringy_ce, NULL, ZEND_STRL("__construct"), return_value, 2, &retStr, encoding);

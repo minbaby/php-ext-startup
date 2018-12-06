@@ -69,6 +69,21 @@ include __DIR__ . '/vendor/autoload.php';
 
 _ns(NS_STRINGY);
 // $x = _('Stringy', ['test test2 test3', 'UTF-8']);
-$x = __('Stringy')::create("bàř", 'UTF-8')->regexReplce('[[:alpha:]]{3}', 'fòô', 'msr');
 
-var_dump($x);
+$data = [
+    ['', '', '', ''],
+    ['bar', 'foo', 'f[o]+', 'bar'],
+    ['o bar', 'foo bar', 'f(o)o', '\1'],
+    ['bar', 'foo bar', 'f[O]+\s', '', 'i'],
+    ['foo', 'bar', '[[:alpha:]]{3}', 'foo'],
+    ['', '', '', '', 'msr', 'UTF-8'],
+    ['bàř', 'fòô ', 'f[òô]+\s', 'bàř', 'msr', 'UTF-8'],
+    ['fòô', 'fò', '(ò)', '\\1ô', 'msr', 'UTF-8'],
+    ['fòô', 'bàř', '[[:alpha:]]{3}', 'fòô', 'msr', 'UTF-8']
+];
+
+foreach($data as $value) {
+    @list($expected, $str, $pattern, $replacement, $options, $encoding) = $value;
+    $x = __('Stringy')::create($str, 'UTF-8')->regexReplace($pattern, $replacement, $options);
+    var_dump((string)$x == $expected);
+}

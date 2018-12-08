@@ -637,7 +637,6 @@ static void swap_case_handler(INTERNAL_FUNCTION_PARAMETERS)
     call_user_function(NULL, NULL, &func, &ret, 1, args);
 
     if (zend_string_equals(Z_STR_P(&ret), Z_STR_P(first)) == 1) {
-        php_var_dump(&ret, 1);
         ZVAL_STRING(&func, "mb_strtolower");
         zval args[] = {
             *first,
@@ -1075,6 +1074,52 @@ PHP_METHOD(Stringy, camelize)
     RETURN_ZVAL(&instance, 1, 0);
 }
 
+PHP_METHOD(Stringy, trimLeft)
+{
+    zval *chars = NULL;
+    ZEND_PARSE_PARAMETERS_START(0, 1)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(chars)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (chars != NULL && Z_TYPE_P(chars) != IS_NULL)
+    {
+        convert_to_string(chars);
+        if (Z_STRLEN_P(chars) == 0) {
+            chars = malloc(sizeof(zval));
+            ZVAL_STRING(chars, "[:space:]");
+        } else {
+            zval func, delimiter;
+            ZVAL_STRING(&func, "preg_quote");
+            zval args[] =  {
+                *chars,
+            };
+            call_user_function(NULL, NULL, &func, return_value, 1, args);
+            ZVAL_STRING(chars, Z_STRVAL_P(return_value));
+        }
+    }
+    else
+    {
+        chars = malloc(sizeof(zval));
+        ZVAL_STRING(chars, "[:space:]");
+
+    }
+
+    zval func_regexReplace, pattern, replacement, options;
+    ZVAL_STRING(&func_regexReplace, "regexReplace");
+    zend_string *p = strpprintf(0, "^[%s]+", Z_STRVAL_P(chars));
+    ZVAL_STR(&pattern, p);
+    ZVAL_STRING(&replacement, "");
+    zval args[] = {
+        pattern,
+        replacement,
+    };
+    call_user_function(NULL, getThis(), &func_regexReplace, return_value, 2, args);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_trimLeft, 1)
+ZEND_ARG_INFO(0, chars)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -1105,6 +1150,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, split, arginfo_split, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, camelize, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, trim, arginfo_trim, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, trimLeft, arginfo_trimLeft, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

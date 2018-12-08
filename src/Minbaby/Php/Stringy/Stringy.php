@@ -292,4 +292,10 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         );
         return $stringy;
     }
+
+    public function trimLeft($chars = null)
+    {
+        $chars = ($chars) ? preg_quote($chars) : '[:space:]';
+        return $this->regexReplace("^[$chars]+", '');
+    }
 }

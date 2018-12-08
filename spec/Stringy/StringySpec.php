@@ -67,7 +67,7 @@ namespace Minbaby\Startup\Spec\Stringy;
     it('test chaining', function () {
         $stringy = __('Stringy')::create('x    y', 'UTF-8');
         \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
-        \expect("X    Y")->toBe((string) $stringy->swapCase());
+        \expect((string) $stringy->swapCase())->toBe("X    Y");
     });
 
     it('test count', function () {
@@ -322,6 +322,33 @@ namespace Minbaby\Startup\Spec\Stringy;
             @list($expected, $str, $pattern, $replacement, $options, $encoding) = $value;
             $stringy = __('Stringy')::create($str, $encoding);
             $result = $stringy->regexReplace($pattern, $replacement, $options);
+            \expect($result)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string)$stringy)->toBe($str);
+            \expect((string)$result)->toBe($expected);
+        }
+    });
+
+    it('test trim', function () {
+        $data = [
+            ['foo   bar', '  foo   bar  '],
+            ['foo bar', ' foo bar'],
+            ['foo bar', 'foo bar '],
+            ['foo bar', "\n\t foo bar \n\t"],
+            ['fòô   bàř', '  fòô   bàř  '],
+            ['fòô bàř', ' fòô bàř'],
+            ['fòô bàř', 'fòô bàř '],
+            [' foo bar ', "\n\t foo bar \n\t", "\n\t"],
+            ['fòô bàř', "\n\t fòô bàř \n\t", null, 'UTF-8'],
+            ['fòô', ' fòô ', null, 'UTF-8'], // narrow no-break space (U+202F)
+            ['fòô', '  fòô  ', null, 'UTF-8'], // medium mathematical space (U+205F)
+            ['fòô', '           fòô', null, 'UTF-8'] // spaces U+2000 to U+200A
+        ];
+
+        foreach($data as $value) {
+            @list($expected, $str, $chars, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->trim($chars);
+
             \expect($result)->toBeAnInstanceOf(__('Stringy'));
             \expect((string)$stringy)->toBe($str);
             \expect((string)$result)->toBe($expected);

@@ -1,0 +1,26 @@
+variants:
+  php-startup:
+    bcmath:
+    bz2:
+    calendar:
+    cli:
+    ctype:
+    dom:
+    fileinfo:
+    filter:
+    ipc:
+    json:
+    mbregex:
+    mbstring:
+    mhash:
+    mcrypt:
+    gd:
+      - --with-libdir=lib/x86_64-linux-gnu
+      - --with-gd=shared
+      - --enable-gd-natf
+      - --with-jpeg-dir=/usr
+      - --with-png-dir=/usr
+extensions:
+  php-startup:
+    xhprof: latest
+    xdebug: stable

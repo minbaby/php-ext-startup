@@ -18,5 +18,4 @@
 
 # gdb -c core php
 
-b src/ext/stringy.c:665
-b /home/minbaby/.phpbrew/build/php-7.1.23/Zend/zend_execute_API.c:782
+# git clone https://github.com/snare/voltron

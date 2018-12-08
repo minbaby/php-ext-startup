@@ -35,14 +35,14 @@ zend_class_entry *stringy_ce;
 
 PHP_METHOD(Stringy, __toString)
 {
-    zval rv, *value;
-    value = zend_read_property(stringy_ce, getThis(), "str", strlen("str"), 0, &rv);
-    RETURN_STRING(Z_STRVAL_P(value));
+    zval rv;
+    zval *value = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    RETURN_ZVAL(value, 1, 0);
 }
 
 PHP_METHOD(Stringy, __construct)
 {
-    char *encoding;
+    char *encoding = NULL;
     zval *str;
     char *string;
     size_t str_len, encoding_len;
@@ -138,7 +138,7 @@ PHP_METHOD(Stringy, create)
 
     zend_call_method(&instance, stringy_ce, NULL, ZEND_STRL("__construct"), return_value, 2, str, encoding);
 
-    RETURN_ZVAL(&instance, 0, 1);
+    RETURN_ZVAL(&instance, 1, 0);
 }
 ZEND_BEGIN_ARG_INFO_EX(arginfo_create, 0, 0, 2)
 ZEND_ARG_INFO(0, str)
@@ -252,7 +252,7 @@ PHP_METHOD(Stringy, getIterator)
     args[1] = flags;
     call_user_function(NULL, &instance, &func, return_value, 2, args);
 
-    RETURN_ZVAL(&instance, 0, 1);
+    RETURN_ZVAL(&instance, 1, 0);
 }
 
 PHP_METHOD(Stringy, chars)
@@ -517,32 +517,45 @@ ZEND_END_ARG_INFO();
 
 PHP_METHOD(Stringy, trim)
 {
-    zval *chars;
+    zval *chars = NULL;
     ZEND_PARSE_PARAMETERS_START(0, 1)
-    Z_PARAM_ZVAL(chars)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(chars)
     ZEND_PARSE_PARAMETERS_END();
 
-    if (Z_TYPE_P(chars) != IS_NULL)
+    if (chars != NULL && Z_TYPE_P(chars) != IS_NULL)
     {
-        zval func, args[2], delimiter;
-        ZVAL_STRING(&func, "preg_quote");
-        args[0] = *chars;
-        args[1] = delimiter;
-        call_user_function(NULL, NULL, &func, return_value, 2, args);
+        convert_to_string(chars);
+        if (Z_STRLEN_P(chars) == 0) {
+            chars = malloc(sizeof(zval));
+            ZVAL_STRING(chars, "[:space:]");
+        } else {
+            zval func, delimiter;
+            ZVAL_STRING(&func, "preg_quote");
+            zval args[] =  {
+                *chars,
+            };
+            call_user_function(NULL, NULL, &func, return_value, 1, args);
+            ZVAL_STRING(chars, Z_STRVAL_P(return_value));
+        }
     }
     else
     {
+        chars = malloc(sizeof(zval));
         ZVAL_STRING(chars, "[:space:]");
+
     }
 
-    zval func_regexReplace, args[3], pattern, replacement, options;
+    zval func_regexReplace, pattern, replacement, options;
     ZVAL_STRING(&func_regexReplace, "regexReplace");
-    ZVAL_STRING(&pattern, "^[$chars]+|[$chars]+$");
+    zend_string *p = strpprintf(0, "^[%s]+|[%s]+$", Z_STRVAL_P(chars), Z_STRVAL_P(chars));
+    ZVAL_STR(&pattern, p);
     ZVAL_STRING(&replacement, "");
-    args[0] = pattern;
-    args[1] = replacement;
-    args[2] = options;
-    call_user_function(NULL, getThis(), &func_regexReplace, return_value, 3, args);
+    zval args[] = {
+        pattern,
+        replacement,
+    };
+    call_user_function(NULL, getThis(), &func_regexReplace, return_value, 2, args);
 }
 ZEND_BEGIN_ARG_INFO(arginfo_trim, 1)
 ZEND_ARG_INFO(0, chars)
@@ -596,7 +609,7 @@ ZEND_ARG_INFO(0, string)
 ZEND_ARG_INFO(0, option)
 ZEND_END_ARG_INFO();
 
-static void once_listener_handler(INTERNAL_FUNCTION_PARAMETERS)
+static void swap_case_handler(INTERNAL_FUNCTION_PARAMETERS)
 {
     zval *arr;
 
@@ -604,33 +617,34 @@ static void once_listener_handler(INTERNAL_FUNCTION_PARAMETERS)
         Z_PARAM_ARRAY(arr)
     ZEND_PARSE_PARAMETERS_END();
 
-    zval *ret = zend_hash_index_find(Z_ARRVAL_P(arr), 0);
+    zval *first = zend_hash_index_find(Z_ARRVAL_P(arr), 0);
 
-    if (ret == NULL) {
+    if (first == NULL) {
         RETURN_EMPTY_STRING();
     }
 
-    zval func = {};
+    zval func, ret;
     ZVAL_STRING(&func, "mb_strtoupper");
     zval args[] = {
-        *ret,
+        *first,
     };
-    call_user_function(NULL, NULL, &func, return_value, 1, args);
+    call_user_function(NULL, NULL, &func, &ret, 1, args);
 
-    if (zend_string_equals(Z_STR_P(return_value), Z_STR_P(ret)) == 1) {
+    if (zend_string_equals(Z_STR_P(&ret), Z_STR_P(first)) == 1) {
+        php_var_dump(&ret, 1);
         ZVAL_STRING(&func, "mb_strtolower");
         zval args[] = {
-            *ret,
+            *first,
         };
-        call_user_function(NULL, NULL, &func, return_value, 1, args);
+        call_user_function(NULL, NULL, &func, &ret, 1, args);
     }
 
-    RETURN_ZVAL(return_value, 0, 1);
+    RETURN_ZVAL(&ret, 0, 1);
 }
 
 PHP_METHOD(Stringy, swapCase)
 {
-    zval rv, func, pattern={}, subject, limit_str, count, ret, encoding;
+    zval rv, func, pattern={}, subject, limit_str, count, ret;
     
     ZVAL_STRING(&pattern, "/[\\S]/u");
     
@@ -652,7 +666,7 @@ PHP_METHOD(Stringy, swapCase)
     zendFunction.common.scope = NULL;
     zendFunction.common.fn_flags = ZEND_ACC_CLOSURE;
     zendFunction.common.function_name = f;
-    zendFunction.internal_function.handler = once_listener_handler;
+    zendFunction.internal_function.handler = swap_case_handler;
     zendFunction.internal_function.type = ZEND_INTERNAL_FUNCTION;
     zendFunction.internal_function.fn_flags = ZEND_ACC_CLOSURE;
     zendFunction.internal_function.arg_info = zai;
@@ -662,33 +676,13 @@ PHP_METHOD(Stringy, swapCase)
     zval callback;
     zend_create_closure(&callback, &zendFunction, NULL, NULL, NULL);
 
-    zval arr;
-    array_init(&arr);
-    add_assoc_string(&arr, "1", "b");
-    zval args1[] = {
-        arr
-    };
-
-    call_user_function(NULL, NULL, &callback, return_value, 1, args1);
-
-
-#if ZEND_DEBUG
-        ZEND_ASSERT(1);
-#endif
-
-    ZVAL_MAKE_REF(&count);
     ZVAL_STRING(&func, "preg_replace_callback");
-    ZVAL_LONG(&limit_str, -1);
-    
     zval args[] ={
         pattern,
         callback,
         subject,
-        limit_str,
-        count,
     };
-
-    call_user_function(NULL, NULL, &func, &ret, 5, args);
+    call_user_function(NULL, NULL, &func, &ret, 3, args);
 
     convert_to_string(&ret);
     zend_update_property_string(stringy_ce, getThis(), ZEND_STRL("str"), Z_STRVAL(ret));
@@ -964,6 +958,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, prepend, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, lines, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, split, arginfo_split, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, trim, arginfo_trim, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

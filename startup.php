@@ -1,4 +1,6 @@
 <?php
+
+use Minbaby\Startup\Ext\Stringy\Stringy;
 $br = (php_sapi_name() == "cli")? "":"<br>";
 $module = 'startup';
 
@@ -68,22 +70,18 @@ include __DIR__ . '/vendor/autoload.php';
 
 
 _ns(NS_STRINGY);
-// $x = _('Stringy', ['test test2 test3', 'UTF-8']);
-
 $data = [
-    ['', '', '', ''],
-    ['bar', 'foo', 'f[o]+', 'bar'],
-    ['o bar', 'foo bar', 'f(o)o', '\1'],
-    ['bar', 'foo bar', 'f[O]+\s', '', 'i'],
-    ['foo', 'bar', '[[:alpha:]]{3}', 'foo'],
-    ['', '', '', '', 'msr', 'UTF-8'],
-    ['bàř', 'fòô ', 'f[òô]+\s', 'bàř', 'msr', 'UTF-8'],
-    ['fòô', 'fò', '(ò)', '\\1ô', 'msr', 'UTF-8'],
-    ['fòô', 'bàř', '[[:alpha:]]{3}', 'fòô', 'msr', 'UTF-8']
+    ['', null],
+    ['', false],
+    ['1', true],
+    ['-9', -9],
+    ['1.18', 1.18],
+    [' string  ', ' string  '],
+    ['❤', '❤'],
 ];
 
-foreach($data as $value) {
-    @list($expected, $str, $pattern, $replacement, $options, $encoding) = $value;
-    $x = __('Stringy')::create($str, 'UTF-8')->regexReplace($pattern, $replacement, $options);
-    var_dump((string)$x == $expected);
+foreach($data as $v) {
+    list($key, $value) = $v;
+    var_dump(new Stringy($value));
+    // var_dump((string) _($this->class, [$value]))
 }

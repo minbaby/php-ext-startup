@@ -1,87 +1,35 @@
 <?php
-
-use Minbaby\Startup\Ext\Stringy\Stringy;
-$br = (php_sapi_name() == "cli")? "":"<br>";
-$module = 'startup';
-
-function handleFunc()
-{
-    global $br, $module;
-
-    $function = 'confirm_' . $module . '_compiled';
-    if (extension_loaded($module)) {
-        $str = $function($module);
-    } else {
-        $str = "Module $module is not compiled into PHP";
-    }
-    echo "$str\n";
-}
-
-function handleClass()
-{
-    if (class_exists('myclass')) {
-        echo 'myclass exists';
-     } else {
-        echo 'myclass exists';
-     }
-
-     $class = new myclass();
-     var_dump($class);
-     $class->abab();
-}
-
-function checkExt()
-{
-    global $br, $module;
-    if (!extension_loaded('startup')) {
-        dl('startup.' . PHP_SHLIB_SUFFIX);
-    }
-    $module = 'startup';
-    $functions = get_extension_funcs($module);
-    echo "Functions available in the test extension:$br\n";
-    foreach ($functions as $func) {
-        echo $func . "$br\n";
-    }
-    echo "$br\n";
-}
-
 include __DIR__ . '/vendor/autoload.php';
-// include __DIR__ . "/spec/const.php";
-// include __DIR__ . "/spec/functions.php";
-
-// function main() {
-//     _ns(NS_STRINGY);
-//     $stringy = __('Stringy')::create('Fòô Bàř', 'UTF-8');
-//     $stringy = $stringy->swapCase();
-//     // var_dump($stringy->test());
-//     $valResult = [];
-//     foreach ($stringy as $char) {
-//         $valResult[] = $char;
-//     }
-//     // var_dump($valResult, function($a){});
-//     // $keyValResult = [];
-//     // foreach ($stringy as $pos => $char) {
-//     //     $keyValResult[$pos] = $char;
-//     // }
-// }
-
-
-// main();
-
 
 _ns(NS_STRINGY);
-$data = [
-    ['', null],
-    ['', false],
-    ['1', true],
-    ['-9', -9],
-    ['1.18', 1.18],
-    [' string  ', ' string  '],
-    ['❤', '❤'],
-];
 
-foreach($data as $v) {
-    list($key, $value) = $v;
-    var_dump(new Stringy($value));
-    // var_dump((string) _($this->class, [$value]))
-}
+// $data = [
+//     ['camelCase', 'CamelCase'],
+//     ['camelCase', 'Camel-Case'],
+//     ['camelCase', 'camel case'],
+//     ['camelCase', 'camel -case'],
+//     ['camelCase', 'camel - case'],
+//     ['camelCase', 'camel_case'],
+//     ['camelCTest', 'camel c test'],
+//     ['stringWith1Number', 'string_with1number'],
+//     ['stringWith22Numbers', 'string-with-2-2 numbers'],
+//     ['dataRate', 'data_rate'],
+//     ['backgroundColor', 'background-color'],
+//     ['yesWeCan', 'yes_we_can'],
+//     ['mozSomething', '-moz-something'],
+//     ['carSpeed', '_car_speed_'],
+//     ['serveHTTP', 'ServeHTTP'],
+//     ['1Camel2Case', '1camel2case'],
+//     ['camelΣase', 'camel σase', 'UTF-8'],
+//     ['στανιλCase', 'Στανιλ case', 'UTF-8'],
+//     ['σamelCase', 'σamel  Case', 'UTF-8']
+// ];
+
+// foreach($data as $value) {
+//     @list($expected, $str, $encoding) = $value;
+//     $x = __('Stringy')::create($str, $encoding)->lowerCaseFirstY();
+//     var_dump($x);
+// }
+
+$x = __('Stringy')::create("")->camelize();
+var_dump(get_class_methods($x));

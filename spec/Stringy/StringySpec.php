@@ -304,6 +304,38 @@ namespace Minbaby\Startup\Spec\Stringy;
 
     });
 
+    it('test testCamelize', function () {
+        $data = [
+            ['camelCase', 'CamelCase'],
+            ['camelCase', 'Camel-Case'],
+            ['camelCase', 'camel case'],
+            ['camelCase', 'camel -case'],
+            ['camelCase', 'camel - case'],
+            ['camelCase', 'camel_case'],
+            ['camelCTest', 'camel c test'],
+            ['stringWith1Number', 'string_with1number'],
+            ['stringWith22Numbers', 'string-with-2-2 numbers'],
+            ['dataRate', 'data_rate'],
+            ['backgroundColor', 'background-color'],
+            ['yesWeCan', 'yes_we_can'],
+            ['mozSomething', '-moz-something'],
+            ['carSpeed', '_car_speed_'],
+            ['serveHTTP', 'ServeHTTP'],
+            ['1Camel2Case', '1camel2case'],
+            ['camelΣase', 'camel σase', 'UTF-8'],
+            ['στανιλCase', 'Στανιλ case', 'UTF-8'],
+            ['σamelCase', 'σamel  Case', 'UTF-8']
+        ];
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->camelize();
+            \expect($result)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string)$stringy)->toBe($str);
+            \expect((string)$result)->toBe($expected);
+        }
+    });
+
     it('test regexReplce', function () {
 
         $data = [

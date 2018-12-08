@@ -491,12 +491,15 @@ PHP_METHOD(Stringy, regexReplace)
     args[0] = *encoding;
     call_user_function(NULL, getThis(), &func, return_value, 1, args);
 
-    zval args_eregReplace[4], retStr;
+    zval retStr;
     ZVAL_STRING(&func, "eregReplace");
-    args_eregReplace[0] = *pattern;
-    args_eregReplace[1] = *replacement;
-    args_eregReplace[2] = *str;
-    args_eregReplace[3] = *options;
+
+    zval args_eregReplace[] = {
+        *pattern,
+        *replacement,
+        *str,
+        *options,
+    };
     call_user_function(NULL, getThis(), &func, &retStr, 4, args_eregReplace);
 
     ZVAL_STRING(&func, "regexEncoding");
@@ -580,7 +583,7 @@ ZEND_END_ARG_INFO();
 
 PHP_METHOD(Stringy, eregReplace)
 {
-    zval *pattern, *replace, *string, *option;
+    zval *pattern, *replace, *string, *option = NULL;
     ZEND_PARSE_PARAMETERS_START(3, 4)
     Z_PARAM_ZVAL(pattern)
     Z_PARAM_ZVAL(replace)
@@ -594,12 +597,15 @@ PHP_METHOD(Stringy, eregReplace)
     convert_to_string(string);
     convert_to_string(option);
 
-    zval func, args[4];
+    zval func;
     ZVAL_STRING(&func, "mb_ereg_replace");
-    args[0] = *pattern;
-    args[1] = *replace;
-    args[2] = *string;
-    args[3] = *option;
+
+    zval args[] = {
+        *pattern,
+        *replace,
+        *string,
+        *option,
+    };
     call_user_function(NULL, NULL, &func, return_value, 4, args);
 }
 ZEND_BEGIN_ARG_INFO(arginfo_eregReplace, 4)
@@ -784,7 +790,7 @@ PHP_METHOD(Stringy, lowerCaseFirst)
     object_init_ex(&this, stringy_ce);
     zend_call_method(&this, stringy_ce, NULL, ZEND_STRL("__construct"), return_value, 2, &ret, &encoding);
 
-    RETURN_ZVAL(&this, 0, 1);
+    RETURN_ZVAL(&this, 1, 0);
 }
 
 PHP_METHOD(Stringy, append)
@@ -930,6 +936,145 @@ ZEND_BEGIN_ARG_INFO(arginfo_split, 2)
     ZEND_ARG_INFO(0, limit_str)
 ZEND_END_ARG_INFO();
 
+static void preg_replace_callback_handler(INTERNAL_FUNCTION_PARAMETERS)
+{
+    zval *arr = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ARRAY(arr)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (arr == NULL || zend_array_count(Z_ARRVAL_P(arr)) <= 1) {
+        RETURN_EMPTY_STRING();
+    } 
+
+    zval *first = zend_hash_index_find(Z_ARRVAL_P(arr), 1);
+    // php_var_dump(arr, 1);
+    // php_var_dump(first, 1);
+    //TODO: 不知道这里如何模拟 php 里边的use， 这里先写死了
+    zval encoding;
+    ZVAL_STRING(&encoding, "UTF-8");
+    zval func, args[] = {
+        *first,
+        encoding,
+    };
+    ZVAL_STRING(&func, "mb_strtoupper");
+    call_user_function(NULL, NULL, &func, return_value, 2, args);
+}
+
+
+static void preg_replace_callback_2_handler(INTERNAL_FUNCTION_PARAMETERS)
+{
+    zval *arr = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ARRAY(arr)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (arr == NULL || zend_array_count(Z_ARRVAL_P(arr)) < 1) {
+        RETURN_EMPTY_STRING();
+    } 
+
+    zval *first = zend_hash_index_find(Z_ARRVAL_P(arr), 0);
+
+    //TODO: 不知道这里如何模拟 php 里边的use， 这里先写死了
+    zval encoding;
+    ZVAL_STRING(&encoding, "UTF-8");
+    zval func, args[] = {
+        *first,
+        encoding,
+    };
+    ZVAL_STRING(&func, "mb_strtoupper");
+    call_user_function(NULL, NULL, &func, return_value, 2, args);
+}
+
+PHP_METHOD(Stringy, camelize)
+{
+    zval rv, func;
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 1, &rv);
+
+    zval instance;
+
+    ZVAL_STRING(&func, "trim");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+
+    ZVAL_STRING(&func, "lowerCaseFirst");
+    call_user_function(NULL, return_value, &func, &instance, 0, NULL);
+
+    zval *str_zval = zend_read_property(stringy_ce, &instance, ZEND_STRL("str"), 1, &rv);
+    
+    zval pattern, replacement;
+    ZVAL_STRING(&pattern, "/^[-_]+/");
+    ZVAL_EMPTY_STRING(&replacement);
+    zval args[] = {
+        pattern,
+        replacement,
+        *str_zval,
+    };
+    ZVAL_STRING(&func, "preg_replace");
+    call_user_function(NULL, NULL, &func, return_value, 3, args);
+    zend_update_property(stringy_ce, &instance, ZEND_STRL("str"), return_value);
+
+    zend_function zendFunction;
+
+    zend_internal_arg_info zai[] = {
+        ZEND_ARG_ARRAY_INFO(0, "matches", 0)
+    };
+#pragma region first
+    zend_string *f = zend_string_init(ZEND_STRL("callback"), 0);
+
+    zendFunction.type = ZEND_INTERNAL_FUNCTION;
+    zendFunction.common.num_args = 1;
+    zendFunction.common.required_num_args = 1;
+    zendFunction.common.arg_info = zai;
+    zendFunction.common.prototype = NULL;
+    zendFunction.common.scope = NULL;
+    zendFunction.common.fn_flags = ZEND_ACC_CLOSURE;
+    zendFunction.common.function_name = f;
+    zendFunction.internal_function.handler = preg_replace_callback_handler;
+    zendFunction.internal_function.type = ZEND_INTERNAL_FUNCTION;
+    zendFunction.internal_function.fn_flags = ZEND_ACC_CLOSURE;
+    zendFunction.internal_function.arg_info = zai;
+    zendFunction.internal_function.required_num_args =1;
+    zendFunction.internal_function.num_args = 1;
+    
+    zval callback;
+    zend_create_closure(&callback, &zendFunction, NULL, NULL, NULL);
+
+    str_zval = zend_read_property(stringy_ce, &instance, ZEND_STRL("str"), 1, &rv);
+    ZVAL_STRING(&pattern, "/[-_\\s]+(.)?/u");
+    ZVAL_EMPTY_STRING(&replacement);
+    zval args_callback[] = {
+        pattern,
+        callback,
+        *str_zval,
+    };
+    ZVAL_STRING(&func, "preg_replace_callback");
+    call_user_function(NULL, NULL, &func, return_value, 3, args_callback);
+#pragma endregion
+
+    zend_update_property(stringy_ce, &instance, ZEND_STRL("str"),  return_value);
+
+#pragma region second
+
+    zendFunction.internal_function.handler = preg_replace_callback_2_handler;
+    
+    zend_create_closure(&callback, &zendFunction, NULL, NULL, NULL);
+
+    str_zval = zend_read_property(stringy_ce, &instance, ZEND_STRL("str"), 1, &rv);
+    ZVAL_STRING(&pattern, "/[\\d]+(.)?/u");
+    ZVAL_EMPTY_STRING(&replacement);
+    args_callback[0] = pattern;
+    args_callback[1] = callback;
+    args_callback[2] = *str_zval;
+
+    ZVAL_STRING(&func, "preg_replace_callback");
+    call_user_function(NULL, NULL, &func, return_value, 3, args_callback);
+#pragma endregion
+
+    zend_update_property(stringy_ce, &instance, ZEND_STRL("str"),  return_value);
+
+    RETURN_ZVAL(&instance, 1, 0);
+}
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -958,6 +1103,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, prepend, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, lines, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, split, arginfo_split, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, camelize, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, trim, arginfo_trim, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };

@@ -298,4 +298,10 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $chars = ($chars) ? preg_quote($chars) : '[:space:]';
         return $this->regexReplace("^[$chars]+", '');
     }
+
+    public function trimRight($chars = null)
+    {
+        $chars = ($chars) ? preg_quote($chars) : '[:space:]';
+        return $this->regexReplace("[$chars]+\$", '');
+    }
 }

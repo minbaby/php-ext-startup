@@ -318,4 +318,13 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         }
         return $this->substr($substrIndex, $endIndex - $substrIndex);
     }
+
+    public function contains($needle, $caseSensitive = true)
+    {
+        $encoding = $this->encoding;
+        if ($caseSensitive) {
+            return (\mb_strpos($this->str, $needle, 0, $encoding) !== false);
+        }
+        return (\mb_stripos($this->str, $needle, 0, $encoding) !== false);
+    }
 }

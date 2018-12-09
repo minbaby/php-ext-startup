@@ -1238,6 +1238,52 @@ ZEND_BEGIN_ARG_INFO(arginfo_between, 3)
     ZEND_ARG_INFO(0, offset)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, contains)
+{
+    zval *needle, *caseSensitive = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_ZVAL(needle)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(caseSensitive)
+    ZEND_PARSE_PARAMETERS_END();
+
+    convert_to_boolean(caseSensitive);
+
+    zval rv;
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+
+    zval z, func;
+    ZVAL_LONG(&z, 0);
+
+    if (Z_TYPE_P(caseSensitive) == IS_TRUE) {
+        zval args[] = {
+            *str,
+            *needle,
+            z,
+            *encoding,
+        };
+        ZVAL_STRING(&func, "mb_strpos");
+        call_user_function(NULL, NULL, &func, return_value, 4, args);
+        ZVAL_BOOL(return_value, Z_TYPE_P(return_value) != IS_FALSE);
+        return;
+    }
+    
+    zval args_i[] = {
+        *str,
+        *needle,
+        z,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_stripos");
+    call_user_function(NULL, NULL, &func, return_value, 4, args_i);
+    ZVAL_BOOL(return_value, Z_TYPE_P(return_value) != IS_FALSE);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_contains, 3)
+    ZEND_ARG_INFO(0, needle)
+    ZEND_ARG_INFO(0, caseSensitive)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -1271,6 +1317,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, trimLeft, arginfo_trimLeft, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, trimRight, arginfo_trimRight, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, between, arginfo_between, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, contains, arginfo_contains, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

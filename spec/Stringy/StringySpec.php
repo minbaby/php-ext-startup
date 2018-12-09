@@ -493,6 +493,39 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect((string)$stringy)->toBe($str);
             \expect((string)$result)->toBe($expected);
         }
+    });
 
+    it('test contains', function () {
+        $data = [
+            [true, 'Str contains foo bar', 'foo bar'],
+            [true, '12398!@(*%!@# @!%#*&^%',  ' @!%#*&^%'],
+            [true, 'Ο συγγραφέας είπε', 'συγγραφέας', 'UTF-8'],
+            [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', 'å´¥©', true, 'UTF-8'],
+            [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', 'å˚ ∆', true, 'UTF-8'],
+            [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', 'øœ¬', true, 'UTF-8'],
+            [false, 'Str contains foo bar', 'Foo bar'],
+            [false, 'Str contains foo bar', 'foobar'],
+            [false, 'Str contains foo bar', 'foo bar '],
+            [false, 'Ο συγγραφέας είπε', '  συγγραφέας ', true, 'UTF-8'],
+            [false, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', ' ßå˚', true, 'UTF-8'],
+            [true, 'Str contains foo bar', 'Foo bar', false],
+            [true, '12398!@(*%!@# @!%#*&^%',  ' @!%#*&^%', false],
+            [true, 'Ο συγγραφέας είπε', 'ΣΥΓΓΡΑΦΈΑΣ', false, 'UTF-8'],
+            [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', 'Å´¥©', false, 'UTF-8'],
+            [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', 'Å˚ ∆', false, 'UTF-8'],
+            [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', 'ØŒ¬', false, 'UTF-8'],
+            [false, 'Str contains foo bar', 'foobar', false],
+            [false, 'Str contains foo bar', 'foo bar ', false],
+            [false, 'Ο συγγραφέας είπε', '  συγγραφέας ', false, 'UTF-8'],
+            [false, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', ' ßÅ˚', false, 'UTF-8']
+        ];
+        foreach($data as $value) {
+            @list($expected, $haystack, $needle, $caseSensitive, $encoding) = $value;
+            $stringy = __('Stringy')::create($haystack, $encoding);
+            $result = $stringy->contains($needle, $caseSensitive === true || $caseSensitive === NULL); // 默认值是　ＮＵＬｌ，　这里需要特殊处理
+            \expect($result)->toBeA('bool');
+            \expect((string)$stringy)->toBe($haystack);
+            \expect((bool)$result)->toBe($expected);
+        }
     });
 });

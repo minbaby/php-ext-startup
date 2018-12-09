@@ -13,5 +13,6 @@
       "**/.hg": true,
       "**/CVS": true,
       "**/.DS_Store": true
-    }
+    },
+    "editor.minimap.enabled": false
 }

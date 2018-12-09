@@ -26,3 +26,5 @@ foreach($data as $value) {
 
     // var_dump((string)$result);
 }
+
+var_dump(mb_strpos('Str contains foo bar', 'Foo bar', 0, "UTF-8"));

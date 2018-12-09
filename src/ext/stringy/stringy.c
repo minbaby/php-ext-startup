@@ -1166,6 +1166,78 @@ ZEND_BEGIN_ARG_INFO(arginfo_trimRight, 1)
 ZEND_ARG_INFO(0, chars)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, between)
+{
+    zval *start_zval, *end_zval, *offset_zval = NULL;
+    ZEND_PARSE_PARAMETERS_START(2, 3)
+        Z_PARAM_ZVAL(start_zval)
+        Z_PARAM_ZVAL(end_zval)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(offset_zval)
+    ZEND_PARSE_PARAMETERS_END();
+
+    convert_to_string(start_zval);
+    convert_to_string(start_zval);
+    convert_to_long(offset_zval);
+
+    zval rv;
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+    
+    zval empty;
+    ZVAL_EMPTY_STRING(&empty);
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+    zend_call_method(&instance, stringy_ce, NULL, ZEND_STRL("__construct"), return_value, 2, &empty, encoding);
+
+    zval func, args[] = {
+        *start_zval,
+        *offset_zval,
+    };
+    ZVAL_STRING(&func, "indexOf");
+    call_user_function(NULL, getThis(), &func, return_value, 2, args);
+    if (Z_TYPE_P(return_value) == IS_FALSE) {
+        RETURN_ZVAL(&instance, 0, 1); 
+    }
+    size_t start_index_l = Z_LVAL_P(return_value);
+
+    zval args_strlen[] = {
+        *start_zval,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_strlen");
+    call_user_function(NULL, NULL, &func, return_value, 2, args_strlen);
+
+    size_t substrIndex = start_index_l + Z_LVAL_P(return_value);
+    zval substrIndex_zval;
+    ZVAL_LONG(&substrIndex_zval, substrIndex);
+
+    zval args_indexOf[] = {
+        *end_zval,
+        substrIndex_zval,
+    };
+    ZVAL_STRING(&func, "indexOf");
+    call_user_function(NULL, getThis(), &func, return_value, 2, args_indexOf);
+    if (Z_TYPE_P(return_value) == IS_FALSE) {
+        RETURN_ZVAL(&instance, 0, 1); 
+    }
+    size_t x_l = Z_LVAL_P(return_value) - substrIndex;
+    zval x_zval;
+    ZVAL_LONG(&x_zval, x_l);
+
+    zval args_substr[] = {
+        substrIndex_zval,
+        x_zval,
+    };
+    ZVAL_STRING(&func, "substr");
+    call_user_function(NULL, getThis(), &func, return_value, 2, args_substr);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_between, 3)
+    ZEND_ARG_INFO(0, start)
+    ZEND_ARG_INFO(0, end)
+    ZEND_ARG_INFO(0, offset)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -1198,6 +1270,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, trim, arginfo_trim, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, trimLeft, arginfo_trimLeft, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, trimRight, arginfo_trimRight, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, between, arginfo_between, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

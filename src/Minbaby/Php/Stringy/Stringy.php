@@ -304,4 +304,18 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $chars = ($chars) ? preg_quote($chars) : '[:space:]';
         return $this->regexReplace("[$chars]+\$", '');
     }
+
+    public function between($start, $end, $offset = 0)
+    {
+        $startIndex = $this->indexOf($start, $offset);
+        if ($startIndex === false) {
+            return static::create('', $this->encoding);
+        }
+        $substrIndex = $startIndex + \mb_strlen($start, $this->encoding);
+        $endIndex = $this->indexOf($end, $substrIndex);
+        if ($endIndex === false) {
+            return static::create('', $this->encoding);
+        }
+        return $this->substr($substrIndex, $endIndex - $substrIndex);
+    }
 }

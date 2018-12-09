@@ -465,4 +465,34 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect((string)$result)->toBe($expected);
         }
     });
+
+    it('test between', function () {
+        $data = [
+            ['', 'foo', '{', '}'],
+            ['', '{foo', '{', '}'],
+            ['foo', '{foo}', '{', '}'],
+            ['{foo', '{{foo}', '{', '}'],
+            ['', '{}foo}', '{', '}'],
+            ['foo', '}{foo}', '{', '}'],
+            ['foo', 'A description of {foo} goes here', '{', '}'],
+            ['bar', '{foo} and {bar}', '{', '}', 1],
+            ['', 'fòô', '{', '}', 0, 'UTF-8'],
+            ['', '{fòô', '{', '}', 0, 'UTF-8'],
+            ['fòô', '{fòô}', '{', '}', 0, 'UTF-8'],
+            ['{fòô', '{{fòô}', '{', '}', 0, 'UTF-8'],
+            ['', '{}fòô}', '{', '}', 0, 'UTF-8'],
+            ['fòô', '}{fòô}', '{', '}', 0, 'UTF-8'],
+            ['fòô', 'A description of {fòô} goes here', '{', '}', 0, 'UTF-8'],
+            ['bàř', '{fòô} and {bàř}', '{', '}', 1, 'UTF-8']
+        ];
+        foreach($data as $value) {
+            @list($expected, $str, $start, $end, $offset, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->between($start, $end, $offset);
+            \expect($result)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string)$stringy)->toBe($str);
+            \expect((string)$result)->toBe($expected);
+        }
+
+    });
 });

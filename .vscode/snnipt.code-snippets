@@ -62,7 +62,7 @@
             "scope": "c,h",
             "body": [
                 "ZEND_BEGIN_ARG_INFO($1, $2)",
-                "    ZEND_ARG_TYPE_$0",
+                "    ZEND_ARG_INFO(0, $0)",
                 "ZEND_END_ARG_INFO();"
             ],
             "description": "args"

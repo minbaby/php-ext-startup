@@ -327,4 +327,17 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         }
         return (\mb_stripos($this->str, $needle, 0, $encoding) !== false);
     }
+
+    public function containsAll($needles, $caseSensitive = true)
+    {
+        if (empty($needles)) {
+            return false;
+        }
+        foreach ($needles as $needle) {
+            if (!$this->contains($needle, $caseSensitive)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

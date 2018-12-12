@@ -576,4 +576,43 @@ namespace Minbaby\Startup\Spec\Stringy;
             }
         });
     });
+
+    it('test split', function () {
+
+        $data = [
+            [['foo,bar,baz'], 'foo,bar,baz', ''],
+            [['foo,bar,baz'], 'foo,bar,baz', '-'],
+            [['foo', 'bar', 'baz'], 'foo,bar,baz', ','],
+            [['foo', 'bar', 'baz'], 'foo,bar,baz', ',', null],
+            [['foo', 'bar', 'baz'], 'foo,bar,baz', ',', -1],
+            [[], 'foo,bar,baz', ',', 0],
+            [['foo'], 'foo,bar,baz', ',', 1],
+            [['foo', 'bar'], 'foo,bar,baz', ',', 2],
+            [['foo', 'bar', 'baz'], 'foo,bar,baz', ',', 3],
+            [['foo', 'bar', 'baz'], 'foo,bar,baz', ',', 10],
+            [['fòô,bàř,baz'], 'fòô,bàř,baz', '-', null, 'UTF-8'],
+            [['fòô', 'bàř', 'baz'], 'fòô,bàř,baz', ',', null, 'UTF-8'],
+            [['fòô', 'bàř', 'baz'], 'fòô,bàř,baz', ',', null, 'UTF-8'],
+            [['fòô', 'bàř', 'baz'], 'fòô,bàř,baz', ',', -1, 'UTF-8'],
+            [[], 'fòô,bàř,baz', ',', 0, 'UTF-8'],
+            [['fòô'], 'fòô,bàř,baz', ',', 1, 'UTF-8'],
+            [['fòô', 'bàř'], 'fòô,bàř,baz', ',', 2, 'UTF-8'],
+            [['fòô', 'bàř', 'baz'], 'fòô,bàř,baz', ',', 3, 'UTF-8'],
+            [['fòô', 'bàř', 'baz'], 'fòô,bàř,baz', ',', 10, 'UTF-8']
+        ];
+
+        foreach($data as $value) {
+            @list($expected, $str, $pattern, $limit, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->split($pattern, $limit);
+            \expect($result)->toBeA('array');
+            foreach ($result as $string) {
+                \expect($string)->toBeAnInstanceOf(__('Stringy'));
+            }
+            for ($i = 0; $i < count($expected); $i++) {
+                \expect((string)$result[$i])->toBe($expected[$i]);
+            }
+        }
+
+    });
 });

@@ -20,6 +20,9 @@ jobs:
             name: run test
             command: ./vendor/bin/kahlan
         - run:
+            name: upload coverage
+            command: bash <(curl -s https://codecov.io/bash)
+        - run:
             name: startup install
             command:  phpize && ./configure && make && sudo make install
         - run:

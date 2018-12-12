@@ -15,7 +15,7 @@ jobs:
         - checkout
         - run:
             name: composer install
-            command: composer install
+            command: composer install --no-interaction --prefer-source
         - run:
             name: run test
             command: ./vendor/bin/kahlan

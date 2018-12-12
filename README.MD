@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/minbaby/php-ext-startup/tree/master.svg?style=svg)](https://circleci.com/gh/minbaby/php-ext-startup/tree/master)
 [![xcxc](https://img.shields.io/github/license/minbaby/php-ext-startup.svg)](https://github.com/minbaby/php-ext-startup/blob/master/README.MD)
-
+[![codecov](https://codecov.io/gh/minbaby/php-ext-startup/branch/master/graph/badge.svg)](https://codecov.io/gh/minbaby/php-ext-startup)
 
 ## 基本思路
 

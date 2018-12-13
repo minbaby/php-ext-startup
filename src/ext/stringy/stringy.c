@@ -453,13 +453,8 @@ PHP_METHOD(Stringy, collapseWhiteSpace)
     ZVAL_STRING(&func, "regexReplace");
     call_user_function(NULL, getThis(), &func, &retval, 3, args);
 
-    // call trim()
-
     ZVAL_STRING(&func, "trim");
-    args_trim[0] = retval;
-    call_user_function(NULL, &retval, &func, return_value, 1, args_trim);
-
-    RETURN_ZVAL(&retval, 0, 1);
+    call_user_function(NULL, &retval, &func, return_value, 0, NULL);
 }
 
 PHP_METHOD(Stringy, regexReplace)
@@ -879,17 +874,27 @@ PHP_METHOD(Stringy, split)
         Z_PARAM_ZVAL(limit_zval)
     ZEND_PARSE_PARAMETERS_END();
 
+    zval pattern_zval, str_zval, rv;
+
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+    str_zval = *zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+
     zval arr;
     array_init(&arr);
 
     if (Z_TYPE_P(limit_zval) == IS_LONG && Z_LVAL_P(limit_zval) == 0) {
-        RETURN_ZVAL(&arr, 1, 0);
+        RETURN_ZVAL(&arr, 0, 1);
     }
     
     if (zend_string_equals(pattern, empty)) {
-        zval *this;
-        ZVAL_COPY(this, getThis());
-        add_index_zval(&arr, 0, this);
+        zval instance;
+        zval tmp;
+        ZVAL_EMPTY_STRING(&tmp);
+
+        object_init_ex(&instance, stringy_ce);
+        zend_call_method(&instance, stringy_ce, NULL, ZEND_STRL("__construct"), return_value, 2, &str_zval, encoding);
+
+        add_index_zval(&arr, 0, &instance);
         RETURN_ZVAL(&arr, 1, 0);
     }
 
@@ -898,9 +903,6 @@ PHP_METHOD(Stringy, split)
 
     zend_long limit = (limit_long > 0) ? limit_long += 1 : -1;
 
-    zval pattern_zval, str_zval, rv;
-
-    str_zval = *zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
     ZVAL_STR(&pattern_zval, pattern);
 
     ZVAL_LONG(limit_zval, limit);
@@ -913,8 +915,6 @@ PHP_METHOD(Stringy, split)
     call_user_function(NULL, NULL, &func, &arr, 3, args);
 
     zend_long array_len = zend_array_count(Z_ARRVAL(arr));
-
-    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
 
     zval *tmp;
     zend_long index;

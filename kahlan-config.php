@@ -6,4 +6,3 @@ $commandLine = $this->commandLine();
 // $commandLine->option('reporter', 'default', 'verbose');
 $commandLine->option('ff', 'default', 1);
 $commandLine->option('clover', 'default', 'coverage.xml');
-$commandLine->option('coverage', 'default', '4');

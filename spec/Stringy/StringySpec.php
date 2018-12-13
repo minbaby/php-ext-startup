@@ -578,7 +578,6 @@ namespace Minbaby\Startup\Spec\Stringy;
     });
 
     it('test split', function () {
-
         $data = [
             [['foo,bar,baz'], 'foo,bar,baz', ''],
             [['foo,bar,baz'], 'foo,bar,baz', '-'],
@@ -614,5 +613,33 @@ namespace Minbaby\Startup\Spec\Stringy;
             }
         }
 
+    });
+
+    it('test CollapseWhitespace', function () {
+        $data = [
+            ['foo bar', '  foo   bar  '],
+            ['test string', 'test string'],
+            ['Ο συγγραφέας', '   Ο     συγγραφέας  '],
+            ['123', ' 123 '],
+            ['', ' ', 'UTF-8'], // no-break space (U+00A0)
+            ['', '           ', 'UTF-8'], // spaces U+2000 to U+200A
+            ['', ' ', 'UTF-8'], // narrow no-break space (U+202F)
+            ['', ' ', 'UTF-8'], // medium mathematical space (U+205F)
+            ['', '　', 'UTF-8'], // ideographic space (U+3000)
+            ['1 2 3', '  1  2  3　　', 'UTF-8'],
+            ['', ' '],
+            ['', ''],
+        ];
+
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            {
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->collapseWhitespace();
+                \expect($result)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string)$stringy)->toBe($str);
+                \expect((string)$result)->toBe($expected);
+            }
+        }
     });
 });

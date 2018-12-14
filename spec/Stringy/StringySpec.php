@@ -642,4 +642,25 @@ namespace Minbaby\Startup\Spec\Stringy;
             }
         }
     });
+
+    it('test indexOf', function () {
+        $data = [
+            [6, 'foo & bar', 'bar'],
+            [6, 'foo & bar', 'bar', 0],
+            [false, 'foo & bar', 'baz'],
+            [false, 'foo & bar', 'baz', 0],
+            [0, 'foo & bar & foo', 'foo', 0],
+            [12, 'foo & bar & foo', 'foo', 5],
+            [6, 'fòô & bàř', 'bàř', 0, 'UTF-8'],
+            [false, 'fòô & bàř', 'baz', 0, 'UTF-8'],
+            [0, 'fòô & bàř & fòô', 'fòô', 0, 'UTF-8'],
+            [12, 'fòô & bàř & fòô', 'fòô', 5, 'UTF-8'],
+        ];
+
+        foreach($data as $value) {
+            @list($expected, $str, $subStr, $offset, $encoding) = $value;
+            $result = __('Stringy')::create($str, $encoding)->indexOf($subStr, $offset);
+            \expect($result)->toBe($expected);
+        }
+    });
 });

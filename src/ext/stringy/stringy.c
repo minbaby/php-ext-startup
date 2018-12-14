@@ -1279,7 +1279,7 @@ PHP_METHOD(Stringy, contains)
     call_user_function(NULL, NULL, &func, return_value, 4, args_i);
     ZVAL_BOOL(return_value, Z_TYPE_P(return_value) != IS_FALSE);
 }
-ZEND_BEGIN_ARG_INFO(arginfo_contains, 3)
+ZEND_BEGIN_ARG_INFO(arginfo_contains, 2)
     ZEND_ARG_INFO(0, needle)
     ZEND_ARG_INFO(0, caseSensitive)
 ZEND_END_ARG_INFO();
@@ -1318,7 +1318,47 @@ PHP_METHOD(Stringy, containsAll)
 
     RETURN_BOOL(1);
 }
-ZEND_BEGIN_ARG_INFO(arginfo_containsAll, 3)
+ZEND_BEGIN_ARG_INFO(arginfo_containsAll, 2)
+    ZEND_ARG_INFO(0, needle)
+    ZEND_ARG_INFO(0, caseSensitive)
+ZEND_END_ARG_INFO();
+
+
+PHP_METHOD(Stringy, containsAny)
+{
+    zval *needles = NULL, *caseSensitive = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_ZVAL(needles)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(caseSensitive)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+
+    convert_to_array(needles);
+
+    if (zend_array_count(Z_ARRVAL_P(needles)) == 0) {
+        RETURN_BOOL(0);
+    }
+
+    zval *needle;
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(needles), needle){
+        zval func, args[] = {
+            *needle,
+            *caseSensitive
+        };
+        ZVAL_STRING(&func, "contains");
+        call_user_function(NULL, getThis(), &func, return_value, 2, args);
+        if (Z_TYPE_P(return_value) == IS_TRUE) {
+            RETURN_BOOL(1);
+        }
+    }ZEND_HASH_FOREACH_END();
+
+    RETURN_BOOL(0);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_containsAny, 2)
     ZEND_ARG_INFO(0, needle)
     ZEND_ARG_INFO(0, caseSensitive)
 ZEND_END_ARG_INFO();
@@ -1358,6 +1398,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, between, arginfo_between, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, contains, arginfo_contains, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, containsAll, arginfo_containsAll, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, containsAny, arginfo_containsAny, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

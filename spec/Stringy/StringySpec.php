@@ -2,6 +2,9 @@
 
 namespace Minbaby\Startup\Spec\Stringy;
 
+use function Kahlan\context;
+
+
 \describe("Stringy Test", function () {
     \beforeAll(function () {
         _ns(NS_STRINGY);
@@ -495,7 +498,7 @@ namespace Minbaby\Startup\Spec\Stringy;
         }
     });
 
-    \context('', function(){
+    \context('contains', function(){
         $data = [
             [true, 'Str contains foo bar', 'foo bar'],
             [true, '12398!@(*%!@# @!%#*&^%',  ' @!%#*&^%'],
@@ -552,8 +555,39 @@ namespace Minbaby\Startup\Spec\Stringy;
                 [false, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', [' ßÅ˚', ' Å˚ '], false, 'UTF-8'],
         ]);
 
-        it('test contains', function () use ($data) {
+        $dataContainsAny = array_merge(
+            array_map(function ($array) {
+                $array[2] = [$array[2]];
+                return $array;
+            }, $data),
+            [
+                // No needles
+                [false, 'Str contains foo bar', []],
+                // Multiple needles
+                [true, 'Str contains foo bar', ['foo', 'bar']],
+                [true, '12398!@(*%!@# @!%#*&^%', [' @!%#*', '&^%']],
+                [true, 'Ο συγγραφέας είπε', ['συγγρ', 'αφέας'], 'UTF-8'],
+                [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', ['å´¥', '©'], true, 'UTF-8'],
+                [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', ['å˚ ', '∆'], true, 'UTF-8'],
+                [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', ['øœ', '¬'], true, 'UTF-8'],
+                [false, 'Str contains foo bar', ['Foo', 'Bar']],
+                [false, 'Str contains foo bar', ['foobar', 'bar ']],
+                [false, 'Str contains foo bar', ['foo bar ', '  foo']],
+                [false, 'Ο συγγραφέας είπε', ['  συγγραφέας ', '  συγγραφ '], true, 'UTF-8'],
+                [false, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', [' ßå˚', ' ß '], true, 'UTF-8'],
+                [true, 'Str contains foo bar', ['Foo bar', 'bar'], false],
+                [true, '12398!@(*%!@# @!%#*&^%', [' @!%#*&^%', '*&^%'], false],
+                [true, 'Ο συγγραφέας είπε', ['ΣΥΓΓΡΑΦΈΑΣ', 'ΑΦΈΑ'], false, 'UTF-8'],
+                [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', ['Å´¥©', '¥©'], false, 'UTF-8'],
+                [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', ['Å˚ ∆', ' ∆'], false, 'UTF-8'],
+                [true, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', ['ØŒ¬', 'Œ'], false, 'UTF-8'],
+                [false, 'Str contains foo bar', ['foobar', 'none'], false],
+                [false, 'Str contains foo bar', ['foo bar ', ' ba '], false],
+                [false, 'Ο συγγραφέας είπε', ['  συγγραφέας ', ' ραφέ '], false, 'UTF-8'],
+                [false, 'å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', [' ßÅ˚', ' Å˚ '], false, 'UTF-8'],
+            ]);
 
+        it('test contains', function () use ($data) {
             foreach($data as $value) {
                 @list($expected, $haystack, $needle, $caseSensitive, $encoding) = $value;
                 $stringy = __('Stringy')::create($haystack, $encoding);
@@ -575,6 +609,18 @@ namespace Minbaby\Startup\Spec\Stringy;
                 \expect((bool)$result)->toBe($expected);
             }
         });
+
+        it('test containsAny', function () use ($dataContainsAny) {
+            foreach($dataContainsAny as $value) {
+                @list($expected, $haystack, $needles, $caseSensitive, $encoding) = $value;
+                $stringy = __('Stringy')::create($haystack, $encoding);
+                
+                $result = $stringy->containsAny($needles, $caseSensitive === true || $caseSensitive === NULL);
+                \expect($result)->toBeA('bool');
+                \expect((string)$stringy)->toBe($haystack);
+                \expect((bool)$result)->toBe($expected);
+            }
+        }); 
     });
 
     it('test split', function () {
@@ -643,20 +689,20 @@ namespace Minbaby\Startup\Spec\Stringy;
         }
     });
 
-    it('test indexOf', function () {
-        $data = [
-            [6, 'foo & bar', 'bar'],
-            [6, 'foo & bar', 'bar', 0],
-            [false, 'foo & bar', 'baz'],
-            [false, 'foo & bar', 'baz', 0],
-            [0, 'foo & bar & foo', 'foo', 0],
-            [12, 'foo & bar & foo', 'foo', 5],
-            [6, 'fòô & bàř', 'bàř', 0, 'UTF-8'],
-            [false, 'fòô & bàř', 'baz', 0, 'UTF-8'],
-            [0, 'fòô & bàř & fòô', 'fòô', 0, 'UTF-8'],
-            [12, 'fòô & bàř & fòô', 'fòô', 5, 'UTF-8'],
-        ];
+    $data = [
+        [6, 'foo & bar', 'bar'],
+        [6, 'foo & bar', 'bar', 0],
+        [false, 'foo & bar', 'baz'],
+        [false, 'foo & bar', 'baz', 0],
+        [0, 'foo & bar & foo', 'foo', 0],
+        [12, 'foo & bar & foo', 'foo', 5],
+        [6, 'fòô & bàř', 'bàř', 0, 'UTF-8'],
+        [false, 'fòô & bàř', 'baz', 0, 'UTF-8'],
+        [0, 'fòô & bàř & fòô', 'fòô', 0, 'UTF-8'],
+        [12, 'fòô & bàř & fòô', 'fòô', 5, 'UTF-8'],
+    ];
 
+    it('test indexOf', function () use ($data) {
         foreach($data as $value) {
             @list($expected, $str, $subStr, $offset, $encoding) = $value;
             $result = __('Stringy')::create($str, $encoding)->indexOf($subStr, $offset);

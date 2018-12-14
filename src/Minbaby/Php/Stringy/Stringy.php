@@ -340,4 +340,17 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         }
         return true;
     }
+
+    public function containsAny($needles, $caseSensitive = true)
+    {
+        if (empty($needles)) {
+            return false;
+        }
+        foreach ($needles as $needle) {
+            if ($this->contains($needle, $caseSensitive)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

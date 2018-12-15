@@ -739,4 +739,33 @@ use function Kahlan\context;
             \expect((string)$stringy)->toBe($str);
         }
     });
+
+    it('test delimit', function () {
+        $data = [
+            ['test*case', 'testCase', '*'],
+            ['test&case', 'Test-Case', '&'],
+            ['test#case', 'test case', '#'],
+            ['test**case', 'test -case', '**'],
+            ['~!~test~!~case', '-test - case', '~!~'],
+            ['test*case', 'test_case', '*'],
+            ['test%c%test', '  test c test', '%'],
+            ['test+u+case', 'TestUCase', '+'],
+            ['test=c=c=test', 'TestCCTest', '='],
+            ['string#>with1number', 'string_with1number', '#>'],
+            ['1test2case', '1test2case', '*'],
+            ['test ύα σase', 'test Σase', ' ύα ', 'UTF-8',],
+            ['στανιλαcase', 'Στανιλ case', 'α', 'UTF-8',],
+            ['σashΘcase', 'Σash  Case', 'Θ', 'UTF-8']
+        ];
+    
+        foreach($data as $value) {
+            @list($expected, $str, $delimiter, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->delimit($delimiter);
+
+            \expect($result)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string)$stringy)->toBe($str);
+            \expect((string)$result)->toBe($expected);
+        }
+    });
 });

@@ -587,13 +587,18 @@ PHP_METHOD(Stringy, eregReplace)
     Z_PARAM_ZVAL(option)
     ZEND_PARSE_PARAMETERS_END();
 
+    zval func;
+    ZVAL_STRING(&func, "mb_ereg_replace");
+
+    if (option == NULL) {
+        option = malloc(sizeof(zval));
+        ZVAL_EMPTY_STRING(option);
+    }
+
     convert_to_string(replace);
     convert_to_string(pattern);
     convert_to_string(string);
     convert_to_string(option);
-
-    zval func;
-    ZVAL_STRING(&func, "mb_ereg_replace");
 
     zval args[] = {
         *pattern,
@@ -1415,6 +1420,56 @@ ZEND_BEGIN_ARG_INFO(arginfo_countSubstr, 2)
     ZEND_ARG_INFO(0, caseSensitive)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, delimit)
+{
+    zval *delimiter = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(delimiter)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv, ret;
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval func;
+    ZVAL_STRING(&func, "trim");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+
+    zval pattern, replacement;
+    ZVAL_STRING(&pattern, "\\B([A-Z])");
+    ZVAL_STRING(&replacement, "-\\1");
+    zval args[] = {
+        pattern,
+        replacement,
+        *return_value
+    };
+    ZVAL_STRING(&func, "eregReplace");
+    call_user_function(NULL, getThis(), &func, &ret, 3, args);
+
+    zval args_strtolower[] = {
+        ret,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_strtolower");
+    call_user_function(NULL, NULL, &func, return_value, 2, args_strtolower);
+
+    ZVAL_STRING(&pattern, "[-_\\s]+");
+    zval args_eregReplace[] = {
+        pattern,
+        *delimiter,
+        *return_value
+    };
+    ZVAL_STRING(&func, "eregReplace");
+    call_user_function(NULL, getThis(), &func, &ret, 3, args_eregReplace);
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+    zend_call_method(&instance, stringy_ce, NULL, ZEND_STRL("__construct"), return_value, 2, &ret, encoding);
+    RETURN_ZVAL(&instance, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_delimit, 0)
+    ZEND_ARG_INFO(0, delimiter)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -1452,6 +1507,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, containsAll, arginfo_containsAll, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, containsAny, arginfo_containsAny, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, countSubstr, arginfo_countSubstr, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, delimit, arginfo_delimit, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

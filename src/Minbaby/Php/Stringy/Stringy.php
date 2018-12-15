@@ -363,4 +363,15 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $substring = \mb_strtoupper($substring, $this->encoding);
         return \mb_substr_count($str, $substring, $this->encoding);
     }
+
+    public function delimit($delimiter)
+    {
+        $regexEncoding = $this->regexEncoding();
+        $this->regexEncoding($this->encoding);
+        $str = $this->eregReplace('\B([A-Z])', '-\1', $this->trim());
+        $str = \mb_strtolower($str, $this->encoding);
+        $str = $this->eregReplace('[-_\s]+', $delimiter, $str);
+        $this->regexEncoding($regexEncoding);
+        return static::create($str, $this->encoding);
+    }
 }

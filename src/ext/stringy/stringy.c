@@ -1363,6 +1363,58 @@ ZEND_BEGIN_ARG_INFO(arginfo_containsAny, 2)
     ZEND_ARG_INFO(0, caseSensitive)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, countSubstr)
+{
+    zval *substring = NULL, *caseSensitive = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_ZVAL(substring)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(caseSensitive)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+
+    if (Z_TYPE_P(caseSensitive) == IS_TRUE) {
+        zval func, args[] = {
+            *str,
+            *substring,
+            *encoding,
+        };
+        ZVAL_STRING(&func, "mb_substr_count");
+        call_user_function(NULL, NULL, &func, return_value, 3, args);
+        return;
+    }
+    
+    zval str_zval, substring_zval;
+    zval func, args[] = {
+        *str,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_strtoupper");
+    call_user_function(NULL, NULL, &func, &str_zval, 2, args);
+
+    zval args_substring[] = {
+        *substring,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_strtoupper");
+    call_user_function(NULL, NULL, &func, &substring_zval, 2, args_substring);
+
+    zval args_count[] = {
+        str_zval,
+        substring_zval,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_substr_count");
+    call_user_function(NULL, NULL, &func, return_value, 3, args_count);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_countSubstr, 2)
+    ZEND_ARG_INFO(0, substring)
+    ZEND_ARG_INFO(0, caseSensitive)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -1399,6 +1451,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, contains, arginfo_contains, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, containsAll, arginfo_containsAll, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, containsAny, arginfo_containsAny, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, countSubstr, arginfo_countSubstr, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

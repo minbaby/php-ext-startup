@@ -353,4 +353,14 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         }
         return false;
     }
+
+    public function countSubstr($substring, $caseSensitive = true)
+    {
+        if ($caseSensitive) {
+            return \mb_substr_count($this->str, $substring, $this->encoding);
+        }
+        $str = \mb_strtoupper($this->str, $this->encoding);
+        $substring = \mb_strtoupper($substring, $this->encoding);
+        return \mb_substr_count($str, $substring, $this->encoding);
+    }
 }

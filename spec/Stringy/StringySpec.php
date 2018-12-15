@@ -709,4 +709,34 @@ use function Kahlan\context;
             \expect($result)->toBe($expected);
         }
     });
+
+    it('test countSubStr', function () {
+        $data = [
+            [0, '', 'foo'],
+            [0, 'foo', 'bar'],
+            [1, 'foo bar', 'foo'],
+            [2, 'foo bar', 'o'],
+            [0, '', 'fòô', true, 'UTF-8'],
+            [0, 'fòô', 'bàř', true, 'UTF-8'],
+            [1, 'fòô bàř', 'fòô', true, 'UTF-8'],
+            [2, 'fôòô bàř', 'ô', true, 'UTF-8'],
+            [0, 'fÔÒÔ bàř', 'ô', true, 'UTF-8'],
+            [0, 'foo', 'BAR', false],
+            [1, 'foo bar', 'FOo', false],
+            [2, 'foo bar', 'O', false],
+            [1, 'fòô bàř', 'fÒÔ', false, 'UTF-8'],
+            [2, 'fôòô bàř', 'Ô', false, 'UTF-8'],
+            [2, 'συγγραφέας', 'Σ', false, 'UTF-8']
+        ];
+
+        foreach($data as $value)
+        {
+            @list($expected, $str, $substring, $caseSensitive, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->countSubstr($substring, $caseSensitive === true || $caseSensitive === NULL);
+            \expect($result)->toBeA('int');
+            \expect($result)->toBe($expected);
+            \expect((string)$stringy)->toBe($str);
+        }
+    });
 });

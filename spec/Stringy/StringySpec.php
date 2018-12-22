@@ -841,6 +841,7 @@ use function Kahlan\context;
             [false, 'FOO bars', ['foo', 'foo BARS']],
             [false, 'FÒÔ bàřs', ['fòô', 'fòô bàřs'], true, 'UTF-8'],
             [false, 'fòô bàřs', ['fòô', 'fòô BÀŘS'], true, 'UTF-8'],
+            [false, 'fòô bàřs', [], true, 'UTF-8'],
         ];
 
         foreach($data as $value) {

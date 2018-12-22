@@ -768,4 +768,38 @@ use function Kahlan\context;
             \expect((string)$result)->toBe($expected);
         }
     });
+
+    it('test dasherize', function () {
+        $data = [
+            ['test-case', 'testCase'],
+            ['test-case', 'Test-Case'],
+            ['test-case', 'test case'],
+            ['-test-case', '-test -case'],
+            ['test-case', 'test - case'],
+            ['test-case', 'test_case'],
+            ['test-c-test', 'test c test'],
+            ['test-d-case', 'TestDCase'],
+            ['test-c-c-test', 'TestCCTest'],
+            ['string-with1number', 'string_with1number'],
+            ['string-with-2-2-numbers', 'String-with_2_2 numbers'],
+            ['1test2case', '1test2case'],
+            ['data-rate', 'dataRate'],
+            ['car-speed', 'CarSpeed'],
+            ['yes-we-can', 'yesWeCan'],
+            ['background-color', 'backgroundColor'],
+            ['dash-σase', 'dash Σase', 'UTF-8'],
+            ['στανιλ-case', 'Στανιλ case', 'UTF-8'],
+            ['σash-case', 'Σash  Case', 'UTF-8']
+        ];
+
+        foreach($data as $value)
+        {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->dasherize();
+            \expect($result)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string)$stringy)->toBe($str);
+            \expect((string)$result)->toBe($expected);
+        }
+    });
 });

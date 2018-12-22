@@ -374,4 +374,9 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $this->regexEncoding($regexEncoding);
         return static::create($str, $this->encoding);
     }
+
+    public function dasherize()
+    {
+        return $this->delimit('-');
+    }
 }

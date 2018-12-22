@@ -802,4 +802,29 @@ use function Kahlan\context;
             \expect((string)$result)->toBe($expected);
         }
     });
+    
+    it('test endsWith', function () {
+        $data = [
+            [true, 'foo bars', 'o bars'],
+            [true, 'FOO bars', 'o bars', false],
+            [true, 'FOO bars', 'o BARs', false],
+            [true, 'FÒÔ bàřs', 'ô bàřs', false, 'UTF-8'],
+            [true, 'fòô bàřs', 'ô BÀŘs', false, 'UTF-8'],
+            [false, 'foo bar', 'foo'],
+            [false, 'foo bar', 'foo bars'],
+            [false, 'FOO bar', 'foo bars'],
+            [false, 'FOO bars', 'foo BARS'],
+            [false, 'FÒÔ bàřs', 'fòô bàřs', true, 'UTF-8'],
+            [false, 'fòô bàřs', 'fòô BÀŘS', true, 'UTF-8'],
+        ];
+        foreach($data as $value) {
+            @list($expected, $str, $substring, $caseSensitive, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->endsWith($substring, $caseSensitive === true || $caseSensitive === NULL);
+
+            \expect($result)->toBeA('boolean');
+            \expect((string) $stringy)->toBe($str);
+            \expect($result)->toBe($expected);
+        }
+    });
 });

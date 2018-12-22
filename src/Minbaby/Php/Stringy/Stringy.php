@@ -379,4 +379,28 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
     {
         return $this->delimit('-');
     }
+
+    // protected function supportsEncoding()
+    // {
+    //     $supported = ['UTF-8' => true, 'ASCII' => true];
+    //     if (isset($supported[$this->encoding])) {
+    //         return true;
+    //     } else {
+    //         throw new \RuntimeException('Stringy method requires the ' .
+    //             'mbstring module for encodings other than ASCII and UTF-8. ' .
+    //             'Encoding used: ' . $this->encoding);
+    //     }
+    // }
+
+    public function endsWith($substring, $caseSensitive = true)
+    {
+        $substringLength = \mb_strlen($substring, $this->encoding);
+        $strLength = $this->length();
+        $endOfStr = \mb_substr($this->str, $strLength - $substringLength, $substringLength, $this->encoding);
+        if (!$caseSensitive) {
+            $substring = \mb_strtolower($substring, $this->encoding);
+            $endOfStr = \mb_strtolower($endOfStr, $this->encoding);
+        }
+        return (string) $substring === $endOfStr;
+    }
 }

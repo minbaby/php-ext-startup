@@ -1553,6 +1553,42 @@ ZEND_BEGIN_ARG_INFO(arginfo_endsWith, 0)
     ZEND_ARG_INFO(0, caseSensitive)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, endsWithAny)
+{
+    zval *substring, *caseSensitive = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_ZVAL(substring)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(caseSensitive)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (caseSensitive == NULL) {
+        caseSensitive = malloc(sizeof(zval));
+        ZVAL_BOOL(caseSensitive, IS_TRUE);
+    }
+
+    convert_to_array(substring);
+
+    zval *val;
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(substring), val) {
+        zval func, args[] = {
+            *val,
+            *caseSensitive,
+        };
+        ZVAL_STRING(&func, "endsWith");
+        call_user_function(NULL, getThis(), &func, return_value, 2, args);
+        if (Z_TYPE_P(return_value) == IS_TRUE) {
+            RETURN_BOOL(1);
+        }
+    } ZEND_HASH_FOREACH_END();
+    
+    RETURN_BOOL(0);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_endsWithAny, 0)
+    ZEND_ARG_INFO(0, substring)
+    ZEND_ARG_INFO(0, caseSensitive)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -1593,6 +1629,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, delimit, arginfo_delimit, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, dasherize, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, endsWith, arginfo_endsWith, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, endsWithAny, arginfo_endsWithAny, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

@@ -403,4 +403,17 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         }
         return (string) $substring === $endOfStr;
     }
+
+    public function endsWithAny($substrings, $caseSensitive = true)
+    {
+        if (empty($substrings)) {
+            return false;
+        }
+        foreach ($substrings as $substring) {
+            if ($this->endsWith($substring, $caseSensitive)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

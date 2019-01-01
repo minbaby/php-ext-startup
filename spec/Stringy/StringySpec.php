@@ -855,4 +855,30 @@ use function Kahlan\context;
         }
 
     });
+
+    it('test startWith', function () {
+        $data = [
+            [true, 'foo bars', 'foo bar'],
+            [true, 'FOO bars', 'foo bar', false],
+            [true, 'FOO bars', 'foo BAR', false],
+            [true, 'FÒÔ bàřs', 'fòô bàř', false, 'UTF-8'],
+            [true, 'fòô bàřs', 'fòô BÀŘ', false, 'UTF-8'],
+            [false, 'foo bar', 'bar'],
+            [false, 'foo bar', 'foo bars'],
+            [false, 'FOO bar', 'foo bars'],
+            [false, 'FOO bars', 'foo BAR'],
+            [false, 'FÒÔ bàřs', 'fòô bàř', true, 'UTF-8'],
+            [false, 'fòô bàřs', 'fòô BÀŘ', true, 'UTF-8'],
+            ];
+        foreach($data as $value){
+            @list($expected, $str, $substring, $caseSensitive, $encoding) = $value;
+            $stringy = _('Stringy')::create($str, $encoding);
+            $result = $stringy->startsWith($substring, $caseSensitive === true || $caseSensitive === NULL);
+
+            \expect($result)->toBeA('boolean');
+            \expect((string) $stringy)->toBe($str);
+            \expect($result)->toBe($expected);
+        }
+
+    });
 });

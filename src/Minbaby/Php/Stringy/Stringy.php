@@ -416,4 +416,15 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         }
         return false;
     }
+
+    public function startsWith($substring, $caseSensitive = true)
+    {
+        $substringLength = \mb_strlen($substring, $this->encoding);
+        $startOfStr = \mb_substr($this->str, 0, $substringLength, $this->encoding);
+        if (!$caseSensitive) {
+            $substring = \mb_strtolower($substring, $this->encoding);
+            $startOfStr = \mb_strtolower($startOfStr, $this->encoding);
+        }
+        return (string) $substring === $startOfStr;
+    }
 }

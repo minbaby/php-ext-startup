@@ -1515,7 +1515,7 @@ PHP_METHOD(Stringy, endsWith)
     size_t str_length = Z_LVAL(str_len);
     size_t substring_length = Z_LVAL(substring_len);
     ZVAL_LONG(&start, str_length - substring_length);
-    zval endOfStr;
+    zval startOfStr;
     //\mb_substr($this->str, $strLength - $substringLength, $substringLength, $this->encoding);
     zval args_substr[] = {
         *str,
@@ -1524,7 +1524,7 @@ PHP_METHOD(Stringy, endsWith)
         *encoding,
     };
     ZVAL_STRING(&func, "mb_substr");
-    call_user_function(NULL, NULL, &func, &endOfStr, 4, args_substr);
+    call_user_function(NULL, NULL, &func, &startOfStr, 4, args_substr);
 
     if (Z_TYPE_P(caseSensitive) == IS_FALSE) {
         zval args_tolower_substring[] = {
@@ -1534,15 +1534,15 @@ PHP_METHOD(Stringy, endsWith)
         ZVAL_STRING(&func, "mb_strtolower");
         call_user_function(NULL, NULL, &func, substring, 2, args_tolower_substring);
 
-        zval args_tolower_endOfStr[] = {
-            endOfStr,
+        zval args_tolower_startOfStr[] = {
+            startOfStr,
             *encoding,
         };
         ZVAL_STRING(&func, "mb_strtolower");
-        call_user_function(NULL, NULL, &func, &endOfStr, 2, args_tolower_endOfStr);
+        call_user_function(NULL, NULL, &func, &startOfStr, 2, args_tolower_startOfStr);
     }
 
-    if (zend_string_equals(Z_STR_P(substring), Z_STR(endOfStr))) {
+    if (zend_string_equals(Z_STR_P(substring), Z_STR(startOfStr))) {
         RETURN_BOOL(1);
     }
 
@@ -1589,6 +1589,71 @@ ZEND_BEGIN_ARG_INFO(arginfo_endsWithAny, 0)
     ZEND_ARG_INFO(0, caseSensitive)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, startsWith)
+{
+    zval *substring, *caseSensitive = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_ZVAL(substring)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(caseSensitive)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (caseSensitive == NULL) {
+        caseSensitive = malloc(sizeof(zval));
+        ZVAL_BOOL(caseSensitive, IS_TRUE);
+    }
+
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval substring_len;
+    zval func, args[] = {
+        *substring,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_strlen");
+    call_user_function(NULL, NULL, &func, &substring_len, 2, args);
+
+    zval start;
+    ZVAL_LONG(&start, 0);
+    zval startOfStr;
+    zval args_substr[] = {
+        *str,
+        start,
+        substring_len,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_substr");
+    call_user_function(NULL, NULL, &func, &startOfStr, 4, args_substr);
+
+    if (Z_TYPE_P(caseSensitive) == IS_FALSE) {
+        zval args_tolower_substring[] = {
+            *substring,
+            *encoding,
+        };
+        ZVAL_STRING(&func, "mb_strtolower");
+        call_user_function(NULL, NULL, &func, substring, 2, args_tolower_substring);
+
+        zval args_tolower_startOfStr[] = {
+            startOfStr,
+            *encoding,
+        };
+        ZVAL_STRING(&func, "mb_strtolower");
+        call_user_function(NULL, NULL, &func, &startOfStr, 2, args_tolower_startOfStr);
+    }
+
+    if (zend_string_equals(Z_STR_P(substring), Z_STR(startOfStr))) {
+        RETURN_BOOL(1);
+    }
+
+    RETURN_BOOL(0);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_startsWith, 0)
+    ZEND_ARG_INFO(0, substring)
+    ZEND_ARG_INFO(0, caseSensitive)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -1629,6 +1694,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, delimit, arginfo_delimit, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, dasherize, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, endsWith, arginfo_endsWith, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, startsWith, arginfo_startsWith, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, endsWithAny, arginfo_endsWithAny, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };

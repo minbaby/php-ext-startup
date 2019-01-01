@@ -417,6 +417,15 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         return false;
     }
 
+    public function ensureLeft($substring)
+    {
+        $stringy = static::create($this->str, $this->encoding);
+        if (!$stringy->startsWith($substring)) {
+            $stringy->str = $substring . $stringy->str;
+        }
+        return $stringy;
+    }
+
     public function startsWith($substring, $caseSensitive = true)
     {
         $substringLength = \mb_strlen($substring, $this->encoding);

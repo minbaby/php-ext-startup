@@ -856,6 +856,31 @@ use function Kahlan\context;
 
     });
 
+    it('test ensureLeft', function () {
+        $data = [
+            ['foobar', 'foobar', 'f'],
+            ['foobar', 'foobar', 'foo'],
+            ['foo/foobar', 'foobar', 'foo/'],
+            ['http://foobar', 'foobar', 'http://'],
+            ['http://foobar', 'http://foobar', 'http://'],
+            ['fòôbàř', 'fòôbàř', 'f', 'UTF-8'],
+            ['fòôbàř', 'fòôbàř', 'fòô', 'UTF-8'],
+            ['fòô/fòôbàř', 'fòôbàř', 'fòô/', 'UTF-8'],
+            ['http://fòôbàř', 'fòôbàř', 'http://', 'UTF-8'],
+            ['http://fòôbàř', 'http://fòôbàř', 'http://', 'UTF-8'],
+        ];
+        
+        foreach($data as $value){
+            @list($expected, $str, $substring, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->ensureLeft($substring);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+        }
+    });
+
     it('test startWith', function () {
         $data = [
             [true, 'foo bars', 'foo bar'],

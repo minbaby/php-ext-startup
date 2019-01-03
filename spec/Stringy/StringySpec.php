@@ -930,4 +930,31 @@ use function Kahlan\context;
             \expect((string) $result)->toBe($expected);
         }
     });
+
+    it('test first', function () {
+        $data = [
+            ['', 'foo bar', -5],
+            ['', 'foo bar', 0],
+            ['f', 'foo bar', 1],
+            ['foo', 'foo bar', 3],
+            ['foo bar', 'foo bar', 7],
+            ['foo bar', 'foo bar', 8],
+            ['', 'fòô bàř', -5, 'UTF-8'],
+            ['', 'fòô bàř', 0, 'UTF-8'],
+            ['f', 'fòô bàř', 1, 'UTF-8'],
+            ['fòô', 'fòô bàř', 3, 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', 7, 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', 8, 'UTF-8'],
+        ];
+
+        foreach($data as $value) {
+            @list($expected, $str, $n, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->first($n);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+        }
+    });
 });

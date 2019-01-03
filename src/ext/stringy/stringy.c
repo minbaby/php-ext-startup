@@ -1732,6 +1732,50 @@ ZEND_BEGIN_ARG_INFO(arginfo_ensureRight, 0)
     ZEND_ARG_INFO(0, substring)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, first)
+{
+    zval *n = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(n)
+    ZEND_PARSE_PARAMETERS_END();
+    
+    if (n == NULL) {
+        ZVAL_LONG(n, 0);
+    }
+
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+    zval func, args[] = {
+        *str,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &instance, &func, return_value, 2, args);
+
+    zend_long len = Z_LVAL_P(n);
+    if (len < 0) {
+        zend_update_property_string(stringy_ce, &instance, ZEND_STRL("str"), "");
+        RETURN_ZVAL(&instance, 0, 1);
+    }
+
+    zval start;
+    ZVAL_LONG(&start, 0);
+
+    zval args_substr[] = {
+        start,
+        *n,
+    };
+    ZVAL_STRING(&func, "substr");
+    call_user_function(NULL, &instance, &func, return_value, 2, args_substr);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_first, 0)
+    ZEND_ARG_INFO(0, substring)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -1776,6 +1820,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, endsWithAny, arginfo_endsWithAny, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, ensureLeft, arginfo_ensureLeft, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, ensureRight, arginfo_ensureRight, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, first, arginfo_first, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

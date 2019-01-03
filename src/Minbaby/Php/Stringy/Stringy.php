@@ -445,4 +445,14 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         }
         return $stringy;
     }
+
+    public function first($n)
+    {
+        $stringy = static::create($this->str, $this->encoding);
+        if ($n < 0) {
+            $stringy->str = '';
+            return $stringy;
+        }
+        return $stringy->substr(0, $n);
+    }
 }

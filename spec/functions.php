@@ -13,12 +13,20 @@ function _ns(string $ns = '\\')
     $________['ns'] = $ns;
 }
 
+/**
+ * @var string $str　类名
+ * @return object 类的实例化对象
+ */
 function _(string $str, array $args = [])
 {
     $class = __($str);
     return new $class(...$args);
 }
 
+/**
+ * @var string $str 类名
+ * @return string 带命名空间的完整类名
+ */
 function __(string $str): string
 {
     global $________;

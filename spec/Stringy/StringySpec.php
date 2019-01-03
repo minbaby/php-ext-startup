@@ -904,6 +904,30 @@ use function Kahlan\context;
             \expect((string) $stringy)->toBe($str);
             \expect($result)->toBe($expected);
         }
+    });
 
+    it('test ensureRight', function () {
+        $data = [
+            ['foobar', 'foobar', 'r'],
+            ['foobar', 'foobar', 'bar'],
+            ['foobar/bar', 'foobar', '/bar'],
+            ['foobar.com/', 'foobar', '.com/'],
+            ['foobar.com/', 'foobar.com/', '.com/'],
+            ['fòôbàř', 'fòôbàř', 'ř', 'UTF-8'],
+            ['fòôbàř', 'fòôbàř', 'bàř', 'UTF-8'],
+            ['fòôbàř/bàř', 'fòôbàř', '/bàř', 'UTF-8'],
+            ['fòôbàř.com/', 'fòôbàř', '.com/', 'UTF-8'],
+            ['fòôbàř.com/', 'fòôbàř.com/', '.com/', 'UTF-8'],
+        ];
+
+        foreach($data as $value) {
+            @list($expected, $str, $substring, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->ensureRight($substring);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+        }
     });
 });

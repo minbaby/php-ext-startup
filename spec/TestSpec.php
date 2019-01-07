@@ -5,11 +5,11 @@ namespace Minbbaby\Ext\Spec;
 use Minbaby\Ext\Test;
 
 describe('Test', function () {
-    it('测试静态方法调用，且输出　hello world!', function() {
+    it('测试静态方法调用，且输出　hello world!', function () {
         expect([Test::class, 'helloWorld'])->toEcho('hello world!');
     });
 
-    it('测试实例化 hello world!!', function() {
+    it('测试实例化 hello world!!', function () {
         $instance = new Test();
         expect([$instance, 'echoHelloWorld'])->toEcho('hello world!!');
     });
@@ -31,13 +31,13 @@ describe('Test', function () {
         $instance = new Test();
         $params = [
             'a21212' => [1, 2, 3, 4],
-            '😊☺😀' => ['abab', 'cdcd', 'efef'],
-            'daba' => [],
+            '😊☺😀'    => ['abab', 'cdcd', 'efef'],
+            'daba'   => [],
         ];
 
-        foreach($params as $method => $args) {
-            $ret = \call_user_func_array([$instance, $method], $args);;
-            \expect($ret)->toBe(sprintf('method:%s,count:%d,args:%s', $method, count($args), \implode("-", $args)));
+        foreach ($params as $method => $args) {
+            $ret = \call_user_func_array([$instance, $method], $args);
+            \expect($ret)->toBe(sprintf('method:%s,count:%d,args:%s', $method, count($args), \implode('-', $args)));
         }
     });
 });

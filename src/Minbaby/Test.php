@@ -1,4 +1,5 @@
 <?php
+
 namespace Minbaby\Ext;
 
 class Test
@@ -21,6 +22,6 @@ class Test
 
     public function __call($method, $args)
     {
-        return sprintf("method:%s,count:%s,args:%s", $method, count($args), \implode("-", $args));
+        return sprintf('method:%s,count:%s,args:%s', $method, count($args), \implode('-', $args));
     }
 }

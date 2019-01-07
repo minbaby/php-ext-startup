@@ -1,4 +1,5 @@
 <?php
+
 namespace Minbaby\Startup\Spec;
 
 describe('Test', function () {
@@ -6,11 +7,11 @@ describe('Test', function () {
         _ns(NS_DEFAULT);
     });
 
-    it('测试静态方法调用，且输出　hello world!', function() {
+    it('测试静态方法调用，且输出　hello world!', function () {
         expect([_('Test'), 'helloWorld'])->toEcho('hello world!');
     });
 
-    it('测试实例化 hello world!!', function() {
+    it('测试实例化 hello world!!', function () {
         expect([_('Test'), 'echoHelloWorld'])->toEcho('hello world!!');
     });
 
@@ -30,13 +31,13 @@ describe('Test', function () {
         $instance = _('Test');
         $params = [
             'a21212' => [1, 2, 3, 4],
-            '😊☺😀' => ['abab', 'cdcd', 'efef'],
-            'daba' => [],
+            '😊☺😀'    => ['abab', 'cdcd', 'efef'],
+            'daba'   => [],
         ];
 
-        foreach($params as $method => $args) {
-            $ret = \call_user_func_array([$instance, $method], $args);;
-            \expect($ret)->toBe(sprintf('method:%s,count:%d,args:%s', $method, count($args), \implode("-", $args)));
+        foreach ($params as $method => $args) {
+            $ret = \call_user_func_array([$instance, $method], $args);
+            \expect($ret)->toBe(sprintf('method:%s,count:%d,args:%s', $method, count($args), \implode('-', $args)));
         }
     });
 });

@@ -1,5 +1,6 @@
 <?php
-include __DIR__ . '/vendor/autoload.php';
+
+include __DIR__.'/vendor/autoload.php';
 
 _ns(NS_STRINGY);
 
@@ -16,10 +17,10 @@ $data = [
     ["fòô bàř \n\t", "\n\t fòô bàř \n\t", null, 'UTF-8'],
     ['fòô ', ' fòô ', null, 'UTF-8'], // narrow no-break space (U+202F)
     ['fòô  ', '  fòô  ', null, 'UTF-8'], // medium mathematical space (U+205F)
-    ['fòô', '           fòô', null, 'UTF-8'] // spaces U+2000 to U+200A
+    ['fòô', '           fòô', null, 'UTF-8'], // spaces U+2000 to U+200A
 ];
 
-foreach($data as $value) {
+foreach ($data as $value) {
     @list($expected, $str, $chars, $encoding) = $value;
     $stringy = __('Stringy')::create($str, $encoding);
     $result = $stringy->trimLeft($chars);
@@ -27,4 +28,4 @@ foreach($data as $value) {
     // var_dump((string)$result);
 }
 
-var_dump(mb_strpos('Str contains foo bar', 'Foo bar', 0, "UTF-8"));
+var_dump(mb_strpos('Str contains foo bar', 'Foo bar', 0, 'UTF-8'));

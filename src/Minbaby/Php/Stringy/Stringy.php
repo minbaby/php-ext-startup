@@ -506,4 +506,16 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
     {
         return $this->matchesPattern('.*[[:lower:]]');
     }
+
+    public function htmlDecode($flags = ENT_COMPAT)
+    {
+        $str = html_entity_decode($this->str, $flags, $this->encoding);
+        return static::create($str, $this->encoding);
+    }
+
+    public function htmlEncode($flags = ENT_COMPAT)
+    {
+        $str = htmlentities($this->str, $flags, $this->encoding);
+        return static::create($str, $this->encoding);
+    }
 }

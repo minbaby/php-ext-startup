@@ -1830,6 +1830,84 @@ PHP_METHOD(Stringy, hasLowerCase)
     call_user_function(NULL, getThis(), &func, return_value, 1, args);
 }
 
+PHP_METHOD(Stringy, htmlDecode)
+{
+    zval *flags = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(flags);
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (flags == NULL) {
+        ZVAL_STRING(flags, "ENT_COMPAT");
+    }
+
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval func, args[] = {
+        *str,
+        *flags,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "html_entity_decode");
+    call_user_function(NULL, NULL, &func, return_value, 3, args);
+
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+    zval func_init, args_init[] = {
+        *return_value,
+        *encoding,
+    };
+    ZVAL_STRING(&func_init, "__construct");
+    call_user_function(NULL, &instance, &func_init, return_value, 2, args_init);
+
+    RETURN_ZVAL(&instance, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_htmlDecode, 0)
+    ZEND_ARG_INFO(0, flags)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, htmlEncode)
+{
+    zval *flags = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(flags);
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (flags == NULL) {
+        ZVAL_STRING(flags, "ENT_COMPAT");
+    }
+
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval func, args[] = {
+        *str,
+        *flags,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "htmlentities");
+    call_user_function(NULL, NULL, &func, return_value, 3, args);
+
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+    zval func_init, args_init[] = {
+        *return_value,
+        *encoding,
+    };
+    ZVAL_STRING(&func_init, "__construct");
+    call_user_function(NULL, &instance, &func_init, return_value, 2, args_init);
+
+    RETURN_ZVAL(&instance, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_htmlEncode, 0)
+    ZEND_ARG_INFO(0, flags)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -1879,6 +1957,8 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, matchesPattern, arginfo_matchesPattern, ZEND_ACC_PROTECTED)
     PHP_ME(Stringy, isBlank, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, hasLowerCase, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, htmlEncode, arginfo_htmlEncode, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, htmlDecode, arginfo_htmlDecode, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

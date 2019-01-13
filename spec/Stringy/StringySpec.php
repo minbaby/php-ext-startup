@@ -967,6 +967,10 @@ namespace Minbaby\Startup\Spec\Stringy;
             @list($expected, $str, $encoding) = $value;
             $stringy = __('Stringy')::create($str, $encoding);
             $result = $stringy->isAlpha();
+
+            \expect($result)->toBeA('boolean');
+            \expect((string) $stringy)->toBe($str);
+            \expect($result)->toBe($expected);
         }
     });
     
@@ -1024,6 +1028,44 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect($result)->toBeA('boolean');
             \expect((string) $stringy)->toBe($str);
             \expect($result)->toBe($expected);
+        }
+    });
+
+    it('test htmlDecode', function () {
+        $data = [
+            ['&', '&amp;'],
+            ['"', '&quot;'],
+            ["'", '&#039;', ENT_QUOTES],
+            ['<', '&lt;'],
+            ['>', '&gt;'],
+        ];
+        foreach($data as $value){
+            @list($expected, $str, $flags, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->htmlDecode($flags ?? ENT_COMPAT);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+        }
+    });
+
+    it('test htmlEncode', function () {
+        $data = [
+            ['&amp;', '&'],
+            ['&quot;', '"'],
+            ['&#039;', "'", ENT_QUOTES],
+            ['&lt;', '<'],
+            ['&gt;', '>'],
+        ];
+        foreach($data as $value){
+            @list($expected, $str, $flags, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->htmlEncode($flags ?? ENT_COMPAT);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
         }
     });
 });

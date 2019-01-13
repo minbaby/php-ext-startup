@@ -19,3 +19,7 @@
 # gdb -c core php
 
 # git clone https://github.com/snare/voltron
+sudo apt install gdb -f
+git clone https://github.com/longld/peda.git ~/peda
+echo "source ~/peda/peda.py" >> ~/.gdbinit
+echo "DONE! debug your program with gdb and enjoy"

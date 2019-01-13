@@ -1776,6 +1776,38 @@ ZEND_BEGIN_ARG_INFO(arginfo_first, 0)
     ZEND_ARG_INFO(0, substring)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, isAlpha)
+{
+    zval str_val;
+    ZVAL_STRING(&str_val, "^[[:alpha:]]*$");
+    zval func, args[] = {
+        str_val
+    };
+    ZVAL_STRING(&func, "matchesPattern");
+    call_user_function(NULL, getThis(), &func, return_value, 1, args);
+}
+
+PHP_METHOD(Stringy, matchesPattern)
+{
+    zval *pattern = NULL;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(pattern)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+
+    zval func, args[] = {
+        *pattern,
+        *str,
+    };
+    ZVAL_STRING(&func, "mb_ereg_match");
+    call_user_function(NULL, NULL, &func, return_value, 2, args);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_matchesPattern, 0)
+    ZEND_ARG_INFO(0, pattern)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -1821,6 +1853,8 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, ensureLeft, arginfo_ensureLeft, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, ensureRight, arginfo_ensureRight, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, first, arginfo_first, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, isAlpha, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, matchesPattern, arginfo_matchesPattern, ZEND_ACC_PROTECTED)
     PHP_FE_END
 };
 

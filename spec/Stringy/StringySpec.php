@@ -949,4 +949,28 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect((string) $result)->toBe($expected);
         }
     });
+
+    it('test isAlpha', function () {
+        $data = [
+            [true, ''],
+            [true, 'foobar'],
+            [false, 'foo bar'],
+            [false, 'foobar2'],
+            [true, 'fòôbàř', 'UTF-8'],
+            [false, 'fòô bàř', 'UTF-8'],
+            [false, 'fòôbàř2', 'UTF-8'],
+            [true, 'ҠѨњфгШ', 'UTF-8'],
+            [false, 'ҠѨњ¨ˆфгШ', 'UTF-8'],
+            [true, '丹尼爾', 'UTF-8'],
+        ];
+        foreach ($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->isAlpha();
+
+            \expect($result)->toBeA('boolean');
+            \expect((string) $stringy)->toBe($str);
+            \expect($result)->toBe($expected);
+        }
+    });
 });

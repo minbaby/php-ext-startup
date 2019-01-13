@@ -481,4 +481,19 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
 
         return $stringy->substr(0, $n);
     }
+
+    protected function matchesPattern($pattern)
+    {
+        $regexEncoding = $this->regexEncoding();
+        $this->regexEncoding($this->encoding);
+        $match = \mb_ereg_match($pattern, $this->str);
+        $this->regexEncoding($regexEncoding);
+
+        return $match;
+    }
+
+    public function isAlpha()
+    {
+        return $this->matchesPattern('^[[:alpha:]]*$');
+    }
 }

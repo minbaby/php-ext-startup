@@ -501,4 +501,9 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
     {
         return $this->matchesPattern('^[[:space:]]*$');
     }
+    
+    public function hasLowerCase()
+    {
+        return $this->matchesPattern('.*[[:lower:]]');
+    }
 }

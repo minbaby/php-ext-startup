@@ -1819,6 +1819,17 @@ PHP_METHOD(Stringy, isBlank)
     call_user_function(NULL, getThis(), &func, return_value, 1, args);
 }
 
+PHP_METHOD(Stringy, hasLowerCase)
+{
+    zval str_val;
+    ZVAL_STRING(&str_val, ".*[[:lower:]]");
+    zval func, args[] = {
+        str_val
+    };
+    ZVAL_STRING(&func, "matchesPattern");
+    call_user_function(NULL, getThis(), &func, return_value, 1, args);
+}
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -1867,6 +1878,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, isAlpha, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, matchesPattern, arginfo_matchesPattern, ZEND_ACC_PROTECTED)
     PHP_ME(Stringy, isBlank, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, hasLowerCase, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

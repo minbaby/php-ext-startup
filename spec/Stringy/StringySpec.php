@@ -999,4 +999,31 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect($result)->toBe($expected);
         }
     });
+
+    it('test hasLowerCase', function () {
+        $data = [
+            [false, ''],
+            [true, 'foobar'],
+            [false, 'FOO BAR'],
+            [true, 'fOO BAR'],
+            [true, 'foO BAR'],
+            [true, 'FOO BAr'],
+            [true, 'Foobar'],
+            [false, 'FÒÔBÀŘ', 'UTF-8'],
+            [true, 'fòôbàř', 'UTF-8'],
+            [true, 'fòôbàř2', 'UTF-8'],
+            [true, 'Fòô bàř', 'UTF-8'],
+            [true, 'fòôbÀŘ', 'UTF-8'],
+        ];
+
+        foreach ($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->hasLowerCase();
+
+            \expect($result)->toBeA('boolean');
+            \expect((string) $stringy)->toBe($str);
+            \expect($result)->toBe($expected);
+        }
+    });
 });

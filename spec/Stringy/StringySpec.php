@@ -967,6 +967,32 @@ namespace Minbaby\Startup\Spec\Stringy;
             @list($expected, $str, $encoding) = $value;
             $stringy = __('Stringy')::create($str, $encoding);
             $result = $stringy->isAlpha();
+        }
+    });
+    
+    it('test isBlank', function () {
+        $data = [
+            [true, ''],
+            [true, ' '],
+            [true, "\n\t "],
+            [true, "\n\t  \v\f"],
+            [false, "\n\t a \v\f"],
+            [false, "\n\t ' \v\f"],
+            [false, "\n\t 2 \v\f"],
+            [true, '', 'UTF-8'],
+            [true, ' ', 'UTF-8'], // no-break space (U+00A0)
+            [true, '           ', 'UTF-8'], // spaces U+2000 to U+200A
+            [true, ' ', 'UTF-8'], // narrow no-break space (U+202F)
+            [true, ' ', 'UTF-8'], // medium mathematical space (U+205F)
+            [true, '　', 'UTF-8'], // ideographic space (U+3000)
+            [false, '　z', 'UTF-8'],
+            [false, '　1', 'UTF-8'],
+        ];
+        foreach ($data as $value)
+        {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->isBlank();
 
             \expect($result)->toBeA('boolean');
             \expect((string) $stringy)->toBe($str);

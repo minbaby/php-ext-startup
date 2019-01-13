@@ -496,4 +496,9 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
     {
         return $this->matchesPattern('^[[:alpha:]]*$');
     }
+    
+    public function isBlank()
+    {
+        return $this->matchesPattern('^[[:space:]]*$');
+    }
 }

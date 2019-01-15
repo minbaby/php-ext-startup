@@ -507,6 +507,11 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         return $this->matchesPattern('.*[[:lower:]]');
     }
 
+    public function hasUpperCase()
+    {
+        return $this->matchesPattern('.*[[:upper:]]');
+    }
+
     public function htmlDecode($flags = ENT_COMPAT)
     {
         $str = html_entity_decode($this->str, $flags, $this->encoding);

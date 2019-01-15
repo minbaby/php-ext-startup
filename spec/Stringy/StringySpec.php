@@ -1031,6 +1031,34 @@ namespace Minbaby\Startup\Spec\Stringy;
         }
     });
 
+
+    it('test hasUpperCase', function () {
+        $data = [
+            [false, ''],
+            [true, 'FOOBAR'],
+            [false, 'foo bar'],
+            [true, 'Foo bar'],
+            [true, 'FOo bar'],
+            [true, 'foo baR'],
+            [true, 'fOOBAR'],
+            [false, 'fòôbàř', 'UTF-8'],
+            [true, 'FÒÔBÀŘ', 'UTF-8'],
+            [true, 'FÒÔBÀŘ2', 'UTF-8'],
+            [true, 'fÒÔ BÀŘ', 'UTF-8'],
+            [true, 'FÒÔBàř', 'UTF-8'],
+        ];
+
+        foreach ($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->hasUpperCase();
+
+            \expect($result)->toBeA('boolean');
+            \expect((string) $stringy)->toBe($str);
+            \expect($result)->toBe($expected);
+        }
+    });
+
     it('test htmlDecode', function () {
         $data = [
             ['&', '&amp;'],

@@ -553,4 +553,10 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         }
         return $stringy->substr(-$n);
     }
+
+    public function humanize()
+    {
+        $str = str_replace(['_id', '_'], ['', ' '], $this->str);
+        return static::create($str, $this->encoding)->trim()->upperCaseFirst();
+    }
 }

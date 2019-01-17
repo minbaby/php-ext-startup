@@ -2076,6 +2076,50 @@ ZEND_BEGIN_ARG_INFO(arginfo_removeRight, 0)
     ZEND_ARG_INFO(0, substring)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, humanize)
+{
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"),  0, &rv);
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"),  0, &rv);
+
+    zval search;
+    array_init(&search);
+    add_next_index_string(&search, "_id");
+    add_next_index_string(&search, "_");
+
+    zval repalce;
+    array_init(&repalce);
+    add_next_index_string(&repalce, "");
+    add_next_index_string(&repalce, " ");
+
+    zval func, args[] = {
+        search,
+        repalce,
+        *str,
+    };
+    ZVAL_STRING(&func, "str_replace");
+    call_user_function(NULL, NULL, &func, return_value, 3, args);
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+    zval func_construct, args_construct[] = {
+        *return_value,
+        *encoding,
+    };
+    ZVAL_STRING(&func_construct, "__construct");
+    call_user_function(NULL, &instance, &func_construct, return_value, 2, args_construct);
+
+    zval func_trim;
+    ZVAL_STRING(&func_trim, "trim");
+    call_user_function(NULL, &instance, &func_trim, return_value, 0, NULL);
+
+    zval func_upperCaseFirst;
+    ZVAL_STRING(&func_upperCaseFirst, "upperCaseFirst");
+    call_user_function(NULL, return_value, &func_upperCaseFirst, return_value, 0, NULL);
+
+    RETURN_ZVAL(return_value, 0, 1);
+}
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -2131,6 +2175,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, htmlDecode, arginfo_htmlDecode, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, removeLeft, arginfo_removeLeft, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, removeRight, arginfo_removeRight, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, humanize, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

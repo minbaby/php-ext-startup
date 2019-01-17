@@ -1203,4 +1203,22 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect((string) $result)->toBe($expected);
         }
     });
+
+    it('test humanize', function () {
+        $data = [
+            ['Author', 'author_id'],
+            ['Test user', ' _test_user_'],
+            ['Συγγραφέας', ' συγγραφέας_id ', 'UTF-8']
+        ];
+        
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->humanize();
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+        }
+    });
 });

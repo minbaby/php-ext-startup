@@ -1096,4 +1096,111 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect((string) $result)->toBe($expected);
         }
     });
+
+    it('test substr', function () {
+        $data = [
+            ['foo bar', 'foo bar', 0],
+            ['bar', 'foo bar', 4],
+            ['bar', 'foo bar', 4, null],
+            ['o b', 'foo bar', 2, 3],
+            ['', 'foo bar', 4, 0],
+            ['fòô bàř', 'fòô bàř', 0, null, 'UTF-8'],
+            ['bàř', 'fòô bàř', 4, null, 'UTF-8'],
+            ['ô b', 'fòô bàř', 2, 3, 'UTF-8'],
+            ['', 'fòô bàř', 4, 0, 'UTF-8'],
+            ['r', 'foo bar', -1],
+        ];
+
+        foreach ($data as $value) {
+            @list($expected, $str, $start, $length, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->substr($start, $length);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+        }
+
+    });
+
+    it('test last', function () {
+        $data = [
+            ['', 'foo bar', -5],
+            ['', 'foo bar', 0],
+            ['r', 'foo bar', 1],
+            ['bar', 'foo bar', 3],
+            ['foo bar', 'foo bar', 7],
+            ['foo bar', 'foo bar', 8],
+            ['', 'fòô bàř', -5, 'UTF-8'],
+            ['', 'fòô bàř', 0, 'UTF-8'],
+            ['ř', 'fòô bàř', 1, 'UTF-8'],
+            ['bàř', 'fòô bàř', 3, 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', 7, 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', 8, 'UTF-8'],
+        ];
+
+        foreach ($data as $value) {
+            @list($expected, $str, $n, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->last($n);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+        }
+    });
+
+    it('test removeLeft', function () {
+        $data = [
+            ['foo bar', 'foo bar', ''],
+            ['oo bar', 'foo bar', 'f'],
+            ['bar', 'foo bar', 'foo '],
+            ['foo bar', 'foo bar', 'oo'],
+            ['foo bar', 'foo bar', 'oo bar'],
+            ['oo bar', 'foo bar', __('Stringy')::create('foo bar')->first(1), 'UTF-8'],
+            ['oo bar', 'foo bar', __('Stringy')::create('foo bar')->at(0), 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', '', 'UTF-8'],
+            ['òô bàř', 'fòô bàř', 'f', 'UTF-8'],
+            ['bàř', 'fòô bàř', 'fòô ', 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', 'òô', 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', 'òô bàř', 'UTF-8']
+        ];
+        foreach($data as $value)
+        {
+            @list($expected, $str, $substring, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->removeLeft((string) $substring);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+        }
+    });
+
+    it('test removeRight', function () {
+        $data = [
+            ['foo bar', 'foo bar', ''],
+            ['foo ba', 'foo bar', 'r'],
+            ['foo', 'foo bar', ' bar'],
+            ['foo bar', 'foo bar', 'ba'],
+            ['foo bar', 'foo bar', 'foo ba'],
+            ['foo ba', 'foo bar', __('Stringy')::create('foo bar')->last(1), 'UTF-8'],
+            ['foo ba', 'foo bar', __('Stringy')::create('foo bar')->at(6), 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', '', 'UTF-8'],
+            ['fòô bà', 'fòô bàř', 'ř', 'UTF-8'],
+            ['fòô', 'fòô bàř', ' bàř', 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', 'bà', 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', 'fòô bà', 'UTF-8']
+        ];
+        foreach($data as $value)
+        {
+            @list($expected, $str, $substring, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->removeRight((string) $substring);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+        }
+    });
 });

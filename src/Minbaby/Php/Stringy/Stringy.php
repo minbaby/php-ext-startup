@@ -36,7 +36,7 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         return $this->encoding;
     }
 
-    public static function create($str, $encoding)
+    public static function create($str = '', $encoding = null)
     {
         return new static($str, $encoding);
     }
@@ -522,5 +522,35 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
     {
         $str = htmlentities($this->str, $flags, $this->encoding);
         return static::create($str, $this->encoding);
+    }
+
+    public function removeLeft($substring)
+    {
+        $stringy = static::create($this->str, $this->encoding);
+        if ($stringy->startsWith($substring)) {
+            $substringLength = \mb_strlen($substring, $stringy->encoding);
+            return $stringy->substr($substringLength);
+        }
+        return $stringy;
+    }
+
+    public function removeRight($substring)
+    {
+        $stringy = static::create($this->str, $this->encoding);
+        if ($stringy->endsWith($substring)) {
+            $substringLength = \mb_strlen($substring, $stringy->encoding);
+            return $stringy->substr(0, $stringy->length() - $substringLength);
+        }
+        return $stringy;
+    }
+
+    public function last($n)
+    {
+        $stringy = static::create($this->str, $this->encoding);
+        if ($n <= 0) {
+            $stringy->str = '';
+            return $stringy;
+        }
+        return $stringy->substr(-$n);
     }
 }

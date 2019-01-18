@@ -572,4 +572,23 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         return $stringy;
     }
 
+    public function isAlphanumeric()
+    {
+        return $this->matchesPattern('^[[:alnum:]]*$');
+    }
+
+    public function isHexadecimal()
+    {
+        return $this->matchesPattern('^[[:xdigit:]]*$');
+    }
+
+    public function isLowerCase()
+    {
+        return $this->matchesPattern('^[[:lower:]]*$');
+    }
+
+    public function isUpperCase()
+    {
+        return $this->matchesPattern('^[[:upper:]]*$');
+    }
 }

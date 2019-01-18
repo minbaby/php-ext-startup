@@ -1244,4 +1244,122 @@ namespace Minbaby\Startup\Spec\Stringy;
 
         }
     });
+
+    it('test isAlphanumeric', function () {
+        $data = [
+            [true, ''],
+            [true, 'foobar1'],
+            [false, 'foo bar'],
+            [false, 'foobar2"'],
+            [false, "\nfoobar\n"],
+            [true, 'fòôbàř1', 'UTF-8'],
+            [false, 'fòô bàř', 'UTF-8'],
+            [false, 'fòôbàř2"', 'UTF-8'],
+            [true, 'ҠѨњфгШ', 'UTF-8'],
+            [false, 'ҠѨњ¨ˆфгШ', 'UTF-8'],
+            [true, '丹尼爾111', 'UTF-8'],
+            [true, 'دانيال1', 'UTF-8'],
+            [false, 'دانيال1 ', 'UTF-8']
+        ];
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->isAlphanumeric();
+
+            \expect($result)->toBeA('boolean');
+            \expect((string) $stringy)->toBe($str);
+            \expect((bool) $result)->toBe($expected);
+        }
+    });
+
+    it('test isHexadecimal', function () {
+        $data = [
+            [true, ''],
+            [true, 'abcdef'],
+            [true, 'ABCDEF'],
+            [true, '0123456789'],
+            [true, '0123456789AbCdEf'],
+            [false, '0123456789x'],
+            [false, 'ABCDEFx'],
+            [true, 'abcdef', 'UTF-8'],
+            [true, 'ABCDEF', 'UTF-8'],
+            [true, '0123456789', 'UTF-8'],
+            [true, '0123456789AbCdEf', 'UTF-8'],
+            [false, '0123456789x', 'UTF-8'],
+            [false, 'ABCDEFx', 'UTF-8'],
+        ];
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->isHexadecimal();
+
+            \expect($result)->toBeA('boolean');
+            \expect((string) $stringy)->toBe($str);
+            \expect((bool) $result)->toBe($expected);
+        }
+    });
+
+
+    it('test isLowerCase', function () {
+        $data = [
+            [true, ''],
+            [true, 'foobar'],
+            [false, 'foo bar'],
+            [false, 'Foobar'],
+            [true, 'fòôbàř', 'UTF-8'],
+            [false, 'fòôbàř2', 'UTF-8'],
+            [false, 'fòô bàř', 'UTF-8'],
+            [false, 'fòôbÀŘ', 'UTF-8'],
+        ];
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->isLowerCase();
+
+            \expect($result)->toBeA('boolean');
+            \expect((string) $stringy)->toBe($str);
+            \expect((bool) $result)->toBe($expected);
+        }
+    });
+
+    it('test isUpperCase', function () {
+        $data = [
+            [true, ''],
+            [true, 'FOOBAR'],
+            [false, 'FOO BAR'],
+            [false, 'fOOBAR'],
+            [true, 'FÒÔBÀŘ', 'UTF-8'],
+            [false, 'FÒÔBÀŘ2', 'UTF-8'],
+            [false, 'FÒÔ BÀŘ', 'UTF-8'],
+            [false, 'FÒÔBàř', 'UTF-8'],
+        ];
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->isUpperCase();
+
+            \expect($result)->toBeA('boolean');
+            \expect((string) $stringy)->toBe($str);
+            \expect((bool) $result)->toBe($expected);
+        }
+    });
+
+    it('test length', function () {
+        $data = [
+            [11, '  foo bar  '],
+            [1, 'f'],
+            [0, ''],
+            [7, 'fòô bàř', 'UTF-8']
+        ];
+
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->length();
+
+            \expect($result)->toBeA('int');
+            \expect((string) $stringy)->toBe($str);
+            \expect((int) $result)->toBe($expected);
+        }
+    });
 });

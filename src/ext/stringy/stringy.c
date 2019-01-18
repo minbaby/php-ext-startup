@@ -2120,6 +2120,73 @@ PHP_METHOD(Stringy, humanize)
     RETURN_ZVAL(return_value, 0, 1);
 }
 
+PHP_METHOD(Stringy, insert)
+{
+    zval *substring, *index;
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_ZVAL(substring)
+        Z_PARAM_ZVAL(index)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"),  0, &rv);
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"),  0, &rv);
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+    zval func, args[] = {
+        *str,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &instance, &func, return_value, 2, args);
+
+
+    zval len;
+    zval func_length;
+    ZVAL_STRING(&func_length, "length");
+    call_user_function(NULL, &instance, &func_length, &len, 0, NULL);
+
+    if (Z_LVAL_P(index) > Z_LVAL(len)) {
+        RETURN_ZVAL(&instance, 0, 1);
+    }
+
+    zval zero;
+    ZVAL_LONG(&zero, 0);
+    
+    zval start;
+    zval func_substr1, args_substr1[] = {
+        *str,
+        zero,
+        *index,
+        *encoding,
+    };
+    ZVAL_STRING(&func_substr1, "mb_substr");
+    call_user_function(NULL, NULL, &func_substr1, &start, 4, args_substr1);
+
+    zval end;
+    zval func_substr2, args_substr2[] = {
+        *str,
+        *index,
+        len,
+        *encoding,
+    };
+    ZVAL_STRING(&func_substr2, "mb_substr");
+    call_user_function(NULL, NULL, &func_substr2, &end, 4, args_substr2);
+
+    zval ret;
+    concat_function(&ret, &start, substring);
+    concat_function(&ret, &ret, &end);
+
+    zend_update_property(stringy_ce, &instance, ZEND_STRL("str"), &ret);
+
+    RETURN_ZVAL(&instance, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_insert, 0)
+    ZEND_ARG_INFO(0, substring)
+    ZEND_ARG_INFO(0, index)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -2176,6 +2243,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, removeLeft, arginfo_removeLeft, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, removeRight, arginfo_removeRight, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, humanize, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, insert, arginfo_insert, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

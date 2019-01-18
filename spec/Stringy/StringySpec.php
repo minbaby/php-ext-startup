@@ -1221,4 +1221,27 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect((string) $result)->toBe($expected);
         }
     });
+
+    it('test insert', function () {
+        $data = [
+            ['foo bar', 'oo bar', 'f', 0],
+            ['foo bar', 'f bar', 'oo', 1],
+            ['f bar', 'f bar', 'oo', 20],
+            ['foo bar', 'foo ba', 'r', 6],
+            ['fòôbàř', 'fòôbř', 'à', 4, 'UTF-8'],
+            ['fòô bàř', 'òô bàř', 'f', 0, 'UTF-8'],
+            ['fòô bàř', 'f bàř', 'òô', 1, 'UTF-8'],
+            ['fòô bàř', 'fòô bà', 'ř', 6, 'UTF-8']
+        ];
+        foreach($data as $value) {
+            @list($expected, $str, $substring, $index, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->insert($substring, $index);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+
+        }
+    });
 });

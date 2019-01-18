@@ -559,4 +559,17 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $str = str_replace(['_id', '_'], ['', ' '], $this->str);
         return static::create($str, $this->encoding)->trim()->upperCaseFirst();
     }
+
+    public function insert($substring, $index)
+    {
+        $stringy = static::create($this->str, $this->encoding);
+        if ($index > $stringy->length()) {
+            return $stringy;
+        }
+        $start = \mb_substr($stringy->str, 0, $index, $stringy->encoding);
+        $end = \mb_substr($stringy->str, $index, $stringy->length(), $stringy->encoding);
+        $stringy->str = $start . $substring . $end;
+        return $stringy;
+    }
+
 }

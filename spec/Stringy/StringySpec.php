@@ -1362,4 +1362,39 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect((int) $result)->toBe($expected);
         }
     });
+
+    it('test isJson', function () {
+        $data = [
+            [false, ''],
+            [false, '  '],
+            [true, 'null'],
+            [true, 'true'],
+            [true, 'false'],
+            [true, '[]'],
+            [true, '{}'],
+            [true, '123'],
+            [true, '{"foo": "bar"}'],
+            [false, '{"foo":"bar",}'],
+            [false, '{"foo"}'],
+            [true, '["foo"]'],
+            [false, '{"foo": "bar"]'],
+            [true, '123', 'UTF-8'],
+            [true, '{"fòô": "bàř"}', 'UTF-8'],
+            [false, '{"fòô":"bàř",}', 'UTF-8'],
+            [false, '{"fòô"}', 'UTF-8'],
+            [false, '["fòô": "bàř"]', 'UTF-8'],
+            [true, '["fòô"]', 'UTF-8'],
+            [false, '{"fòô": "bàř"]', 'UTF-8'],
+        ];
+        foreach($data as $value) {
+            @list($expected, $str, $encoding) = $value;
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->isJson();
+
+            \expect($result)->toBeA('boolean');
+            \expect((string) $stringy)->toBe($str);
+            \expect((bool) $result)->toBe($expected);
+        }
+ 
+    });
 });

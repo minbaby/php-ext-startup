@@ -591,4 +591,13 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
     {
         return $this->matchesPattern('^[[:upper:]]*$');
     }
+
+    public function isJson()
+    {
+        if (!$this->length()) {
+            return false;
+        }
+        json_decode($this->str);
+        return (json_last_error() === JSON_ERROR_NONE);
+    }
 }

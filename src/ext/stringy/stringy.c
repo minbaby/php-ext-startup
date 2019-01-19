@@ -2231,6 +2231,35 @@ PHP_METHOD(Stringy, isHexadecimal)
     call_user_function(NULL, getThis(), &func, return_value, 1, args);
 }
 
+PHP_METHOD(Stringy, isJson)
+{
+    zval func;
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+    if (Z_LVAL_P(return_value) <= 0) {
+        RETURN_BOOL(0);
+    }
+
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+
+    zval func_json_decode, args[] = {
+        *str,
+    };
+    ZVAL_STRING(&func_json_decode, "json_decode");
+    call_user_function(NULL, NULL, &func_json_decode, return_value, 1, args);
+
+    ZVAL_STRING(&func, "json_last_error");
+    call_user_function(NULL, NULL, &func, return_value, 0, NULL);
+
+    zval *json_error_none = zend_get_constant_str(ZEND_STRL("JSON_ERROR_NONE"));
+    
+    if (Z_LVAL_P(json_error_none) == Z_LVAL_P(return_value)) {
+        RETURN_BOOL(1);
+    }
+    RETURN_BOOL(0);
+}
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -2292,6 +2321,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, removeRight, arginfo_removeRight, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, humanize, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, insert, arginfo_insert, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, isJson, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

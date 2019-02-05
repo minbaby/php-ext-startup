@@ -3,6 +3,6 @@
 
 /** @var \Kahlan\Cli\CommandLine $commandLine */
 $commandLine = $this->commandLine();
-// $commandLine->option('reporter', 'default', 'verbose');
+$commandLine->option('reporter', 'default', 'verbose');
 $commandLine->option('ff', 'default', 1);
-$commandLine->option('clover', 'default', 'coverage.xml');
+isset($_SERVER['CI']) && $_SERVER['CI'] === true && $commandLine->option('clover', 'default', 'coverage.xml');

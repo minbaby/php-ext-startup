@@ -39,3 +39,8 @@ function __(string $str): string
 
     return sprintf('%s\%s', rtrim($________['ns'], SEP_DIR), $str);
 }
+
+function __formatMessage(string $message, array $data): string
+{
+    return sprintf('%s: ==> %s <==', $message, json_encode($data));
+}

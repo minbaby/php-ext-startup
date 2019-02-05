@@ -2260,6 +2260,49 @@ PHP_METHOD(Stringy, isJson)
     RETURN_BOOL(0);
 }
 
+PHP_METHOD(Stringy, isSerialized)
+{
+    zval empty_object_serialized;
+    ZVAL_STRING(&empty_object_serialized, "b:0;");
+
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    
+    if (Z_TYPE_P(str) == Z_TYPE(empty_object_serialized) && Z_STR_P(str) == Z_STR(empty_object_serialized))
+    {
+        RETURN_TRUE;
+    }
+    zval func;
+
+    zval error_level;
+    ZVAL_STRING(&func, "error_reporting");
+    zval new_error_level;
+    ZVAL_LONG(&new_error_level, 0);
+    zval args_error_reporting[] = {
+        new_error_level,
+    };
+    call_user_function(NULL, NULL, &func, &error_level, 1, args_error_reporting);
+
+    zval args[] = {
+        *str,
+    };
+    ZVAL_STRING(&func, "unserialize");
+    call_user_function(NULL, NULL, &func, return_value, 1, args);
+    
+    zval reset_error_level;
+    zval args_reset[] = {
+        error_level,
+    };
+    ZVAL_STRING(&func, "error_reporting");
+    call_user_function(NULL, NULL, &func, &reset_error_level, 1, args_reset);
+
+    if (Z_TYPE_P(return_value) != IS_FALSE) {
+        RETURN_TRUE;
+    }
+
+    RETURN_FALSE;
+}
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -2322,6 +2365,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, humanize, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, insert, arginfo_insert, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, isJson, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, isSerialized, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

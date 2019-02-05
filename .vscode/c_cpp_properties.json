@@ -16,7 +16,7 @@
           "name": "Mac",
           "includePath": [
             "${workspaceFolder}/**",
-            "~/.phpbrew/build/php-7.1.17/**"
+            "~/.phpbrew/build/php-7.1.23/**"
           ],
           "defines": [],
           "compilerPath": "/usr/bin/gcc",

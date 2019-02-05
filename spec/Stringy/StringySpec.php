@@ -2,6 +2,11 @@
 
 namespace Minbaby\Startup\Spec\Stringy;
 
+use function Kahlan\context;
+use function Kahlan\it;
+use function Kahlan\describe;
+
+
 \describe('Stringy Test', function () {
     \beforeAll(function () {
         _ns(NS_STRINGY);
@@ -1396,5 +1401,28 @@ namespace Minbaby\Startup\Spec\Stringy;
             \expect((bool) $result)->toBe($expected);
         }
  
+    });
+
+    context('test isSerialized', function () {
+        $data = [
+            [false, ''],
+            [true, 'a:1:{s:3:"foo";s:3:"bar";}'],
+            [false, 'a:1:{s:3:"foo";s:3:"bar"}'],
+            [true, serialize(['foo' => 'bar'])],
+            [true, 'a:1:{s:5:"fòô";s:5:"bàř";}', 'UTF-8'],
+            [false, 'a:1:{s:5:"fòô";s:5:"bàř"}', 'UTF-8'],
+            [true, serialize(['fòô' => 'bár']), 'UTF-8'],
+        ];
+        foreach($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+                @list($expected, $str, $encoding) = $value;
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->isSerialized();
+
+                \expect($result)->toBeA('boolean');
+                \expect((string) $stringy)->toBe($str);
+                \expect((bool) $result)->toBe($expected);
+            });
+        }
     });
 });

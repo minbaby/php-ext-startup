@@ -600,4 +600,9 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         json_decode($this->str);
         return (json_last_error() === JSON_ERROR_NONE);
     }
+
+    public function isSerialized()
+    {
+        return $this->str === 'b:0;' || @unserialize($this->str) !== false;
+    }
 }

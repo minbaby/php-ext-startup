@@ -1425,4 +1425,29 @@ use function Kahlan\describe;
             });
         }
     });
+
+    context('test isBase64', function () {
+        $data = [
+            [false, ' '],
+            [true, ''],
+            [true, base64_encode('FooBar') ],
+            [true, base64_encode(' ') ],
+            [true, base64_encode('FÒÔBÀŘ') ],
+            [true, base64_encode('συγγραφέας') ],
+            [false, 'Foobar'],
+        ];
+
+        foreach($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+                list($expected, $str) = $value;
+
+                $stringy = __('Stringy')::create($str);
+                $result = $stringy->isBase64();
+
+                \expect($result)->toBeA('boolean');
+                \expect((string) $stringy)->toBe($str);
+                \expect((bool) $result)->toBe($expected);
+            });
+        }
+    });
 });

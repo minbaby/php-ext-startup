@@ -1,14 +1,4 @@
 #include "stringy.h"
-#include "php.h"
-#include "../common.h"
-#include "ext/standard/php_standard.h"
-#include "Zend/zend_exceptions.h"
-#include "ext/spl/spl_exceptions.h"
-#include "ext/spl/spl_iterators.h"
-#include "ext/mbstring/mbstring.h"
-#include "zend_interfaces.h"
-#include "zend_closures.h"
-#include "ext/spl/spl_array.h"
 
 zend_class_entry *stringy_ce;
 
@@ -2303,6 +2293,33 @@ PHP_METHOD(Stringy, isSerialized)
     RETURN_FALSE;
 }
 
+PHP_METHOD(Stringy, isBase64)
+{
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    
+    zval z_true;
+    ZVAL_BOOL(&z_true, IS_TRUE);
+    zval func, args[] = {
+        *str,
+        z_true,
+    };
+    ZVAL_STRING(&func, "base64_decode");
+    call_user_function(NULL, NULL, &func, return_value, 2, args);
+
+    zval args_decode[] = {
+        *return_value,
+    };
+    ZVAL_STRING(&func, "base64_encode");
+    call_user_function(NULL, NULL, &func, return_value, 1, args_decode);
+
+    if (zval_str_equal(return_value, str)) {
+        RETURN_TRUE;
+    }
+
+    RETURN_FALSE;
+}
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -2366,6 +2383,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, insert, arginfo_insert, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, isJson, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, isSerialized, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, isBase64, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

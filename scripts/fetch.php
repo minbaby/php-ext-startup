@@ -16,6 +16,7 @@ $data = [
     'phptrace'      => 'https://github.com/Qihoo360/phptrace',
     'php-memcached' => 'https://github.com/php-memcached-dev/php-memcached',
     'swoole'        => 'https://github.com/swoole/swoole-src',
+    'async-ext'     => 'https://github.com/swoole/async-ext.git',
     'pthreads'      => 'https://github.com/krakjoe/pthreads',
     'SeasLog'       => 'https://github.com/SeasX/SeasLog',
     'phpdbg'        => 'https://github.com/krakjoe/phpdbg',
@@ -24,6 +25,7 @@ $data = [
     'php-git'       => 'https://github.com/libgit2/php-git',
     'AOP'           => 'https://github.com/AOP-PHP/AOP',
     'xdeubg'        => 'https://github.com/xdebug/xdebug.git',
+    'apcu'          => 'https://github.com/krakjoe/apcu.git',
 ];
 
 // PHPBREW_ROOT/build/php-7.1.17/ext/

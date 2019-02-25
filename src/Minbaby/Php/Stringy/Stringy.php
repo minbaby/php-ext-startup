@@ -610,4 +610,72 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
     {
         return (base64_encode(base64_decode($this->str, true)) === $this->str);
     }
+
+    public function longestCommonPrefix($otherStr)
+    {
+        $encoding = $this->encoding;
+        $maxLength = min($this->length(), \mb_strlen($otherStr, $encoding));
+        $longestCommonPrefix = '';
+        for ($i = 0; $i < $maxLength; $i++) {
+            $char = \mb_substr($this->str, $i, 1, $encoding);
+            if ($char == \mb_substr($otherStr, $i, 1, $encoding)) {
+                $longestCommonPrefix .= $char;
+            } else {
+                break;
+            }
+        }
+        return static::create($longestCommonPrefix, $encoding);
+    }
+    
+    public function longestCommonSuffix($otherStr)
+    {
+        $encoding = $this->encoding;
+        $maxLength = min($this->length(), \mb_strlen($otherStr, $encoding));
+        $longestCommonSuffix = '';
+        for ($i = 1; $i <= $maxLength; $i++) {
+            $char = \mb_substr($this->str, -$i, 1, $encoding);
+            if ($char == \mb_substr($otherStr, -$i, 1, $encoding)) {
+                $longestCommonSuffix = $char . $longestCommonSuffix;
+            } else {
+                break;
+            }
+        }
+        return static::create($longestCommonSuffix, $encoding);
+    }
+    
+    public function longestCommonSubstring($otherStr)
+    {
+        // Uses dynamic programming to solve
+        // http://en.wikipedia.org/wiki/Longest_common_substring_problem
+        $encoding = $this->encoding;
+        $stringy = static::create($this->str, $encoding);
+        $strLength = $stringy->length();
+        $otherLength = \mb_strlen($otherStr, $encoding);
+        // Return if either string is empty
+        if ($strLength == 0 || $otherLength == 0) {
+            $stringy->str = '';
+        return $stringy;
+        }
+        $len = 0;
+        $end = 0;
+        $table = array_fill(0, $strLength + 1,
+            array_fill(0, $otherLength + 1, 0));
+        for ($i = 1; $i <= $strLength; $i++) {
+            for ($j = 1; $j <= $otherLength; $j++) {
+                $strChar = \mb_substr($stringy->str, $i - 1, 1, $encoding);
+                $otherChar = \mb_substr($otherStr, $j - 1, 1, $encoding);
+                if ($strChar == $otherChar) {
+                    $table[$i][$j] = $table[$i - 1][$j - 1] + 1;
+                    if ($table[$i][$j] > $len) {
+                        $len = $table[$i][$j];
+                        $end = $i;
+                    }
+                } else {
+                    $table[$i][$j] = 0;
+                }
+            }
+        }
+        $stringy->str = \mb_substr($stringy->str, $end - $len, $len, $encoding);
+        return $stringy;
+    }
 }

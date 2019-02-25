@@ -5,7 +5,13 @@
 #include "php.h"
 #include "common.h"
 #include "ext/standard/php_standard.h"
+#include "log.h"
 
-// void php_startup_register_functions(zend_function_entry *zend_function_entry);
-bool zval_equal(zval *first, zval *second);
+int strsplit (const char *, char *[], const char *);
+
+bool zval_str_equal(zval *first, zval *second);
+
+zval m_array_get(zval *array, const char *key);
+
+bool m_array_set(zval *array, const char *key, zval *value);
 #endif

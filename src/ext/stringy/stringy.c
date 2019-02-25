@@ -2320,6 +2320,285 @@ PHP_METHOD(Stringy, isBase64)
     RETURN_FALSE;
 }
 
+PHP_METHOD(Stringy, longestCommonPrefix)
+{
+    zval *otherStr;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(otherStr)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval func;
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+    size_t length = Z_LVAL_P(return_value);
+
+    zval args_mb_strlen[] = {
+        *otherStr,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_strlen");
+    call_user_function(NULL, NULL, &func, return_value, 2, args_mb_strlen);
+    size_t mb_strlen_length = Z_LVAL_P(return_value);
+
+    size_t maxLength = MIN(length, mb_strlen_length);
+    
+    zval longestCommonPrefix, i_tmp, const_substr_len, ret_first, ret_second;
+    ZVAL_EMPTY_STRING(&longestCommonPrefix);
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    ZVAL_LONG(&const_substr_len, 1);
+
+    for(int i = 0; i < maxLength; i++) {
+        ZVAL_LONG(&i_tmp, i);
+        zval args_mb_substr[] = {
+            *str,
+            i_tmp,
+            const_substr_len,
+            *encoding,
+        };
+        ZVAL_STRING(&func, "mb_substr");
+        call_user_function(NULL, NULL, &func, &ret_first, 4, args_mb_substr);
+
+        zval args_mb_substr2[] = {
+            *otherStr,
+            i_tmp,
+            const_substr_len,
+            *encoding,
+        };
+        ZVAL_STRING(&func, "mb_substr");
+        call_user_function(NULL, NULL, &func, &ret_second, 4, args_mb_substr2);
+        
+        if (zend_string_equals(Z_STR(ret_first), Z_STR(ret_second)) == false) {
+            break;
+        }
+
+        concat_function(&longestCommonPrefix, &longestCommonPrefix, &ret_first);
+    }
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+
+    zval args_const[] = {
+        longestCommonPrefix,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &instance, &func, return_value, 2, args_const);
+
+    RETURN_ZVAL(&instance, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_longestCommonPrefix, 0)
+    ZEND_ARG_INFO(0, otherStr)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, longestCommonSuffix)
+{
+    zval *otherStr;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(otherStr)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval func;
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+    size_t length = Z_LVAL_P(return_value);
+
+    zval args_mb_strlen[] = {
+        *otherStr,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_strlen");
+    call_user_function(NULL, NULL, &func, return_value, 2, args_mb_strlen);
+    size_t mb_strlen_length = Z_LVAL_P(return_value);
+
+    size_t maxLength = MIN(length, mb_strlen_length);
+    
+    zval longestCommonSuffix, i_tmp, const_substr_len, ret_first, ret_second;
+    ZVAL_EMPTY_STRING(&longestCommonSuffix);
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    ZVAL_LONG(&const_substr_len, 1);
+
+    for(int i = 1; i <= maxLength; i++) {
+        ZVAL_LONG(&i_tmp, -i);
+        zval args_mb_substr[] = {
+            *str,
+            i_tmp,
+            const_substr_len,
+            *encoding,
+        };
+        ZVAL_STRING(&func, "mb_substr");
+        call_user_function(NULL, NULL, &func, &ret_first, 4, args_mb_substr);
+
+        zval args_mb_substr2[] = {
+            *otherStr,
+            i_tmp,
+            const_substr_len,
+            *encoding,
+        };
+        ZVAL_STRING(&func, "mb_substr");
+        call_user_function(NULL, NULL, &func, &ret_second, 4, args_mb_substr2);
+        
+        if (zend_string_equals(Z_STR(ret_first), Z_STR(ret_second)) == false) {
+            break;
+        }
+        zval tmp;
+        concat_function(&tmp, &ret_first, &longestCommonSuffix);
+        longestCommonSuffix = tmp;
+    }
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+
+    zval args_const[] = {
+        longestCommonSuffix,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &instance, &func, return_value, 2, args_const);
+
+    RETURN_ZVAL(&instance, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_longestCommonSuffix, 0)
+    ZEND_ARG_INFO(0, otherStr)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, longestCommonSubstring)
+{
+    // Uses dynamic programming to solve
+    // http://en.wikipedia.org/wiki/Longest_common_substring_problem
+    
+    zval *otherStr;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(otherStr)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+
+    zval instance, func;
+    object_init_ex(&instance, stringy_ce);
+
+    zval args_const[] = {
+        *str,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &instance, &func, return_value, 2, args_const);
+
+    zval strLen;
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, &instance, &func, &strLen, 0, NULL);
+
+    zval otherLength, args_mb_strlen[] = {
+        *otherStr,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_strlen");
+    call_user_function(NULL, NULL, &func, &otherLength, 2, args_mb_strlen);
+
+    if (Z_LVAL(strLen) == 0 || Z_LVAL(otherLength) == 0) {
+        zend_update_property_stringl(stringy_ce, &instance, ZEND_STRL("str"), ZEND_STRL(""));
+        RETURN_ZVAL(&instance, 0, 1);
+    }
+
+    zval len, end, table, tmp, zero;
+    ZVAL_LONG(&len, 0);
+    ZVAL_LONG(&end, 0);
+    ZVAL_LONG(&zero, 0);
+    ZVAL_LONG(&otherLength, Z_LVAL(otherLength)+1);
+    ZVAL_LONG(&strLen, Z_LVAL(strLen)+1);
+    array_init(&table);
+
+    zval args_array_fill[] = {
+        zero,
+        otherLength,
+        zero,
+    };
+    ZVAL_STRING(&func, "array_fill");
+    call_user_function(NULL, NULL, &func, return_value, 3, args_array_fill);
+
+    zval args_array_fill2[] = {
+        zero,
+        strLen,
+        *return_value,
+    };
+    call_user_function(NULL, NULL, &func, &table, 3, args_array_fill2);
+
+    zval strChar, otherChar, i_tmp, j_tmp, const_substr_len;
+    ZVAL_LONG(&const_substr_len, 1);
+    for(int i = 1; i < Z_LVAL(strLen); i++) {
+        ZVAL_LONG(&i_tmp, i - 1);
+        zval args_mb_strlen[] = {
+                *str,
+                i_tmp,
+                const_substr_len,
+                *encoding,
+        };
+        ZVAL_STRING(&func, "mb_substr");
+        call_user_function(NULL, NULL, &func, &strChar, 4, args_mb_strlen);
+        
+        zend_array *ht = Z_ARRVAL(table);
+        for(int j = 1; j < Z_LVAL(otherLength); j++) {
+            ZVAL_LONG(&j_tmp, j - 1);
+            zval args_mb_strlen2[] = {
+                *otherStr,
+                j_tmp,
+                const_substr_len,
+                *encoding,
+            };
+            ZVAL_STRING(&func, "mb_substr");
+            call_user_function(NULL, NULL, &func, &otherChar, 4, args_mb_strlen2);
+         
+            zval *tmp = zend_hash_index_find(ht, i);
+            if (zend_string_equals(Z_STR(otherChar), Z_STR(strChar))) {
+                zval *tmp2 = zend_hash_index_find(ht, i - 1);
+                tmp2 = zend_hash_index_find(Z_ARRVAL_P(tmp2), j - 1);
+                zval value;
+                ZVAL_LONG(&value, Z_LVAL_P(tmp2) + 1);
+
+                zval_add_ref(&value);
+                zend_hash_index_update(Z_ARR_P(tmp), j, &value);
+
+                if (Z_LVAL(value) > Z_LVAL(len)) {
+                    ZVAL_LONG(&len, Z_LVAL(value));
+                    ZVAL_LONG(&end, i);
+                }
+            } else {
+                zval_add_ref(&zero);
+                zend_hash_index_update(Z_ARR_P(tmp), j, &zero);
+            }
+
+            zval_add_ref(tmp);
+            zend_hash_index_update(ht, j, tmp);
+        }
+    }
+
+    zval end_len;
+    ZVAL_LONG(&end_len, Z_LVAL(end) - Z_LVAL(len));
+
+    zval args_mb_strlen3[] = {
+        *str,
+        end_len,
+        len,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_substr");
+    call_user_function(NULL, NULL, &func, return_value, 4, args_mb_strlen3);
+
+    zend_update_property(stringy_ce, &instance, ZEND_STRL("str"), return_value);
+
+    RETURN_ZVAL(&instance, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_longestCommonSubstring, 0)
+    ZEND_ARG_INFO(0, otherStr)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -2384,6 +2663,9 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, isJson, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, isSerialized, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, isBase64, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, longestCommonPrefix, arginfo_longestCommonPrefix, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, longestCommonSuffix, arginfo_longestCommonSuffix, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, longestCommonSubstring, arginfo_longestCommonSubstring, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

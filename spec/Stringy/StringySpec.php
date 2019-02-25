@@ -1450,4 +1450,89 @@ use function Kahlan\describe;
             });
         }
     });
+
+    context('test longestCommonPrefix', function () {
+        $data = [
+            ['foo', 'foobar', 'foo bar'],
+            ['foo bar', 'foo bar', 'foo bar'],
+            ['f', 'foo bar', 'far boo'],
+            ['', 'toy car', 'foo bar'],
+            ['', 'foo bar', ''],
+            ['fòô', 'fòôbar', 'fòô bar', 'UTF-8'],
+            ['fòô bar', 'fòô bar', 'fòô bar', 'UTF-8'],
+            ['fò', 'fòô bar', 'fòr bar', 'UTF-8'],
+            ['', 'toy car', 'fòô bar', 'UTF-8'],
+            ['', 'fòô bar', '', 'UTF-8'],
+        ];
+
+        foreach($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+                @list($expected, $str, $otherStr, $encoding) = $value;
+
+                $stringy = __('Stringy')::create($str);
+                $result = $stringy->longestCommonPrefix($otherStr);
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
+
+    context('test longestCommonSuffix', function () {
+        $data = [
+            ['bar', 'foobar', 'foo bar'],
+            ['foo bar', 'foo bar', 'foo bar'],
+            ['ar', 'foo bar', 'boo far'],
+            ['', 'foo bad', 'foo bar'],
+            ['', 'foo bar', ''],
+            ['bàř', 'fòôbàř', 'fòô bàř', 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', 'fòô bàř', 'UTF-8'],
+            [' bàř', 'fòô bàř', 'fòr bàř', 'UTF-8'],
+            ['', 'toy car', 'fòô bàř', 'UTF-8'],
+            ['', 'fòô bàř', '', 'UTF-8'],
+        ];
+
+        foreach($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+                @list($expected, $str, $otherStr, $encoding) = $value;
+
+                $stringy = __('Stringy')::create($str);
+                $result = $stringy->longestCommonSuffix($otherStr);
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
+
+    xcontext('test longestCommonSubstring', function () {
+        $data = [
+            // ['ff', 'aff', 'ff'],
+            // ['foo', 'foobar', 'foo bar'],
+            // ['foo bar', 'foo bar', 'foo bar'],
+            // ['oo ', 'foo bar', 'boo far'],
+            // ['foo ba', 'foo bad', 'foo bar'],
+            // ['', 'foo bar', ''],
+            // ['fòô', 'fòôbàř', 'fòô bàř', 'UTF-8'],
+            // ['fòô bàř', 'fòô bàř', 'fòô bàř', 'UTF-8'],
+            [' bàř', 'fòô bàř', 'fòr bàř', 'UTF-8'],
+            [' ', 'toy car', 'fòô bàř', 'UTF-8'],
+            ['', 'fòô bàř', '', 'UTF-8'],
+        ];
+
+        foreach($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+                @list($expected, $str, $otherStr, $encoding) = $value;
+
+                $stringy = __('Stringy')::create($str);
+                $result = $stringy->longestCommonSubstring($otherStr);
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
 });

@@ -42,5 +42,21 @@ function __(string $str): string
 
 function __formatMessage(string $message, array $data): string
 {
-    return sprintf('%s: ==> %s <==', $message, json_encode($data));
+    return sprintf('%s: ==> %s <==', $message, json_encode($data, JSON_UNESCAPED_UNICODE));
+}
+
+function __debug_array(array $arr): string
+{
+    $i = $j = 0;
+
+    $ret = '';
+    for ($i = 0; $i < count($arr); $i++) {
+        for ($j = 0; $j < count($arr[$i]); $j++) {
+            $ret .= " ($i, $j) ";
+        }
+        $ret .= "\n";
+    }
+    $ret .= "\n";
+
+    return $ret;
 }

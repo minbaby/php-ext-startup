@@ -17,6 +17,13 @@ PHP_ARG_ENABLE(startup, whether to enable startup support,
 dnl Make sure that the comment is aligned:
 [  --enable-startup           Enable startup support])
 
+if test -z "$PHP_DEBUG"; then
+  AC_ARG_ENABLE(debug,
+    [--enable-debug  compile with debugging system],
+    [PHP_DEBUG=$enableval], [PHP_DEBUG=no]
+  )
+fi
+
 if test "$PHP_STARTUP" != "no"; then
   dnl Write more examples of tests here...
 
@@ -65,11 +72,24 @@ if test "$PHP_STARTUP" != "no"; then
               src/ext/stringy/stringy.c";
 
   PHP_NEW_EXTENSION(startup, $source, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
+
+  dnl configure can't use ".." as a source filename, so we make a link here
+  # ln -sf $ext_srcdir/../common $ext_srcdir
+  # ln -sf $ext_srcdir/../deps $ext_srcdir
+  # ln -sf ./thirdParty/rxi-log include/rxi-log
+
+  dnl add common include path
+  PHP_ADD_INCLUDE(thirdParty/rxi-log/src)
+
+  # PHP_ADD_SOURCES(thirdParty/rxi-log/src)
+
+  PHP_ADD_MAKEFILE_FRAGMENT
 fi
 
-if test -z "$PHP_DEBUG"; then
-  AC_ARG_ENABLE(debug,
-    [--enable-debug  compile with debugging system],
-    [PHP_DEBUG=$enableval], [PHP_DEBUG=no]
-  )
-fi
+if test "$PHP_DEBUG" != "no"; then
+    dnl 是，则设置 C 语言宏指令
+    AC_DEFINE(PHP_DEBUG, 1, [Include debugging support in ext1])
+    AC_DEFINE(PHP_EXT_DEBUG, 1, [Include debugging support in ext])
+  fi
+
+

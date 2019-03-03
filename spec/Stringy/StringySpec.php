@@ -1535,4 +1535,125 @@ use function Kahlan\describe;
             });
         }
     });
+
+    context('test pad', function () {
+        $data = [
+            // length <= str
+            ['foo bar', 'foo bar', -1],
+            ['foo bar', 'foo bar', 7],
+            ['fòô bàř', 'fòô bàř', 7, ' ', 'right', 'UTF-8'],
+            // right
+            ['foo bar  ', 'foo bar', 9],
+            ['foo bar_*', 'foo bar', 9, '_*', 'right'],
+            ['fòô bàř¬ø¬', 'fòô bàř', 10, '¬ø', 'right', 'UTF-8'],
+            // left
+            ['  foo bar', 'foo bar', 9, ' ', 'left'],
+            ['_*foo bar', 'foo bar', 9, '_*', 'left'],
+            ['¬ø¬fòô bàř', 'fòô bàř', 10, '¬ø', 'left', 'UTF-8'],
+            // both
+            ['foo bar ', 'foo bar', 8, ' ', 'both'],
+            ['¬fòô bàř¬ø', 'fòô bàř', 10, '¬ø', 'both', 'UTF-8'],
+            ['¬øfòô bàř¬øÿ', 'fòô bàř', 12, '¬øÿ', 'both', 'UTF-8']
+        ];
+
+        foreach($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+                @list($expected, $str, $length, $padStr, $padType, $encoding) = $value;
+                
+                $padType = $padType ?? 'right';
+
+                $padStr = $padStr ?? ' ';
+
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->pad($length, $padStr, $padType);
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
+
+    context('test padLeft', function () {
+        $data = [
+            ['  foo bar', 'foo bar', 9],
+            ['_*foo bar', 'foo bar', 9, '_*'],
+            ['_*_foo bar', 'foo bar', 10, '_*'],
+            ['  fòô bàř', 'fòô bàř', 9, ' ', 'UTF-8'],
+            ['¬øfòô bàř', 'fòô bàř', 9, '¬ø', 'UTF-8'],
+            ['¬ø¬fòô bàř', 'fòô bàř', 10, '¬ø', 'UTF-8'],
+            ['¬ø¬øfòô bàř', 'fòô bàř', 11, '¬ø', 'UTF-8'],
+        ];
+
+        foreach($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+                @list($expected, $str, $length, $padStr, $encoding) = $value;
+
+                $padStr = $padStr ?? ' ';
+
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->padLeft($length, $padStr);
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
+    context('test padRight', function () {
+        $data = [
+            ['foo bar  ', 'foo bar', 9],
+            ['foo bar_*', 'foo bar', 9, '_*'],
+            ['foo bar_*_', 'foo bar', 10, '_*'],
+            ['fòô bàř  ', 'fòô bàř', 9, ' ', 'UTF-8'],
+            ['fòô bàř¬ø', 'fòô bàř', 9, '¬ø', 'UTF-8'],
+            ['fòô bàř¬ø¬', 'fòô bàř', 10, '¬ø', 'UTF-8'],
+            ['fòô bàř¬ø¬ø', 'fòô bàř', 11, '¬ø', 'UTF-8'],
+        ];
+
+        foreach($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+                @list($expected, $str, $length, $padStr, $encoding) = $value;
+
+                $padStr = $padStr ?? ' ';
+
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->padRight($length, $padStr);
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
+    context('test padBoth', function () {
+        $data = [
+            ['foo bar ', 'foo bar', 8],
+            [' foo bar ', 'foo bar', 9, ' '],
+            ['fòô bàř ', 'fòô bàř', 8, ' ', 'UTF-8'],
+            [' fòô bàř ', 'fòô bàř', 9, ' ', 'UTF-8'],
+            ['fòô bàř¬', 'fòô bàř', 8, '¬ø', 'UTF-8'],
+            ['¬fòô bàř¬', 'fòô bàř', 9, '¬ø', 'UTF-8'],
+            ['¬fòô bàř¬ø', 'fòô bàř', 10, '¬ø', 'UTF-8'],
+            ['¬øfòô bàř¬ø', 'fòô bàř', 11, '¬ø', 'UTF-8'],
+            ['¬fòô bàř¬ø', 'fòô bàř', 10, '¬øÿ', 'UTF-8'],
+            ['¬øfòô bàř¬ø', 'fòô bàř', 11, '¬øÿ', 'UTF-8'],
+            ['¬øfòô bàř¬øÿ', 'fòô bàř', 12, '¬øÿ', 'UTF-8']
+        ];
+
+        foreach($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+                @list($expected, $str, $length, $padStr, $encoding) = $value;
+
+                $padStr = $padStr ?? ' ';
+
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->padBoth($length, $padStr);
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
 });

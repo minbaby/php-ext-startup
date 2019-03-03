@@ -2599,6 +2599,290 @@ ZEND_BEGIN_ARG_INFO(arginfo_longestCommonSubstring, 0)
     ZEND_ARG_INFO(0, otherStr)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, pad) 
+{
+    zval *length, *padStr, *padType;
+    ZEND_PARSE_PARAMETERS_START(1, 3)
+        Z_PARAM_ZVAL(length)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(padStr)
+        Z_PARAM_ZVAL(padType)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (padStr == NULL) {
+        padStr = malloc(sizeof(zval));
+        ZVAL_STRING(padStr, " ");
+    }
+
+    if (padType == NULL) {
+        padType = malloc(sizeof(zval));
+        ZVAL_STRING(padType, "right");
+    }
+
+    zval left, right, both;
+    ZVAL_STRING(&left, "left");
+    ZVAL_STRING(&right, "right");
+    ZVAL_STRING(&both, "both");
+
+    zval func;
+    
+    if (zval_str_equal(&left, padType)) {
+        ZVAL_STRING(&func, "padLeft");
+    } else if (zval_str_equal(&right, padType) == 1) {
+        ZVAL_STRING(&func, "padRight");
+    } else if (zval_str_equal(&both, padType) == 1) {
+        ZVAL_STRING(&func, "padBoth");
+    } else {
+        zend_throw_exception_ex(
+            spl_ce_InvalidArgumentException, 
+            0, 
+            "Pad expects %s to be one of 'left', 'right' or 'both'",
+            Z_STRVAL_P(padType)
+        );
+    }
+
+    zval args[] = {
+        *length, 
+        *padStr
+    };
+
+    call_user_function(NULL, getThis(), &func, return_value, 2, args);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_pad, 0)
+    ZEND_ARG_INFO(0, length)
+    ZEND_ARG_INFO(0, padStr)
+    ZEND_ARG_INFO(0, padType)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, applyPadding) 
+{
+    zval *left, *right, *padStr;
+    ZEND_PARSE_PARAMETERS_START(0, 3)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(left);
+        Z_PARAM_ZVAL(right);
+        Z_PARAM_ZVAL(padStr);
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv, zero;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 1, &rv);
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 1, &rv);
+
+    ZVAL_LONG(&zero, 0);
+
+    if (left == NULL) {
+        left = malloc(sizeof(zval));
+        ZVAL_LONG(left, 0);
+    }
+
+    if (Z_TYPE_P(left) != IS_LONG) {
+        convert_to_long(left);
+    }
+
+    if (right == NULL) {
+        right = malloc(sizeof(zval));
+        ZVAL_LONG(right, 0);
+    }
+
+    if (Z_TYPE_P(right) != IS_LONG) {
+        convert_to_long(right);
+    }
+
+    if (padStr == NULL) {
+        padStr = malloc(sizeof(zval));
+        ZVAL_STRING(padStr, " ");
+    }
+
+    zval stringy;
+    object_init_ex(&stringy, stringy_ce);
+    zval func, args[] = {
+        *str,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &stringy, &func, return_value, 2, args);
+
+    zval length;
+    zval args_mb_strlen[] = {
+        *padStr,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_strlen");
+    call_user_function(NULL, NULL, &func, &length, 2, args_mb_strlen);
+
+    zval strLength;
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, &stringy, &func, return_value, 0, NULL);
+
+    zval paddedLength;
+    ZVAL_LONG(&paddedLength, Z_LVAL(strLength) + Z_LVAL_P(left) + Z_LVAL_P(right));
+    
+    if (Z_TYPE(length) == IS_FALSE || Z_LVAL(paddedLength) <= Z_LVAL(strLength)) {
+        RETURN_ZVAL(&stringy, 0, 1);
+    }
+
+    zval str_repeat_0;
+    zval str_repeat_0_val;
+    ZVAL_LONG(&str_repeat_0_val, ceil(Z_LVAL_P(left)/(float)Z_LVAL(length)));
+    zval args_str_repeat[] = {
+        *padStr,
+        str_repeat_0_val,
+    };
+    ZVAL_STRING(&func, "str_repeat");
+    call_user_function(NULL, NULL, &func, &str_repeat_0, 2, args_str_repeat);
+
+    zval leftPadding;
+    zval args_leftPadding[] = {
+        str_repeat_0,
+        zero,
+        *left,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_substr");
+    call_user_function(NULL, NULL, &func, &leftPadding, 4, args_leftPadding);
+
+    zval str_repeat_1;
+    zval str_repeat_1_val;
+    ZVAL_LONG(&str_repeat_1_val, ceil(Z_LVAL_P(right)/(float)Z_LVAL(length)));
+    zval args_str_repeat_1[] = {
+        *padStr,
+        str_repeat_1_val,
+    };
+    ZVAL_STRING(&func, "str_repeat");
+    call_user_function(NULL, NULL, &func, &str_repeat_1, 2, args_str_repeat_1);
+
+    zval rightPadding;
+    zval args_rightPadding[] = {
+        str_repeat_1,
+        zero,
+        *right,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_substr");
+    call_user_function(NULL, NULL, &func, &rightPadding, 4, args_rightPadding);
+
+    zval x;
+    concat_function(&x, &leftPadding, str);
+    concat_function(&x, &x, &rightPadding);
+
+    RETURN_ZVAL(&x, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_applyPadding, 0)
+    ZEND_ARG_INFO(0, left)
+    ZEND_ARG_INFO(0, right)
+    ZEND_ARG_INFO(0, padStr)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, padLeft)
+{
+    zval *length, *padStr;
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_ZVAL(length)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(padStr)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (padStr == NULL) {
+        padStr = malloc(sizeof(zval));
+        ZVAL_STRING(padStr, " ");
+    }
+
+    zval zero;
+    ZVAL_LONG(&zero, 0);
+
+    zval func;
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+
+    zval first;
+    ZVAL_LONG(&first, Z_LVAL_P(length) - Z_LVAL_P(return_value));
+    zval args[] = {
+        first,
+        zero,
+        *padStr,
+    };
+    ZVAL_STRING(&func, "applyPadding");
+    call_user_function(NULL, getThis(), &func, return_value, 3, args);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_padLeft, 0)
+    ZEND_ARG_INFO(0, length)
+    ZEND_ARG_INFO(0, padStr)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, padRight)
+{
+    zval *length, *padStr;
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_ZVAL(length)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(padStr)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (padStr == NULL) {
+        padStr = malloc(sizeof(zval));
+        ZVAL_STRING(padStr, " ");
+    }
+
+    zval zero;
+    ZVAL_LONG(&zero, 0);
+
+    zval func;
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+
+    zval value;
+    ZVAL_LONG(&value, Z_LVAL_P(length) - Z_LVAL_P(return_value));
+    zval args[] = {
+        zero,
+        value,
+        *padStr,
+    };
+    ZVAL_STRING(&func, "applyPadding");
+    call_user_function(NULL, getThis(), &func, return_value, 3, args);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_padRight, 0)
+    ZEND_ARG_INFO(0, length)
+    ZEND_ARG_INFO(0, padStr)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, padBoth)
+{
+    zval *length, *padStr;
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_ZVAL(length)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(padStr)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (padStr == NULL) {
+        padStr = malloc(sizeof(zval));
+        ZVAL_STRING(padStr, " ");
+    }
+
+    zval func;
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+
+    zval value;
+    ZVAL_LONG(&value, Z_LVAL_P(length) - Z_LVAL_P(return_value));
+
+    zval first, second;
+    ZVAL_LONG(&first, floor(Z_LVAL(value) / 2.0));
+    ZVAL_LONG(&second, ceil(Z_LVAL(value) / 2.0);)
+
+    zval args[] = {
+        first,
+        second,
+        *padStr,
+    };
+    ZVAL_STRING(&func, "applyPadding");
+    call_user_function(NULL, getThis(), &func, return_value, 3, args);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_padBoth, 0)
+    ZEND_ARG_INFO(0, length)
+    ZEND_ARG_INFO(0, padStr)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -2666,6 +2950,11 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, longestCommonPrefix, arginfo_longestCommonPrefix, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, longestCommonSuffix, arginfo_longestCommonSuffix, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, longestCommonSubstring, arginfo_longestCommonSubstring, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, pad, arginfo_pad, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, padLeft, arginfo_padLeft, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, padRight, arginfo_padRight, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, padBoth, arginfo_padBoth, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, applyPadding, arginfo_applyPadding, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

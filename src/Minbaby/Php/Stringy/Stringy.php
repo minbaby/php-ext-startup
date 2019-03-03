@@ -678,4 +678,54 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $stringy->str = \mb_substr($stringy->str, $end - $len, $len, $encoding);
         return $stringy;
     }
+
+    public function pad($length, $padStr = ' ', $padType = 'right')
+    {
+        if (!in_array($padType, ['left', 'right', 'both'])) {
+            throw new InvalidArgumentException('Pad expects $padType ' .
+                "to be one of 'left', 'right' or 'both'");
+        }
+        switch ($padType) {
+            case 'left':
+                return $this->padLeft($length, $padStr);
+            case 'right':
+                return $this->padRight($length, $padStr);
+            default:
+                return $this->padBoth($length, $padStr);
+        }
+    }
+
+    public function padBoth($length, $padStr = ' ')
+    {
+        $padding = $length - $this->length();
+        return $this->applyPadding(floor($padding / 2), ceil($padding / 2),
+            $padStr);
+    }
+
+    public function padLeft($length, $padStr = ' ')
+    {
+        return $this->applyPadding($length - $this->length(), 0, $padStr);
+    }
+
+    public function padRight($length, $padStr = ' ')
+    {
+        return $this->applyPadding(0, $length - $this->length(), $padStr);
+    }
+
+    protected function applyPadding($left = 0, $right = 0, $padStr = ' ')
+    {
+        $stringy = static::create($this->str, $this->encoding);
+        $length = \mb_strlen($padStr, $stringy->encoding);
+        $strLength = $stringy->length();
+        $paddedLength = $strLength + $left + $right;
+        if (!$length || $paddedLength <= $strLength) {
+            return $stringy;
+        }
+        $leftPadding = \mb_substr(str_repeat($padStr, ceil($left / $length)), 0,
+            $left, $stringy->encoding);
+        $rightPadding = \mb_substr(str_repeat($padStr, ceil($right / $length)),
+            0, $right, $stringy->encoding);
+        $stringy->str = $leftPadding . $stringy->str . $rightPadding;
+        return $stringy;
+    }
 }

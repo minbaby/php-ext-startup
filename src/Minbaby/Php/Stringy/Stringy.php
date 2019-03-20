@@ -728,4 +728,15 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $stringy->str = $leftPadding . $stringy->str . $rightPadding;
         return $stringy;
     }
+
+    public function repeat($multiplier)
+    {
+        $repeated = str_repeat($this->str, $multiplier);
+        return static::create($repeated, $this->encoding);
+    }
+
+    public function replace($search, $replacement)
+    {
+        return $this->regexReplace(preg_quote($search), $replacement);
+    }
 }

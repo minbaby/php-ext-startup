@@ -1656,4 +1656,62 @@ use function Kahlan\describe;
             });
         }
     });
+
+    context('test repeat', function () {
+        $data = [
+            ['', 'foo', 0],
+            ['foo', 'foo', 1],
+            ['foofoo', 'foo', 2],
+            ['foofoofoo', 'foo', 3],
+            ['fòô', 'fòô', 1, 'UTF-8'],
+            ['fòôfòô', 'fòô', 2, 'UTF-8'],
+            ['fòôfòôfòô', 'fòô', 3, 'UTF-8']
+        ];
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+                @list($expected, $str, $multiplier, $encoding) = $value;
+                
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->repeat($multiplier);
+                
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
+
+    context('test replace', function () {
+        $data = [
+            ['', '', '', ''],
+            ['foo', '', '', 'foo'],
+            ['foo', '\s', '\s', 'foo'],
+            ['foo bar', 'foo bar', '', ''],
+            ['foo bar', 'foo bar', 'f(o)o', '\1'],
+            ['\1 bar', 'foo bar', 'foo', '\1'],
+            ['bar', 'foo bar', 'foo ', ''],
+            ['far bar', 'foo bar', 'foo', 'far'],
+            ['bar bar', 'foo bar foo bar', 'foo ', ''],
+            ['', '', '', '', 'UTF-8'],
+            ['fòô', '', '', 'fòô', 'UTF-8'],
+            ['fòô', '\s', '\s', 'fòô', 'UTF-8'],
+            ['fòô bàř', 'fòô bàř', '', '', 'UTF-8'],
+            ['bàř', 'fòô bàř', 'fòô ', '', 'UTF-8'],
+            ['far bàř', 'fòô bàř', 'fòô', 'far', 'UTF-8'],
+            ['bàř bàř', 'fòô bàř fòô bàř', 'fòô ', '', 'UTF-8'],
+        ];
+
+        foreach($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+                @list($expected, $str, $search, $replacement, $encoding) = $value;
+                
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->replace($search, $replacement);
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
 });

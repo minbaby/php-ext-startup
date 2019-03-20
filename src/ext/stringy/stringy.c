@@ -2724,42 +2724,52 @@ PHP_METHOD(Stringy, applyPadding)
     zval str_repeat_0;
     zval str_repeat_0_val;
     ZVAL_LONG(&str_repeat_0_val, ceil(Z_LVAL_P(left)/(float)Z_LVAL(length)));
-    zval args_str_repeat[] = {
-        *padStr,
-        str_repeat_0_val,
-    };
-    ZVAL_STRING(&func, "str_repeat");
-    call_user_function(NULL, NULL, &func, &str_repeat_0, 2, args_str_repeat);
+    zval leftPadding;    
+    if (Z_LVAL(str_repeat_0_val) >=0)
+    {
+        zval args_str_repeat[] = {
+            *padStr,
+            str_repeat_0_val,
+        };
+        ZVAL_STRING(&func, "str_repeat");
+        call_user_function(NULL, NULL, &func, &str_repeat_0, 2, args_str_repeat);
 
-    zval leftPadding;
-    zval args_leftPadding[] = {
-        str_repeat_0,
-        zero,
-        *left,
-        *encoding,
-    };
-    ZVAL_STRING(&func, "mb_substr");
-    call_user_function(NULL, NULL, &func, &leftPadding, 4, args_leftPadding);
+        zval args_leftPadding[] = {
+            str_repeat_0,
+            zero,
+            *left,
+            *encoding,
+        };
+        ZVAL_STRING(&func, "mb_substr");
+        call_user_function(NULL, NULL, &func, &leftPadding, 4, args_leftPadding);
+    } else {
+        ZVAL_STRING(&leftPadding, "");
+    }
 
     zval str_repeat_1;
     zval str_repeat_1_val;
     ZVAL_LONG(&str_repeat_1_val, ceil(Z_LVAL_P(right)/(float)Z_LVAL(length)));
-    zval args_str_repeat_1[] = {
-        *padStr,
-        str_repeat_1_val,
-    };
-    ZVAL_STRING(&func, "str_repeat");
-    call_user_function(NULL, NULL, &func, &str_repeat_1, 2, args_str_repeat_1);
+    zval rightPadding;    
+    if (Z_LVAL(str_repeat_1_val) >=0)
+    {
+        zval args_str_repeat_1[] = {
+            *padStr,
+            str_repeat_1_val,
+        };
+        ZVAL_STRING(&func, "str_repeat");
+        call_user_function(NULL, NULL, &func, &str_repeat_1, 2, args_str_repeat_1);
 
-    zval rightPadding;
-    zval args_rightPadding[] = {
-        str_repeat_1,
-        zero,
-        *right,
-        *encoding,
-    };
-    ZVAL_STRING(&func, "mb_substr");
-    call_user_function(NULL, NULL, &func, &rightPadding, 4, args_rightPadding);
+        zval args_rightPadding[] = {
+            str_repeat_1,
+            zero,
+            *right,
+            *encoding,
+        };
+        ZVAL_STRING(&func, "mb_substr");
+        call_user_function(NULL, NULL, &func, &rightPadding, 4, args_rightPadding);
+    } else {
+        ZVAL_STRING(&rightPadding, "");
+    }
 
     zval x;
     concat_function(&x, &leftPadding, str);
@@ -2883,6 +2893,66 @@ ZEND_BEGIN_ARG_INFO(arginfo_padBoth, 0)
     ZEND_ARG_INFO(0, padStr)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, repeat)
+{
+    zval *multilpier;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(multilpier)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+    zval func, args[] = {
+        *str,
+        *multilpier,
+    };
+    ZVAL_STRING(&func, "str_repeat");
+    call_user_function(NULL, NULL, &func, return_value, 2, args);
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+    
+    zval args_construct[] = {
+        *return_value,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &instance, &func, return_value, 2, args_construct);
+
+    RETURN_ZVAL(&instance, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_repeat, 0)
+    ZEND_ARG_INFO(0, multiplier)
+ZEND_END_ARG_INFO();
+
+PHP_METHOD(Stringy, replace)
+{
+    zval *search, *replacement;
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_ZVAL(search)
+        Z_PARAM_ZVAL(replacement)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval func, delimiter;
+    ZVAL_STRING(&func, "preg_quote");
+    zval args[] =  {
+        *search,
+    };
+    call_user_function(NULL, NULL, &func, return_value, 1, args);
+    
+    ZVAL_STRING(&func, "regexReplace");
+    zval args_regex[] =  {
+        *return_value,
+        *replacement,
+    };
+    call_user_function(NULL, getThis(), &func, return_value, 2, args_regex);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_replace, 0)
+    ZEND_ARG_INFO(0, search)
+    ZEND_ARG_INFO(0, replacement)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -2955,6 +3025,8 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, padRight, arginfo_padRight, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, padBoth, arginfo_padBoth, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, applyPadding, arginfo_applyPadding, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, repeat, arginfo_repeat, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, replace, arginfo_replace, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

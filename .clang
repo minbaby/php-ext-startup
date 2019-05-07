@@ -1,0 +1,6 @@
+-I/home/minbaby-debain/.phpbrew/php/php-7.1.23/include/php
+-I/home/minbaby-debain/.phpbrew/php/php-7.1.23/include/php/main
+-I/home/minbaby-debain/.phpbrew/php/php-7.1.23/include/php/TSRM
+-I/home/minbaby-debain/.phpbrew/php/php-7.1.23/include/php/Zend
+-I/home/minbaby-debain/.phpbrew/php/php-7.1.23/include/php/ext
+-I/home/minbaby-debain/.phpbrew/php/php-7.1.23/include/php/ext/date/lib

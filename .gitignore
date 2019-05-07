@@ -1,6 +1,7 @@
 .deps
 *.lo
 *.la
+*.so
 .libs
 acinclude.m4
 aclocal.m4
@@ -47,3 +48,12 @@ GPATH
 /.gdb_history
 peda-session-php.txt
 /coverage.xml
+/.vscode/ipch
+
+#clion
+/.idea/
+CMakeCache.txt
+/CMakeFiles/
+/cmake-build-debug/
+cmake_install.cmake
+php_ext_startup.cbp

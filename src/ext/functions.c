@@ -1,7 +1,6 @@
 #include "functions.h"
 
-
-int strsplit (const char *str, char *parts[], const char *delimiter) {
+int strsplit(const char *str, char *parts[], const char *delimiter) {
   char *pch;
   int i = 0;
   char *copy = NULL, *tmp = NULL;
@@ -31,7 +30,6 @@ int strsplit (const char *str, char *parts[], const char *delimiter) {
 
   free(copy);
   return i;
-
  bad:
   free(copy);
   for (int j = 0; j < i; j++)

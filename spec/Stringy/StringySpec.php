@@ -661,7 +661,7 @@ use function Kahlan\describe;
         }
     });
 
-    it('test CollapseWhitespace', function () {
+    xit('test CollapseWhitespace', function () {
         $data = [
             ['foo bar', '  foo   bar  '],
             ['test string', 'test string'],
@@ -1711,6 +1711,47 @@ use function Kahlan\describe;
                 \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
                 \expect((string) $stringy)->toBe($str);
                 \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
+
+    context('test toAsiic', function ()  {
+        $data = [
+            ['foo bar', 'fòô bàř'],
+            [' TEST ', ' ŤÉŚŢ '],
+            ['f = z = 3', 'φ = ź = 3'],
+            ['perevirka', 'перевірка'],
+            ['lysaya gora', 'лысая гора'],
+            ['user@host', 'user@host'],
+            ['shchuka', 'щука'],
+            ['', '漢字'],
+            ['xin chao the gioi', 'xin chào thế giới'],
+            ['XIN CHAO THE GIOI', 'XIN CHÀO THẾ GIỚI'],
+            ['dam phat chet luon', 'đấm phát chết luôn'],
+            [' ', ' '], // no-break space (U+00A0)
+            ['           ', '           '], // spaces U+2000 to U+200A
+            [' ', ' '], // narrow no-break space (U+202F)
+            [' ', ' '], // medium mathematical space (U+205F)
+            [' ', '　'], // ideographic space (U+3000)
+            ['', '𐍉'], // some uncommon, unsupported character (U+10349)
+            ['𐍉', '𐍉', 'en', false],
+            ['aouAOU', 'äöüÄÖÜ'],
+            ['aeoeueAEOEUE', 'äöüÄÖÜ', 'de'],
+            ['aeoeueAEOEUE', 'äöüÄÖÜ', 'de_DE']
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+            @list($expected, $str, $language, $removeUnsupported) = $value;
+            $language = $language ?? 'en';
+            $removeUnsupported = $removeUnsupported ?? true;
+
+            $stringy = __('Stringy')::create($str);
+            $result = $stringy->toAscii($language, $removeUnsupported);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
             });
         }
     });

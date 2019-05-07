@@ -5,7 +5,7 @@
 #include "php.h"
 #include "common.h"
 #include "ext/standard/php_standard.h"
-#include "log.h"
+//#include "log.h"
 
 int strsplit (const char *, char *[], const char *);
 

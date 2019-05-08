@@ -2252,13 +2252,13 @@ PHP_METHOD(Stringy, isJson)
 
 PHP_METHOD(Stringy, isSerialized)
 {
-    zval empty_object_serialized;
-    ZVAL_STRING(&empty_object_serialized, "b:0;");
+    zval str_object_serialized;
+    ZVAL_STRING(&str_object_serialized, "b:0;");
 
     zval rv;
     zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
     
-    if (Z_TYPE_P(str) == Z_TYPE(empty_object_serialized) && Z_STR_P(str) == Z_STR(empty_object_serialized))
+    if (Z_TYPE_P(str) == Z_TYPE(str_object_serialized) && Z_STR_P(str) == Z_STR(str_object_serialized))
     {
         RETURN_TRUE;
     }
@@ -3988,18 +3988,18 @@ PHP_METHOD(Stringy, charsArray)
     }
     add_assoc_zval(&ret, "Zh", &tb_Zh);
 
-    zval tb_empty;
-    array_init(&tb_empty);
-    char* th_empty_arr[] = {"\xC2\xA0", "\xE2\x80\x80", "\xE2\x80\x81",
+    zval tb_str;
+    array_init(&tb_str);
+    char* th_str_arr[] = {"\xC2\xA0", "\xE2\x80\x80", "\xE2\x80\x81",
                         "\xE2\x80\x82", "\xE2\x80\x83", "\xE2\x80\x84",
                         "\xE2\x80\x85", "\xE2\x80\x86", "\xE2\x80\x87",
                         "\xE2\x80\x88", "\xE2\x80\x89", "\xE2\x80\x8A",
                         "\xE2\x80\xAF", "\xE2\x81\x9F", "\xE3\x80\x80",
                         "\xEF\xBE\xA0"};
     for(int i = 0; i < 16; i++) {
-        add_next_index_string(&tb_empty, th_empty_arr[i]);
+        add_next_index_string(&tb_str, th_str_arr[i]);
     }
-    add_assoc_zval(&ret, " ", &tb_empty);
+    add_assoc_zval(&ret, " ", &tb_str);
 
     RETURN_ZVAL(&ret, 0, 0);
 }
@@ -4091,6 +4091,53 @@ ZEND_BEGIN_ARG_INFO(arginfo_langSpecificCharsArray, 0)
     ZEND_ARG_INFO(0, language)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, toSpaces)
+{
+    zval * tabLength;
+    ZEND_PARSE_PARAMETERS_START(0, 1)
+        Z_PARAM_ZVAL(tabLength)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval * str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    zval * encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 1, &rv);
+
+    zval tmp_str;
+    ZVAL_STRING(&tmp_str, " ");
+
+    convert_to_long(tabLength);
+    zval func, args[] = {
+        tmp_str,
+        *tabLength,
+    };
+    ZVAL_STRING(&func, "str_repeat");
+    call_user_function(NULL, NULL, &func, return_value, 2, args);
+
+    ZVAL_STRING(&tmp_str, "\t");
+    zval args_str_replace[] = {
+        tmp_str,
+        *return_value,
+        *str,
+    };
+    ZVAL_STRING(&func, "str_replace");
+    call_user_function(NULL, NULL, &func, return_value, 3, args_str_replace);
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+
+    zval args_construct[] = {
+        *return_value,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &instance, &func, return_value, 2, args_construct);
+
+    RETURN_ZVAL(&instance, 0, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_toSpaces, 0)
+    ZEND_ARG_INFO(0, tabLength)
+ZEND_END_ARG_INFO();
+
 
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -4169,6 +4216,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, toAscii, arginfo_toAscii, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, charsArray, NULL, ZEND_ACC_PROTECTED)
     PHP_ME(Stringy, langSpecificCharsArray, arginfo_langSpecificCharsArray, ZEND_ACC_PROTECTED)
+    PHP_ME(Stringy, toSpaces, arginfo_toSpaces, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

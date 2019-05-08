@@ -950,4 +950,11 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
                         "\xEF\xBE\xA0"],
         ];
     }
+
+    public function toSpaces($tabLength = 4)
+    {
+        $spaces = str_repeat(' ', $tabLength);
+        $str = str_replace("\t", $spaces, $this->str);
+        return static::create($str, $this->encoding);
+    }
 }

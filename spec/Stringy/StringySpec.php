@@ -1755,4 +1755,29 @@ use function Kahlan\describe;
             });
         }
     });
+
+    context('test toSpaces', function ()  {
+        $data = [
+            ['    foo    bar    ', '	foo	bar	'],
+            ['     foo     bar     ', '	foo	bar	', 5],
+            ['    foo  bar  ', '		foo	bar	', 2],
+            ['foobar', '	foo	bar	', 0],
+            ["    foo\n    bar", "	foo\n	bar"],
+            ["    fòô\n    bàř", "	fòô\n	bàř"]
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+            @list($expected, $str, $tabLength) = $value;
+            $tabLength = $tabLength ?? 4;
+
+            $stringy = __('Stringy')::create($str);
+            $result = $stringy->toSpaces($tabLength);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
 });

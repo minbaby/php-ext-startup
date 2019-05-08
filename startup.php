@@ -8,4 +8,4 @@ include __DIR__.'/vendor/autoload.php';
 _ns(NS_STRINGY);
 
 
-__('Stringy')::create("afdsafsd")->toAscii();
+echo __('Stringy')::create("afds\tafsd")->toSpaces();

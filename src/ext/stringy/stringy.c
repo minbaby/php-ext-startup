@@ -2,8 +2,8 @@
 
 zend_class_entry *stringy_ce;
 
-// @TODO: 这个地方似乎用法有问题，全是动态调用本类的方法，这个思路是是面向对象的用法，理论上这个地方应该把公用的地方提取成公共方法。
-// @TODO: 先把这个写完，然后去学习一下其他项目，然后再来优化这个地方的代码，先跑起来
+// @TODO: 这个地方似乎用法有问题,全是动态调用本类的方法,这个思路是是面向对象的用法,理论上这个地方应该把公用的地方提取成公共方法。
+// @TODO: 先把这个写完,然后去学习一下其他项目,然后再来优化这个地方的代码,先跑起来
 ///* don't forget to free the zvals */
 //zval_ptr_dtor(&retval_ptr);
 //zval_dtor(&function_name);
@@ -75,7 +75,7 @@ PHP_METHOD(Stringy, __construct)
         encoding = "";
     }
 
-    // 这里需要加一下了逻辑， 如果这里需要判断 encoding 是否支持, 不支持话，就用默认的编码
+    // 这里需要加一下了逻辑, 如果这里需要判断 encoding 是否支持, 不支持话,就用默认的编码
     ZVAL_STRING(&func, "mb_list_encodings");
     call_user_function(NULL, NULL, &func, return_value, 0, NULL);
 
@@ -198,7 +198,7 @@ ZEND_ARG_INFO(0, offset)
 ZEND_END_ARG_INFO()
 
 /*{{{ int indexOf($needle, $offset = 0)
-    TODO: 这个和上个重复率太高，暂时不知道怎么优化
+    TODO: 这个和上个重复率太高,暂时不知道怎么优化
 }}}*/
 PHP_METHOD(Stringy, indexOf)
 {
@@ -949,7 +949,7 @@ static void preg_replace_callback_handler(INTERNAL_FUNCTION_PARAMETERS)
     zval *first = zend_hash_index_find(Z_ARRVAL_P(arr), 1);
     // php_var_dump(arr, 1);
     // php_var_dump(first, 1);
-    //TODO: 不知道这里如何模拟 php 里边的use， 这里先写死了
+    //TODO: 不知道这里如何模拟 php 里边的use, 这里先写死了
     zval encoding;
     ZVAL_STRING(&encoding, "UTF-8");
     zval func, args[] = {
@@ -974,7 +974,7 @@ static void preg_replace_callback_2_handler(INTERNAL_FUNCTION_PARAMETERS)
 
     zval *first = zend_hash_index_find(Z_ARRVAL_P(arr), 0);
 
-    //TODO: 不知道这里如何模拟 php 里边的use， 这里先写死了
+    //TODO: 不知道这里如何模拟 php 里边的use, 这里先写死了
     zval encoding;
     ZVAL_STRING(&encoding, "UTF-8");
     zval func, args[] = {
@@ -3055,951 +3055,196 @@ PHP_METHOD(Stringy, charsArray)
 {
     zval ret;
     array_init(&ret);
+
+    char str_arr[STRINNGY_ROW_COUNT][STRINNGY_COLUM_COUNT][10] = {
+        {"°", "₀", "۰", "０"},
+        {"¹", "₁", "۱", "１"},
+        {"²", "₂", "۲", "２"},
+        {"³", "₃", "۳", "３"},
+        {"⁴", "₄", "۴", "٤", "４"},
+        {"⁵", "₅", "۵", "٥", "５"},
+        {"⁶", "₆", "۶", "٦", "６"},
+        {"⁷", "₇", "۷", "７"},
+        {"⁸", "₈", "۸", "８"},
+        {"⁹", "₉", "۹", "９"},
+        {"à", "á", "ả", "ã", "ạ", "ă", "ắ", "ằ", "ẳ", "ẵ",
+         "ặ", "â", "ấ", "ầ", "ẩ", "ẫ", "ậ", "ā", "ą", "å",
+         "α", "ά", "ἀ", "ἁ", "ἂ", "ἃ", "ἄ", "ἅ", "ἆ", "ἇ",
+         "ᾀ", "ᾁ", "ᾂ", "ᾃ", "ᾄ", "ᾅ", "ᾆ", "ᾇ", "ὰ", "ά",
+         "ᾰ", "ᾱ", "ᾲ", "ᾳ", "ᾴ", "ᾶ", "ᾷ", "а", "أ", "အ",
+         "ာ", "ါ", "ǻ", "ǎ", "ª", "ა", "अ", "ا", "ａ", "ä"},
+        {"б", "β", "ب", "ဗ", "ბ", "ｂ"},
+        {"ç", "ć", "č", "ĉ", "ċ", "ｃ"},
+        {"ď", "ð", "đ", "ƌ", "ȡ", "ɖ", "ɗ", "ᵭ", "ᶁ", "ᶑ",
+         "д", "δ", "د", "ض", "ဍ", "ဒ", "დ", "ｄ"},
+        {"é", "è", "ẻ", "ẽ", "ẹ", "ê", "ế", "ề", "ể", "ễ",
+         "ệ", "ë", "ē", "ę", "ě", "ĕ", "ė", "ε", "έ", "ἐ",
+         "ἑ", "ἒ", "ἓ", "ἔ", "ἕ", "ὲ", "έ", "е", "ё", "э",
+         "є", "ə", "ဧ", "ေ", "ဲ", "ე", "ए", "إ", "ئ", "ｅ"},
+        {"ф", "φ", "ف", "ƒ", "ფ", "ｆ"},
+        {"ĝ", "ğ", "ġ", "ģ", "г", "ґ", "γ", "ဂ", "გ", "گ",
+         "ｇ"},
+        {"ĥ", "ħ", "η", "ή", "ح", "ه", "ဟ", "ှ", "ჰ", "ｈ"},
+        {"í", "ì", "ỉ", "ĩ", "ị", "î", "ï", "ī", "ĭ", "į",
+         "ı", "ι", "ί", "ϊ", "ΐ", "ἰ", "ἱ", "ἲ", "ἳ", "ἴ",
+         "ἵ", "ἶ", "ἷ", "ὶ", "ί", "ῐ", "ῑ", "ῒ", "ΐ", "ῖ",
+         "ῗ", "і", "ї", "и", "ဣ", "ိ", "ီ", "ည်", "ǐ", "ი",
+         "इ", "ی", "ｉ"},
+        {"ĵ", "ј", "Ј", "ჯ", "ج", "ｊ"},
+        {"ķ", "ĸ", "к", "κ", "Ķ", "ق", "ك", "က", "კ", "ქ",
+         "ک", "ｋ"},
+        {"ł", "ľ", "ĺ", "ļ", "ŀ", "л", "λ", "ل", "လ", "ლ",
+          "ｌ"},
+        {"м", "μ", "م", "မ", "მ", "ｍ"},
+        {"ñ", "ń", "ň", "ņ", "ŉ", "ŋ", "ν", "н", "ن", "န",
+         "ნ", "ｎ"},
+        {"ó", "ò", "ỏ", "õ", "ọ", "ô", "ố", "ồ", "ổ", "ỗ",
+         "ộ", "ơ", "ớ", "ờ", "ở", "ỡ", "ợ", "ø", "ō", "ő",
+         "ŏ", "ο", "ὀ", "ὁ", "ὂ", "ὃ", "ὄ", "ὅ", "ὸ", "ό",
+         "о", "و", "θ", "ို", "ǒ", "ǿ", "º", "ო", "ओ", "ｏ",
+         "ö"},
+        {"п", "π", "ပ", "პ", "پ", "ｐ"},
+        {"ყ", "ｑ"},
+        {"ŕ", "ř", "ŗ", "р", "ρ", "ر", "რ", "ｒ"},
+        {"ś", "š", "ş", "с", "σ", "ș", "ς", "س", "ص", "စ",
+         "ſ", "ს", "ｓ"},
+        {"ť", "ţ", "т", "τ", "ț", "ت", "ط", "ဋ", "တ", "ŧ",
+         "თ", "ტ", "ｔ"},
+        {"ú", "ù", "ủ", "ũ", "ụ", "ư", "ứ", "ừ", "ử", "ữ",
+         "ự", "û", "ū", "ů", "ű", "ŭ", "ų", "µ", "у", "ဉ",
+         "ု", "ူ", "ǔ", "ǖ", "ǘ", "ǚ", "ǜ", "უ", "उ", "ｕ",
+         "ў", "ü"},
+        {"в", "ვ", "ϐ", "ｖ"},
+        {"ŵ", "ω", "ώ", "ဝ", "ွ", "ｗ"},
+        {"χ", "ξ", "ｘ"},
+        {"ý", "ỳ", "ỷ", "ỹ", "ỵ", "ÿ", "ŷ", "й", "ы", "υ",
+         "ϋ", "ύ", "ΰ", "ي", "ယ", "ｙ"},
+        {"ź", "ž", "ż", "з", "ζ", "ز", "ဇ", "ზ", "ｚ"},
+        {"ع", "आ", "آ"},
+        {"æ", "ǽ"},
+        {"ऐ"},
+        {"ч", "ჩ", "ჭ", "چ"},
+        {"ђ", "đ"},
+        {"џ", "ძ"},
+        {"ऍ"},
+        {"غ", "ღ"},
+        {"ई"},
+        {"х", "خ", "ხ"},
+        {"ĳ"},
+        {"љ"},
+        {"њ"},
+        {"œ", "ؤ"},
+        {"ऑ"},
+        {"ऒ"},
+        {"ψ"},
+        {"ш", "შ", "ش"},
+        {"щ"},
+        {"ß"},
+        {"ŝ"},
+        {"þ", "ϑ", "ث", "ذ", "ظ"},
+        {"ц", "ც", "წ"},
+        {"ऊ"},
+        {"я"},
+        {"ю"},
+        {"ж", "ჟ", "ژ"},
+        {"©"},
+        {"Á", "À", "Ả", "Ã", "Ạ", "Ă", "Ắ", "Ằ", "Ẳ", "Ẵ",
+         "Ặ", "Â", "Ấ", "Ầ", "Ẩ", "Ẫ", "Ậ", "Å", "Ā", "Ą",
+         "Α", "Ά", "Ἀ", "Ἁ", "Ἂ", "Ἃ", "Ἄ", "Ἅ", "Ἆ", "Ἇ",
+         "ᾈ", "ᾉ", "ᾊ", "ᾋ", "ᾌ", "ᾍ", "ᾎ", "ᾏ", "Ᾰ", "Ᾱ",
+         "Ὰ", "Ά", "ᾼ", "А", "Ǻ", "Ǎ", "Ａ", "Ä"},
+        {"Б", "Β", "ब", "Ｂ"},
+        {"Ç", "Ć", "Č", "Ĉ", "Ċ", "Ｃ"},
+        {"Ď", "Ð", "Đ", "Ɖ", "Ɗ", "Ƌ", "ᴅ", "ᴆ", "Д", "Δ",
+         "Ｄ"},
+        {"É", "È", "Ẻ", "Ẽ", "Ẹ", "Ê", "Ế", "Ề", "Ể", "Ễ",
+         "Ệ", "Ë", "Ē", "Ę", "Ě", "Ĕ", "Ė", "Ε", "Έ", "Ἐ",
+         "Ἑ", "Ἒ", "Ἓ", "Ἔ", "Ἕ", "Έ", "Ὲ", "Е", "Ё", "Э",
+         "Є", "Ə", "Ｅ"},
+        {"Ф", "Φ", "Ｆ"},
+        {"Ğ", "Ġ", "Ģ", "Г", "Ґ", "Γ", "Ｇ"},
+        {"Η", "Ή", "Ħ", "Ｈ"},
+        {"Í", "Ì", "Ỉ", "Ĩ", "Ị", "Î", "Ï", "Ī", "Ĭ", "Į",
+         "İ", "Ι", "Ί", "Ϊ", "Ἰ", "Ἱ", "Ἳ", "Ἴ", "Ἵ", "Ἶ",
+         "Ἷ", "Ῐ", "Ῑ", "Ὶ", "Ί", "И", "І", "Ї", "Ǐ", "ϒ",
+         "Ｉ"},
+        {"Ｊ"},
+        {"К", "Κ", "Ｋ"},
+        {"Ĺ", "Ł", "Л", "Λ", "Ļ", "Ľ", "Ŀ", "ल", "Ｌ"},
+        {"М", "Μ", "Ｍ"},
+        {"Ń", "Ñ", "Ň", "Ņ", "Ŋ", "Н", "Ν", "Ｎ"},
+        {"Ó", "Ò", "Ỏ", "Õ", "Ọ", "Ô", "Ố", "Ồ", "Ổ", "Ỗ",
+         "Ộ", "Ơ", "Ớ", "Ờ", "Ở", "Ỡ", "Ợ", "Ø", "Ō", "Ő",
+         "Ŏ", "Ο", "Ό", "Ὀ", "Ὁ", "Ὂ", "Ὃ", "Ὄ", "Ὅ", "Ὸ",
+         "Ό", "О", "Θ", "Ө", "Ǒ", "Ǿ", "Ｏ", "Ö"},
+        {"П", "Π", "Ｐ"},
+        {"Ｑ"},
+        {"Ř", "Ŕ", "Р", "Ρ", "Ŗ", "Ｒ"},
+        {"Ş", "Ŝ", "Ș", "Š", "Ś", "С", "Σ", "Ｓ"},
+        {"Ť", "Ţ", "Ŧ", "Ț", "Т", "Τ", "Ｔ"},
+        {"Ú", "Ù", "Ủ", "Ũ", "Ụ", "Ư", "Ứ", "Ừ", "Ử", "Ữ",
+         "Ự", "Û", "Ū", "Ů", "Ű", "Ŭ", "Ų", "У", "Ǔ", "Ǖ",
+         "Ǘ", "Ǚ", "Ǜ", "Ｕ", "Ў", "Ü"},
+        {"В", "Ｖ"},
+        {"Ω", "Ώ", "Ŵ", "Ｗ"},
+        {"Χ", "Ξ", "Ｘ"},
+        {"Ý", "Ỳ", "Ỷ", "Ỹ", "Ỵ", "Ÿ", "Ῠ", "Ῡ", "Ὺ", "Ύ",
+         "Ы", "Й", "Υ", "Ϋ", "Ŷ", "Ｙ"},
+        {"Ź", "Ž", "Ż", "З", "Ζ", "Ｚ"},
+        {"Æ", "Ǽ"},
+        {"Ч"},
+        {"Ђ"},
+        {"Џ"},
+        {"Ĝ"},
+        {"Ĥ"},
+        {"Ĳ"},
+        {"Ĵ"},
+        {"Х"},
+        {"Љ"},
+        {"Њ"},
+        {"Œ"},
+        {"Ψ"},
+        {"Ш"},
+        {"Щ"},
+        {"ẞ"},
+        {"Þ"},
+        {"Ц"},
+        {"Я"},
+        {"Yu"},
+        {"Ж"},
+        {"\xC2\xA0", "\xE2\x80\x80", "\xE2\x80\x81",
+         "\xE2\x80\x82", "\xE2\x80\x83", "\xE2\x80\x84",
+         "\xE2\x80\x85", "\xE2\x80\x86", "\xE2\x80\x87",
+         "\xE2\x80\x88", "\xE2\x80\x89", "\xE2\x80\x8A",
+        "\xE2\x80\xAF", "\xE2\x81\x9F", "\xE3\x80\x80",
+        "\xEF\xBE\xA0"},
+    };
+    
+    char str[STRINNGY_ROW_COUNT][5] = {
+        "0", "1", "2","3","4", "5", "6", "7", "8", "9",
+        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+        "aa", "ae", "ai", "ch", "dj", "dz", "ei", "gh", "ii", "kh", "ij", "lj", "nj", "oe", "oi", "oii", "ps", "sh", "shch", "ss", "sx", "th", "ts", "uu", "ya", "yu", "zh", "(c)",
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+        "AE", "Ch", "Dj", "Dz", "Gx", "Hx", "Ij", "Jx", "Kh", "Lj", "Nj", "Oe", "Ps", "Sh", "Shch", "Ss", "Th", "Ts", "Ya", "Yu", "Zh", " ",
+    };
+
+    for (size_t i = 0; i < STRINNGY_ROW_COUNT; i++)
+    {
+        zval tmp;
+        array_init(&tmp);
+
+        for (size_t j = 0; j < STRINNGY_COLUM_COUNT; j++)
+        {
+            if (strlen(str_arr[i][j]) == 0) {
+                break;
+            }
+            
+            add_next_index_string(&tmp, str_arr[i][j]);
+        }
         
-    zval tb_0;
-    array_init(&tb_0);
-    char* th_0_arr[] = {"°", "₀", "۰", "０"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_0, th_0_arr[i]);
+        add_assoc_zval(&ret, str[i], &tmp);
     }
-    add_assoc_zval(&ret, "0", &tb_0);
-
-    zval tb_1;
-    array_init(&tb_1);
-    char* th_1_arr[] = {"¹", "₁", "۱", "１"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_1, th_1_arr[i]);
-    }
-    add_assoc_zval(&ret, "1", &tb_1);
-
-    zval tb_2;
-    array_init(&tb_2);
-    char* th_2_arr[] = {"²", "₂", "۲", "２"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_2, th_2_arr[i]);
-    }
-    add_assoc_zval(&ret, "2", &tb_2);
-
-    zval tb_3;
-    array_init(&tb_3);
-    char* th_3_arr[] = {"³", "₃", "۳", "３"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_3, th_3_arr[i]);
-    }
-    add_assoc_zval(&ret, "3", &tb_3);
-
-    zval tb_4;
-    array_init(&tb_4);
-    char* th_4_arr[] = {"⁴", "₄", "۴", "٤", "４"};
-    for(int i = 0; i < 5; i++) {
-        add_next_index_string(&tb_4, th_4_arr[i]);
-    }
-    add_assoc_zval(&ret, "4", &tb_4);
-
-    zval tb_5;
-    array_init(&tb_5);
-    char* th_5_arr[] = {"⁵", "₅", "۵", "٥", "５"};
-    for(int i = 0; i < 5; i++) {
-        add_next_index_string(&tb_5, th_5_arr[i]);
-    }
-    add_assoc_zval(&ret, "5", &tb_5);
-
-    zval tb_6;
-    array_init(&tb_6);
-    char* th_6_arr[] = {"⁶", "₆", "۶", "٦", "６"};
-    for(int i = 0; i < 5; i++) {
-        add_next_index_string(&tb_6, th_6_arr[i]);
-    }
-    add_assoc_zval(&ret, "5", &tb_6);
-
-    zval tb_7;
-    array_init(&tb_7);
-    char* th_7_arr[] = {"⁷", "₇", "۷", "７"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_7, th_7_arr[i]);
-    }
-    add_assoc_zval(&ret, "7", &tb_7);
-
-    zval tb_8;
-    array_init(&tb_8);
-    char* th_8_arr[] = {"⁸", "₈", "۸", "８"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_8, th_8_arr[i]);
-    }
-    add_assoc_zval(&ret, "8", &tb_8);
-
-    zval tb_9;
-    array_init(&tb_9);
-    char* th_9_arr[] = {"⁹", "₉", "۹", "９"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_9, th_9_arr[i]);
-    }
-    add_assoc_zval(&ret, "9", &tb_9);
-
-    zval tb_a;
-    array_init(&tb_a);
-    char* th_a_arr[] = {"à", "á", "ả", "ã", "ạ", "ă", "ắ", "ằ", "ẳ", "ẵ",
-                        "ặ", "â", "ấ", "ầ", "ẩ", "ẫ", "ậ", "ā", "ą", "å",
-                        "α", "ά", "ἀ", "ἁ", "ἂ", "ἃ", "ἄ", "ἅ", "ἆ", "ἇ",
-                        "ᾀ", "ᾁ", "ᾂ", "ᾃ", "ᾄ", "ᾅ", "ᾆ", "ᾇ", "ὰ", "ά",
-                        "ᾰ", "ᾱ", "ᾲ", "ᾳ", "ᾴ", "ᾶ", "ᾷ", "а", "أ", "အ",
-                        "ာ", "ါ", "ǻ", "ǎ", "ª", "ა", "अ", "ا", "ａ", "ä"};
-    for(int i = 0; i < 60; i++) {
-        add_next_index_string(&tb_a, th_a_arr[i]);
-    }
-    add_assoc_zval(&ret, "a", &tb_a);
-
-    zval tb_b;
-    array_init(&tb_b);
-    char* th_b_arr[] = {"б", "β", "ب", "ဗ", "ბ", "ｂ"};
-    for(int i = 0; i < 6; i++) {
-        add_next_index_string(&tb_b, th_b_arr[i]);
-    }
-    add_assoc_zval(&ret, "b", &tb_b);
-
-    zval tb_c;
-    array_init(&tb_c);
-    char* th_c_arr[] = {"ç", "ć", "č", "ĉ", "ċ", "ｃ"};
-    for(int i = 0; i < 6; i++) {
-        add_next_index_string(&tb_c, th_c_arr[i]);
-    }
-    add_assoc_zval(&ret, "c", &tb_c);
-
-    zval tb_d;
-    array_init(&tb_d);
-    char* th_d_arr[] = {"ď", "ð", "đ", "ƌ", "ȡ", "ɖ", "ɗ", "ᵭ", "ᶁ", "ᶑ",
-                        "д", "δ", "د", "ض", "ဍ", "ဒ", "დ", "ｄ"};
-    for(int i = 0; i < 18; i++) {
-        add_next_index_string(&tb_d, th_d_arr[i]);
-    }
-    add_assoc_zval(&ret, "d", &tb_d);
-
-    zval tb_e;
-    array_init(&tb_e);
-    char* th_e_arr[] = {"é", "è", "ẻ", "ẽ", "ẹ", "ê", "ế", "ề", "ể", "ễ",
-                        "ệ", "ë", "ē", "ę", "ě", "ĕ", "ė", "ε", "έ", "ἐ",
-                        "ἑ", "ἒ", "ἓ", "ἔ", "ἕ", "ὲ", "έ", "е", "ё", "э",
-                        "є", "ə", "ဧ", "ေ", "ဲ", "ე", "ए", "إ", "ئ", "ｅ"};
-    for(int i = 0; i < 40; i++) {
-        add_next_index_string(&tb_e, th_e_arr[i]);
-    }
-    add_assoc_zval(&ret, "e", &tb_e);
-
-    zval tb_f;
-    array_init(&tb_f);
-    char* th_f_arr[] = {"ф", "φ", "ف", "ƒ", "ფ", "ｆ"};
-    for(int i = 0; i < 6; i++) {
-        add_next_index_string(&tb_f, th_f_arr[i]);
-    }
-    add_assoc_zval(&ret, "f", &tb_f);
-
-    zval tb_g;
-    array_init(&tb_g);
-    char* th_g_arr[] = {"ĝ", "ğ", "ġ", "ģ", "г", "ґ", "γ", "ဂ", "გ", "گ",
-                        "ｇ"};
-    for(int i = 0; i < 11; i++) {
-        add_next_index_string(&tb_g, th_g_arr[i]);
-    }
-    add_assoc_zval(&ret, "g", &tb_g);
-
-    zval tb_h;
-    array_init(&tb_h);
-    char* th_h_arr[] = {"ĥ", "ħ", "η", "ή", "ح", "ه", "ဟ", "ှ", "ჰ", "ｈ"};
-    for(int i = 0; i < 10; i++) {
-        add_next_index_string(&tb_h, th_h_arr[i]);
-    }
-    add_assoc_zval(&ret, "h", &tb_h);
-
-    zval tb_i;
-    array_init(&tb_i);
-    char* th_i_arr[] = {"í", "ì", "ỉ", "ĩ", "ị", "î", "ï", "ī", "ĭ", "į",
-                        "ı", "ι", "ί", "ϊ", "ΐ", "ἰ", "ἱ", "ἲ", "ἳ", "ἴ",
-                        "ἵ", "ἶ", "ἷ", "ὶ", "ί", "ῐ", "ῑ", "ῒ", "ΐ", "ῖ",
-                        "ῗ", "і", "ї", "и", "ဣ", "ိ", "ီ", "ည်", "ǐ", "ი",
-                        "इ", "ی", "ｉ"};
-    for(int i = 0; i < 43; i++) {
-        add_next_index_string(&tb_i, th_i_arr[i]);
-    }
-    add_assoc_zval(&ret, "i", &tb_i);
-
-    zval tb_j;
-    array_init(&tb_j);
-    char* th_j_arr[] = {"ĵ", "ј", "Ј", "ჯ", "ج", "ｊ"};
-    for(int i = 0; i < 6; i++) {
-        add_next_index_string(&tb_j, th_j_arr[i]);
-    }
-    add_assoc_zval(&ret, "j", &tb_j);
-
-    zval tb_k;
-    array_init(&tb_k);
-    char* th_k_arr[] = {"ķ", "ĸ", "к", "κ", "Ķ", "ق", "ك", "က", "კ", "ქ",
-                        "ک", "ｋ"};
-    for(int i = 0; i < 12; i++) {
-        add_next_index_string(&tb_k, th_k_arr[i]);
-    }
-    add_assoc_zval(&ret, "k", &tb_k);
-
-    zval tb_l;
-    array_init(&tb_l);
-    char* th_l_arr[] = {"ł", "ľ", "ĺ", "ļ", "ŀ", "л", "λ", "ل", "လ", "ლ",
-                        "ｌ"};
-    for(int i = 0; i < 11; i++) {
-        add_next_index_string(&tb_l, th_l_arr[i]);
-    }
-    add_assoc_zval(&ret, "l", &tb_l);
-
-    zval tb_m;
-    array_init(&tb_m);
-    char* th_m_arr[] = {"м", "μ", "م", "မ", "მ", "ｍ"};
-    for(int i = 0; i < 6; i++) {
-        add_next_index_string(&tb_m, th_m_arr[i]);
-    }
-    add_assoc_zval(&ret, "m", &tb_m);
-
-    zval tb_n;
-    array_init(&tb_n);
-    char* th_n_arr[] = {"ñ", "ń", "ň", "ņ", "ŉ", "ŋ", "ν", "н", "ن", "န",
-                        "ნ", "ｎ"};
-    for(int i = 0; i < 12; i++) {
-        add_next_index_string(&tb_n, th_n_arr[i]);
-    }
-    add_assoc_zval(&ret, "n", &tb_n);
-
-    zval tb_o;
-    array_init(&tb_o);
-    char* th_o_arr[] = {"ó", "ò", "ỏ", "õ", "ọ", "ô", "ố", "ồ", "ổ", "ỗ",
-                        "ộ", "ơ", "ớ", "ờ", "ở", "ỡ", "ợ", "ø", "ō", "ő",
-                        "ŏ", "ο", "ὀ", "ὁ", "ὂ", "ὃ", "ὄ", "ὅ", "ὸ", "ό",
-                        "о", "و", "θ", "ို", "ǒ", "ǿ", "º", "ო", "ओ", "ｏ",
-                        "ö"};
-    for(int i = 0; i < 41; i++) {
-        add_next_index_string(&tb_o, th_o_arr[i]);
-    }
-    add_assoc_zval(&ret, "o", &tb_o);
-
-    zval tb_p;
-    array_init(&tb_p);
-    char* th_p_arr[] = {"п", "π", "ပ", "პ", "پ", "ｐ"};
-    for(int i = 0; i < 6; i++) {
-        add_next_index_string(&tb_p, th_p_arr[i]);
-    }
-    add_assoc_zval(&ret, "p", &tb_p);
-
-    zval tb_q;
-    array_init(&tb_q);
-    char* th_q_arr[] = {"ყ", "ｑ"};
-    for(int i = 0; i < 2; i++) {
-        add_next_index_string(&tb_q, th_q_arr[i]);
-    }
-    add_assoc_zval(&ret, "q", &tb_q);
-
-    zval tb_r;
-    array_init(&tb_r);
-    char* th_r_arr[] = {"ŕ", "ř", "ŗ", "р", "ρ", "ر", "რ", "ｒ"};
-    for(int i = 0; i < 8; i++) {
-        add_next_index_string(&tb_r, th_r_arr[i]);
-    }
-    add_assoc_zval(&ret, "r", &tb_r);
-
-    zval tb_s;
-    array_init(&tb_s);
-    char* th_s_arr[] = {"ś", "š", "ş", "с", "σ", "ș", "ς", "س", "ص", "စ",
-                        "ſ", "ს", "ｓ"};
-    for(int i = 0; i < 13; i++) {
-        add_next_index_string(&tb_s, th_s_arr[i]);
-    }
-    add_assoc_zval(&ret, "s", &tb_s);
-
-    zval tb_tt;
-    array_init(&tb_tt);
-    char* th_t_arr[] = {"ť", "ţ", "т", "τ", "ț", "ت", "ط", "ဋ", "တ", "ŧ",
-                        "თ", "ტ", "ｔ"};
-    for(int i = 0; i < 13; i++) {
-        add_next_index_string(&tb_tt, th_t_arr[i]);
-    }
-    add_assoc_zval(&ret, "t", &tb_tt);
-
-    zval tb_u;
-    array_init(&tb_u);
-    char* th_u_arr[] = {"ú", "ù", "ủ", "ũ", "ụ", "ư", "ứ", "ừ", "ử", "ữ",
-                        "ự", "û", "ū", "ů", "ű", "ŭ", "ų", "µ", "у", "ဉ",
-                        "ု", "ူ", "ǔ", "ǖ", "ǘ", "ǚ", "ǜ", "უ", "उ", "ｕ",
-                        "ў", "ü"};
-    for(int i = 0; i < 32; i++) {
-        add_next_index_string(&tb_u, th_u_arr[i]);
-    }
-    add_assoc_zval(&ret, "u", &tb_u);
-
-    zval tb_v;
-    array_init(&tb_v);
-    char* th_v_arr[] = {"в", "ვ", "ϐ", "ｖ"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_v, th_v_arr[i]);
-    }
-    add_assoc_zval(&ret, "v", &tb_v);
     
-    zval tb_w;
-    array_init(&tb_w);
-    char* th_w_arr[] = {"ŵ", "ω", "ώ", "ဝ", "ွ", "ｗ"};
-    for(int i = 0; i < 6; i++) {
-        add_next_index_string(&tb_w, th_w_arr[i]);
-    }
-    add_assoc_zval(&ret, "w", &tb_w);
-
-    zval tb_x;
-    array_init(&tb_x);
-    char* th_x_arr[] = {"χ", "ξ", "ｘ"};
-    for(int i = 0; i < 3; i++) {
-        add_next_index_string(&tb_x, th_x_arr[i]);
-    }
-    add_assoc_zval(&ret, "x", &tb_x);
-
-    zval tb_y;
-    array_init(&tb_y);
-    char* th_y_arr[] = {"ý", "ỳ", "ỷ", "ỹ", "ỵ", "ÿ", "ŷ", "й", "ы", "υ",
-                        "ϋ", "ύ", "ΰ", "ي", "ယ", "ｙ"};
-    for(int i = 0; i < 16; i++) {
-        add_next_index_string(&tb_y, th_y_arr[i]);
-    }
-    add_assoc_zval(&ret, "y", &tb_y);
-
-    zval tb_z;
-    array_init(&tb_z);
-    char* th_z_arr[] = {"ź", "ž", "ż", "з", "ζ", "ز", "ဇ", "ზ", "ｚ"};
-    for(int i = 0; i < 9; i++) {
-        add_next_index_string(&tb_z, th_z_arr[i]);
-    }
-    add_assoc_zval(&ret, "z", &tb_z);
-
-    zval tb_aa;
-    array_init(&tb_aa);
-    char* th_aa_arr[] = {"ع", "आ", "آ"};
-    for(int i = 0; i < 3; i++) {
-        add_next_index_string(&tb_aa, th_aa_arr[i]);
-    }
-    add_assoc_zval(&ret, "aa", &tb_aa);
-
-    zval tb_ae;
-    array_init(&tb_ae);
-    char* th_ae_arr[] = {"æ", "ǽ"};
-    for(int i = 0; i < 2; i++) {
-        add_next_index_string(&tb_ae, th_ae_arr[i]);
-    }
-    add_assoc_zval(&ret, "aa", &tb_ae);
-
-    zval tb_ai;
-    array_init(&tb_ai);
-    char* th_ai_arr[] = {"ऐ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_ai, th_ai_arr[i]);
-    }
-    add_assoc_zval(&ret, "ai", &tb_ai);
-
-    zval tb_ch;
-    array_init(&tb_ch);
-    char* th_ch_arr[] = {"ч", "ჩ", "ჭ", "چ"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_ch, th_ch_arr[i]);
-    }
-    add_assoc_zval(&ret, "ch", &tb_ch);
-
-    zval tb_dj;
-    array_init(&tb_dj);
-    char* th_dj_arr[] = {"ђ", "đ"};
-    for(int i = 0; i < 2; i++) {
-        add_next_index_string(&tb_dj, th_dj_arr[i]);
-    }
-    add_assoc_zval(&ret, "dj", &tb_dj);
-
-    zval tb_dz;
-    array_init(&tb_dz);
-    char* th_dz_arr[] = {"џ", "ძ"};
-    for(int i = 0; i < 2; i++) {
-        add_next_index_string(&tb_dz, th_dz_arr[i]);
-    }
-    add_assoc_zval(&ret, "dz", &tb_dz);
-
-    zval tb_ei;
-    array_init(&tb_ei);
-    char* th_ei_arr[] = {"ऍ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_ei, th_ei_arr[i]);
-    }
-    add_assoc_zval(&ret, "ei", &tb_ei);
-
-    zval tb_gh;
-    array_init(&tb_gh);
-    char* th_gh_arr[] = {"غ", "ღ"};
-    for(int i = 0; i < 2; i++) {
-        add_next_index_string(&tb_gh, th_gh_arr[i]);
-    }
-    add_assoc_zval(&ret, "gh", &tb_gh);
-
-    zval tb_ii;
-    array_init(&tb_ii);
-    char* th_ii_arr[] = {"ई"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_ii, th_ii_arr[i]);
-    }
-    add_assoc_zval(&ret, "ii", &tb_ii);
-
-    zval tb_kh;
-    array_init(&tb_kh);
-    char* th_kh_arr[] = {"х", "خ", "ხ"};
-    for(int i = 0; i < 3; i++) {
-        add_next_index_string(&tb_kh, th_kh_arr[i]);
-    }
-    add_assoc_zval(&ret, "kh", &tb_kh);
-
-    zval tb_ij;
-    array_init(&tb_ij);
-    char* th_ij_arr[] = {"ĳ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_ij, th_ij_arr[i]);
-    }
-    add_assoc_zval(&ret, "ij", &tb_ij);
-
-    zval tb_lj;
-    array_init(&tb_lj);
-    char* th_lj_arr[] = {"љ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_lj, th_lj_arr[i]);
-    }
-    add_assoc_zval(&ret, "lj", &tb_lj);
-
-    zval tb_nj;
-    array_init(&tb_nj);
-    char* th_nj_arr[] = {"њ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_nj, th_nj_arr[i]);
-    }
-    add_assoc_zval(&ret, "nj", &tb_nj);
-
-    zval tb_oe;
-    array_init(&tb_oe);
-    char* th_oe_arr[] = {"œ", "ؤ"};
-    for(int i = 0; i < 2; i++) {
-        add_next_index_string(&tb_oe, th_oe_arr[i]);
-    }
-    add_assoc_zval(&ret, "oe", &tb_oe);
-
-    zval tb_oi;
-    array_init(&tb_oi);
-    char* th_oi_arr[] = {"ऑ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_oi, th_oi_arr[i]);
-    }
-    add_assoc_zval(&ret, "oi", &tb_oi);
-
-    zval tb_oii;
-    array_init(&tb_oii);
-    char* th_oii_arr[] = {"ऒ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_oii, th_oii_arr[i]);
-    }
-    add_assoc_zval(&ret, "oii", &tb_oii);
-
-    zval tb_ps;
-    array_init(&tb_ps);
-    char* th_ps_arr[] = {"ψ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_ps, th_ps_arr[i]);
-    }
-    add_assoc_zval(&ret, "ps", &tb_ps);
-
-    zval tb_sh;
-    array_init(&tb_sh);
-    char* th_sh_arr[] = {"ш", "შ", "ش"};
-    for(int i = 0; i < 3; i++) {
-        add_next_index_string(&tb_sh, th_sh_arr[i]);
-    }
-    add_assoc_zval(&ret, "sh", &tb_sh);
-
-    zval tb_shch;
-    array_init(&tb_shch);
-    char* th_shch_arr[] = {"щ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_shch, th_shch_arr[i]);
-    }
-    add_assoc_zval(&ret, "shch", &tb_shch);
-
-    zval tb_ss;
-    array_init(&tb_ss);
-    char* th_ss_arr[] = {"ß"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_ss, th_ss_arr[i]);
-    }
-    add_assoc_zval(&ret, "ss", &tb_ss);
-    
-    zval tb_sx;
-    array_init(&tb_sx);
-    char* th_sx_arr[] = {"ŝ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_sx, th_sx_arr[i]);
-    }
-    add_assoc_zval(&ret, "sx", &tb_sx);
-
-    zval tb_th;
-    array_init(&tb_th);
-    char* th_th_arr[] = {"þ", "ϑ", "ث", "ذ", "ظ"};
-    for(int i = 0; i < 5; i++) {
-        add_next_index_string(&tb_th, th_th_arr[i]);
-    }
-    add_assoc_zval(&ret, "th", &tb_th);
-
-    zval tb_ts;
-    array_init(&tb_ts);
-    char* th_ts_arr[] = {"ц", "ც", "წ"};
-    for(int i = 0; i < 3; i++) {
-        add_next_index_string(&tb_ts, th_ts_arr[i]);
-    }
-    add_assoc_zval(&ret, "ts", &tb_ts);
-
-    zval tb_uu;
-    array_init(&tb_uu);
-    char* th_uu_arr[] = {"ऊ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_uu, th_uu_arr[i]);
-    }
-    add_assoc_zval(&ret, "uu", &tb_uu);
-
-    zval tb_ya;
-    array_init(&tb_ya);
-    char* th_ya_arr[] = {"я"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_ya, th_ya_arr[i]);
-    }
-    add_assoc_zval(&ret, "ya", &tb_ya);
-
-    zval tb_yu;
-    array_init(&tb_yu);
-    char* th_yu_arr[] = {"ю"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_yu, th_yu_arr[i]);
-    }
-    add_assoc_zval(&ret, "yu", &tb_yu);
-
-    zval tb_zh;
-    array_init(&tb_zh);
-    char* th_zh_arr[] = {"ж", "ჟ", "ژ"};
-    for(int i = 0; i < 3; i++) {
-        add_next_index_string(&tb_zh, th_zh_arr[i]);
-    }
-    add_assoc_zval(&ret, "zh", &tb_zh);
-
-    zval tb_ccc;
-    array_init(&tb_ccc);
-    char* th_ccc_arr[] = {"©"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_ccc, th_ccc_arr[i]);
-    }
-    add_assoc_zval(&ret, "(c)", &tb_ccc);
-
-    zval tb_A;
-    array_init(&tb_A);
-    char* th_A_arr[] = {"Á", "À", "Ả", "Ã", "Ạ", "Ă", "Ắ", "Ằ", "Ẳ", "Ẵ",
-                        "Ặ", "Â", "Ấ", "Ầ", "Ẩ", "Ẫ", "Ậ", "Å", "Ā", "Ą",
-                        "Α", "Ά", "Ἀ", "Ἁ", "Ἂ", "Ἃ", "Ἄ", "Ἅ", "Ἆ", "Ἇ",
-                        "ᾈ", "ᾉ", "ᾊ", "ᾋ", "ᾌ", "ᾍ", "ᾎ", "ᾏ", "Ᾰ", "Ᾱ",
-                        "Ὰ", "Ά", "ᾼ", "А", "Ǻ", "Ǎ", "Ａ", "Ä"};
-    for(int i = 0; i < 48; i++) {
-        add_next_index_string(&tb_A, th_A_arr[i]);
-    }
-    add_assoc_zval(&ret, "A", &tb_A);
-
-    zval tb_B;
-    array_init(&tb_B);
-    char* th_B_arr[] = {"Б", "Β", "ब", "Ｂ"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_B, th_B_arr[i]);
-    }
-    add_assoc_zval(&ret, "B", &tb_B);
-
-    zval tb_C;
-    array_init(&tb_C);
-    char* th_C_arr[] = {"Ç", "Ć", "Č", "Ĉ", "Ċ", "Ｃ"};
-    for(int i = 0; i < 6; i++) {
-        add_next_index_string(&tb_C, th_C_arr[i]);
-    }
-    add_assoc_zval(&ret, "C", &tb_C);
-    
-    zval tb_D;
-    array_init(&tb_D);
-    char* th_D_arr[] = {"Ď", "Ð", "Đ", "Ɖ", "Ɗ", "Ƌ", "ᴅ", "ᴆ", "Д", "Δ",
-                        "Ｄ"};
-    for(int i = 0; i < 11; i++) {
-        add_next_index_string(&tb_D, th_D_arr[i]);
-    }
-    add_assoc_zval(&ret, "D", &tb_D);
-
-    zval tb_E;
-    array_init(&tb_E);
-    char* th_E_arr[] = {"É", "È", "Ẻ", "Ẽ", "Ẹ", "Ê", "Ế", "Ề", "Ể", "Ễ",
-                        "Ệ", "Ë", "Ē", "Ę", "Ě", "Ĕ", "Ė", "Ε", "Έ", "Ἐ",
-                        "Ἑ", "Ἒ", "Ἓ", "Ἔ", "Ἕ", "Έ", "Ὲ", "Е", "Ё", "Э",
-                        "Є", "Ə", "Ｅ"};
-    for(int i = 0; i < 33; i++) {
-        add_next_index_string(&tb_E, th_E_arr[i]);
-    }
-    add_assoc_zval(&ret, "E", &tb_E);
-
-    zval tb_F;
-    array_init(&tb_F);
-    char* th_F_arr[] = {"Ф", "Φ", "Ｆ"};
-    for(int i = 0; i < 3; i++) {
-        add_next_index_string(&tb_F, th_F_arr[i]);
-    }
-    add_assoc_zval(&ret, "F", &tb_F);
-
-    zval tb_G;
-    array_init(&tb_G);
-    char* th_G_arr[] = {"Ğ", "Ġ", "Ģ", "Г", "Ґ", "Γ", "Ｇ"};
-    for(int i = 0; i < 7; i++) {
-        add_next_index_string(&tb_G, th_G_arr[i]);
-    }
-    add_assoc_zval(&ret, "G", &tb_G);
-
-    zval tb_H;
-    array_init(&tb_H);
-    char* th_H_arr[] = {"Η", "Ή", "Ħ", "Ｈ"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_H, th_H_arr[i]);
-    }
-    add_assoc_zval(&ret, "H", &tb_H);
-
-    zval tb_I;
-    array_init(&tb_I);
-    char* th_I_arr[] = {"Í", "Ì", "Ỉ", "Ĩ", "Ị", "Î", "Ï", "Ī", "Ĭ", "Į",
-                        "İ", "Ι", "Ί", "Ϊ", "Ἰ", "Ἱ", "Ἳ", "Ἴ", "Ἵ", "Ἶ",
-                        "Ἷ", "Ῐ", "Ῑ", "Ὶ", "Ί", "И", "І", "Ї", "Ǐ", "ϒ",
-                        "Ｉ"};
-    for(int i = 0; i < 31; i++) {
-        add_next_index_string(&tb_I, th_I_arr[i]);
-    }
-    add_assoc_zval(&ret, "I", &tb_I);
-
-    zval tb_J;
-    array_init(&tb_J);
-    char* th_J_arr[] = {"Ｊ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_J, th_J_arr[i]);
-    }
-    add_assoc_zval(&ret, "J", &tb_J);
-
-    zval tb_K;
-    array_init(&tb_K);
-    char* th_K_arr[] = {"К", "Κ", "Ｋ"};
-    for(int i = 0; i < 3; i++) {
-        add_next_index_string(&tb_K, th_K_arr[i]);
-    }
-    add_assoc_zval(&ret, "K", &tb_K);
-
-    zval tb_L;
-    array_init(&tb_L);
-    char* th_L_arr[] = {"Ĺ", "Ł", "Л", "Λ", "Ļ", "Ľ", "Ŀ", "ल", "Ｌ"};
-    for(int i = 0; i < 9; i++) {
-        add_next_index_string(&tb_L, th_L_arr[i]);
-    }
-    add_assoc_zval(&ret, "L", &tb_L);
-
-    zval tb_M;
-    array_init(&tb_M);
-    char* th_M_arr[] = {"М", "Μ", "Ｍ"};
-    for(int i = 0; i < 3; i++) {
-        add_next_index_string(&tb_M, th_M_arr[i]);
-    }
-    add_assoc_zval(&ret, "M", &tb_M);
-
-    zval tb_N;
-    array_init(&tb_N);
-    char* th_N_arr[] = {"Ń", "Ñ", "Ň", "Ņ", "Ŋ", "Н", "Ν", "Ｎ"};
-    for(int i = 0; i < 8; i++) {
-        add_next_index_string(&tb_N, th_N_arr[i]);
-    }
-    add_assoc_zval(&ret, "N", &tb_N);
-
-    zval tb_O;
-    array_init(&tb_O);
-    char* th_O_arr[] = {"Ó", "Ò", "Ỏ", "Õ", "Ọ", "Ô", "Ố", "Ồ", "Ổ", "Ỗ",
-                        "Ộ", "Ơ", "Ớ", "Ờ", "Ở", "Ỡ", "Ợ", "Ø", "Ō", "Ő",
-                        "Ŏ", "Ο", "Ό", "Ὀ", "Ὁ", "Ὂ", "Ὃ", "Ὄ", "Ὅ", "Ὸ",
-                        "Ό", "О", "Θ", "Ө", "Ǒ", "Ǿ", "Ｏ", "Ö"};
-    for(int i = 0; i < 38; i++) {
-        add_next_index_string(&tb_O, th_O_arr[i]);
-    }
-    add_assoc_zval(&ret, "O", &tb_O);
-
-    zval tb_P;
-    array_init(&tb_P);
-    char* th_P_arr[] = {"П", "Π", "Ｐ"};
-    for(int i = 0; i < 3; i++) {
-        add_next_index_string(&tb_P, th_P_arr[i]);
-    }
-    add_assoc_zval(&ret, "P", &tb_P);
-
-    zval tb_Q;
-    array_init(&tb_Q);
-    char* th_Q_arr[] = {"Ｑ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Q, th_Q_arr[i]);
-    }
-    add_assoc_zval(&ret, "Q", &tb_Q);
-
-    zval tb_R;
-    array_init(&tb_R);
-    char* th_R_arr[] = {"Ř", "Ŕ", "Р", "Ρ", "Ŗ", "Ｒ"};
-    for(int i = 0; i < 6; i++) {
-        add_next_index_string(&tb_R, th_R_arr[i]);
-    }
-    add_assoc_zval(&ret, "R", &tb_R);
-
-    zval tb_S;
-    array_init(&tb_S);
-    char* th_S_arr[] = {"Ş", "Ŝ", "Ș", "Š", "Ś", "С", "Σ", "Ｓ"};
-    for(int i = 0; i < 8; i++) {
-        add_next_index_string(&tb_S, th_S_arr[i]);
-    }
-    add_assoc_zval(&ret, "S", &tb_S);
-
-    zval tb_T;
-    array_init(&tb_T);
-    char* th_T_arr[] = {"Ť", "Ţ", "Ŧ", "Ț", "Т", "Τ", "Ｔ"};
-    for(int i = 0; i < 7; i++) {
-        add_next_index_string(&tb_T, th_T_arr[i]);
-    }
-    add_assoc_zval(&ret, "T", &tb_T);
-
-    zval tb_U;
-    array_init(&tb_U);
-    char* th_U_arr[] = {"Ú", "Ù", "Ủ", "Ũ", "Ụ", "Ư", "Ứ", "Ừ", "Ử", "Ữ",
-                        "Ự", "Û", "Ū", "Ů", "Ű", "Ŭ", "Ų", "У", "Ǔ", "Ǖ",
-                        "Ǘ", "Ǚ", "Ǜ", "Ｕ", "Ў", "Ü"};
-    for(int i = 0; i < 26; i++) {
-        add_next_index_string(&tb_U, th_U_arr[i]);
-    }
-    add_assoc_zval(&ret, "U", &tb_U);
-
-    zval tb_V;
-    array_init(&tb_V);
-    char* th_V_arr[] = {"В", "Ｖ"};
-    for(int i = 0; i < 2; i++) {
-        add_next_index_string(&tb_V, th_V_arr[i]);
-    }
-    add_assoc_zval(&ret, "V", &tb_V);
-
-    zval tb_W;
-    array_init(&tb_W);
-    char* th_W_arr[] = {"Ω", "Ώ", "Ŵ", "Ｗ"};
-    for(int i = 0; i < 4; i++) {
-        add_next_index_string(&tb_W, th_W_arr[i]);
-    }
-    add_assoc_zval(&ret, "W", &tb_W);
-
-    zval tb_X;
-    array_init(&tb_X);
-    char* th_X_arr[] = {"Χ", "Ξ", "Ｘ"};
-    for(int i = 0; i < 3; i++) {
-        add_next_index_string(&tb_X, th_X_arr[i]);
-    }
-    add_assoc_zval(&ret, "X", &tb_X);
-
-    zval tb_Y;
-    array_init(&tb_Y);
-    char* th_Y_arr[] = {"Ý", "Ỳ", "Ỷ", "Ỹ", "Ỵ", "Ÿ", "Ῠ", "Ῡ", "Ὺ", "Ύ",
-                        "Ы", "Й", "Υ", "Ϋ", "Ŷ", "Ｙ"};
-    for(int i = 0; i < 16; i++) {
-        add_next_index_string(&tb_Y, th_Y_arr[i]);
-    }
-    add_assoc_zval(&ret, "Y", &tb_Y);
-
-    zval tb_Z;
-    array_init(&tb_Z);
-    char* th_Z_arr[] = {"Ź", "Ž", "Ż", "З", "Ζ", "Ｚ"};
-    for(int i = 0; i < 6; i++) {
-        add_next_index_string(&tb_Z, th_Z_arr[i]);
-    }
-    add_assoc_zval(&ret, "Z", &tb_Z);
-
-    zval tb_AE;
-    array_init(&tb_AE);
-    char* th_AE_arr[] = {"Æ", "Ǽ"};
-    for(int i = 0; i < 2; i++) {
-        add_next_index_string(&tb_AE, th_AE_arr[i]);
-    }
-    add_assoc_zval(&ret, "AE", &tb_AE);
-
-    zval tb_Ch;
-    array_init(&tb_Ch);
-    char* th_Ch_arr[] = {"Ч"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Ch, th_Ch_arr[i]);
-    }
-    add_assoc_zval(&ret, "Ch", &tb_Ch);
-
-    zval tb_Dj;
-    array_init(&tb_Dj);
-    char* th_Dj_arr[] = {"Ђ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Dj, th_Dj_arr[i]);
-    }
-    add_assoc_zval(&ret, "Dj", &tb_Dj);
-
-    zval tb_Dz;
-    array_init(&tb_Dz);
-    char* th_Dz_arr[] = {"Џ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Dz, th_Dz_arr[i]);
-    }
-    add_assoc_zval(&ret, "Dz", &tb_Dz);
-
-    zval tb_Gx;
-    array_init(&tb_Gx);
-    char* th_Gx_arr[] = {"Ĝ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Gx, th_Gx_arr[i]);
-    }
-    add_assoc_zval(&ret, "Gx", &tb_Gx);
-
-    zval tb_Hx;
-    array_init(&tb_Hx);
-    char* th_Hx_arr[] = {"Ĥ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Hx, th_Hx_arr[i]);
-    }
-    add_assoc_zval(&ret, "Hx", &tb_Hx);
-
-    zval tb_Ij;
-    array_init(&tb_Ij);
-    char* th_Ij_arr[] = {"Ĳ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Ij, th_Ij_arr[i]);
-    }
-    add_assoc_zval(&ret, "Ij", &tb_Ij);
-
-    zval tb_Jx;
-    array_init(&tb_Jx);
-    char* th_Jx_arr[] = {"Ĵ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Jx, th_Jx_arr[i]);
-    }
-    add_assoc_zval(&ret, "Jx", &tb_Jx);
-
-    zval tb_Kh;
-    array_init(&tb_Kh);
-    char* th_Kh_arr[] = {"Х"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Kh, th_Kh_arr[i]);
-    }
-    add_assoc_zval(&ret, "Kh", &tb_Kh);
-
-    zval tb_Lj;
-    array_init(&tb_Lj);
-    char* th_Lj_arr[] = {"Љ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Lj, th_Lj_arr[i]);
-    }
-    add_assoc_zval(&ret, "Lj", &tb_Lj);
-
-    zval tb_Nj;
-    array_init(&tb_Nj);
-    char* th_Nj_arr[] = {"Њ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Nj, th_Nj_arr[i]);
-    }
-    add_assoc_zval(&ret, "Nj", &tb_Nj);
-
-    zval tb_Oe;
-    array_init(&tb_Oe);
-    char* th_Oe_arr[] = {"Œ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Oe, th_Oe_arr[i]);
-    }
-    add_assoc_zval(&ret, "Oe", &tb_Oe);
-
-    zval tb_Ps;
-    array_init(&tb_Ps);
-    char* th_Ps_arr[] = {"Ψ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Ps, th_Ps_arr[i]);
-    }
-    add_assoc_zval(&ret, "Ps", &tb_Ps);
-
-    zval tb_Sh;
-    array_init(&tb_Sh);
-    char* th_Sh_arr[] = {"Ш"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Sh, th_Sh_arr[i]);
-    }
-    add_assoc_zval(&ret, "Sh", &tb_Sh);
-
-    zval tb_Shch;
-    array_init(&tb_Shch);
-    char* th_Shch_arr[] = {"Щ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Shch, th_Shch_arr[i]);
-    }
-    add_assoc_zval(&ret, "Shch", &tb_Shch);
-
-    zval tb_Ss;
-    array_init(&tb_Ss);
-    char* th_Ss_arr[] = {"ẞ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Ss, th_Ss_arr[i]);
-    }
-    add_assoc_zval(&ret, "Ss", &tb_Ss);
-
-    zval tb_Th;
-    array_init(&tb_Th);
-    char* th_Th_arr[] = {"Þ"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Th, th_Th_arr[i]);
-    }
-    add_assoc_zval(&ret, "Th", &tb_Th);
-
-    zval tb_Ts;
-    array_init(&tb_Ts);
-    char* th_Ts_arr[] = {"Ц"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Ts, th_Ts_arr[i]);
-    }
-    add_assoc_zval(&ret, "Ts", &tb_Ts);
-
-    zval tb_Ya;
-    array_init(&tb_Ya);
-    char* th_Ya_arr[] = {"Я"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Ya, th_Ya_arr[i]);
-    }
-    add_assoc_zval(&ret, "Ya", &tb_Ya);
-
-    zval tb_Yu;
-    array_init(&tb_Yu);
-    char* th_Yu_arr[] = {"Yu"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Yu, th_Yu_arr[i]);
-    }
-    add_assoc_zval(&ret, "Yu", &tb_Yu);
-
-    zval tb_Zh;
-    array_init(&tb_Zh);
-    char* th_Zh_arr[] = {"Ж"};
-    for(int i = 0; i < 1; i++) {
-        add_next_index_string(&tb_Zh, th_Zh_arr[i]);
-    }
-    add_assoc_zval(&ret, "Zh", &tb_Zh);
-
-    zval tb_str;
-    array_init(&tb_str);
-    char* th_str_arr[] = {"\xC2\xA0", "\xE2\x80\x80", "\xE2\x80\x81",
-                        "\xE2\x80\x82", "\xE2\x80\x83", "\xE2\x80\x84",
-                        "\xE2\x80\x85", "\xE2\x80\x86", "\xE2\x80\x87",
-                        "\xE2\x80\x88", "\xE2\x80\x89", "\xE2\x80\x8A",
-                        "\xE2\x80\xAF", "\xE2\x81\x9F", "\xE3\x80\x80",
-                        "\xEF\xBE\xA0"};
-    for(int i = 0; i < 16; i++) {
-        add_next_index_string(&tb_str, th_str_arr[i]);
-    }
-    add_assoc_zval(&ret, " ", &tb_str);
 
     RETURN_ZVAL(&ret, 0, 0);
 }

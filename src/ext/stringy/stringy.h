@@ -15,6 +15,10 @@
 
 #define PHP_STARTUP_STRINGY_NS(cls) PHP_STARTUP_NS_NAME "Stringy\\" #cls
 
+#define STRINNGY_ROW_COUNT 112
+
+#define STRINNGY_COLUM_COUNT 60
+
 extern  zend_class_entry *stringy_ce;
 
 void php_startup_register_stringy();

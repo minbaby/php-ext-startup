@@ -3340,6 +3340,7 @@ PHP_METHOD(Stringy, toSpaces)
 {
     zval * tabLength;
     ZEND_PARSE_PARAMETERS_START(0, 1)
+        Z_PARAM_OPTIONAL
         Z_PARAM_ZVAL(tabLength)
     ZEND_PARSE_PARAMETERS_END();
 

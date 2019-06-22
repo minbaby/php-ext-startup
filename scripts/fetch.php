@@ -26,6 +26,7 @@ $data = [
     'AOP'           => 'https://github.com/AOP-PHP/AOP',
     'xdeubg'        => 'https://github.com/xdebug/xdebug.git',
     'apcu'          => 'https://github.com/krakjoe/apcu.git',
+    // 'swoole-pgsql'  => 'git@github.com:swoole/ext-postgresql.git',
 ];
 
 // PHPBREW_ROOT/build/php-7.1.17/ext/

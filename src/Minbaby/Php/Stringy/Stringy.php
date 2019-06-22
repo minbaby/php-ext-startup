@@ -957,4 +957,9 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $str = str_replace("\t", $spaces, $this->str);
         return static::create($str, $this->encoding);
     }
+
+    public function underscored()
+    {
+        return $this->delimit('_');
+    }
 }

@@ -3384,6 +3384,17 @@ ZEND_BEGIN_ARG_INFO(arginfo_toSpaces, 0)
     ZEND_ARG_INFO(0, tabLength)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, underscored)
+{
+    zval delimit;
+    ZVAL_STRING(&delimit, "_");
+    zval func, args[] = {
+        delimit,
+    };
+    ZVAL_STRING(&func, "delimit");
+    call_user_function(NULL, getThis(), &func, return_value, 1, args);
+}
+
 
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -3463,6 +3474,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, charsArray, NULL, ZEND_ACC_PROTECTED)
     PHP_ME(Stringy, langSpecificCharsArray, arginfo_langSpecificCharsArray, ZEND_ACC_PROTECTED)
     PHP_ME(Stringy, toSpaces, arginfo_toSpaces, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, underscored, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

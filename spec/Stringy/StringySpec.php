@@ -1780,4 +1780,38 @@ use function Kahlan\describe;
             });
         }
     });
+
+    context('test underscored', function () {
+        $data = [
+            ['test_case', 'testCase'],
+            ['test_case', 'Test-Case'],
+            ['test_case', 'test case'],
+            ['test_case', 'test -case'],
+            ['_test_case', '-test - case'],
+            ['test_case', 'test_case'],
+            ['test_c_test', '  test c test'],
+            ['test_u_case', 'TestUCase'],
+            ['test_c_c_test', 'TestCCTest'],
+            ['string_with1number', 'string_with1number'],
+            ['string_with_2_2_numbers', 'String-with_2_2 numbers'],
+            ['1test2case', '1test2case'],
+            ['yes_we_can', 'yesWeCan'],
+            ['test_σase', 'test Σase', 'UTF-8'],
+            ['στανιλ_case', 'Στανιλ case', 'UTF-8'],
+            ['σash_case', 'Σash  Case', 'UTF-8']
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+            @list($expected, $str, $encoding) = $value;
+
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->underscored();
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
 });

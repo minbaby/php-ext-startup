@@ -962,4 +962,10 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
     {
         return $this->delimit('_');
     }
+
+    public function toUpperCase()
+    {
+        $str = \mb_strtoupper($this->str, $this->encoding);
+        return static::create($str, $this->encoding);
+    }
 }

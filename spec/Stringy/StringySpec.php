@@ -1814,4 +1814,27 @@ use function Kahlan\describe;
             });
         }
     });
+
+    context('test toUpperCase', function () {
+        $data = [
+            ['FOO BAR', 'foo bar'],
+            [' FOO_BAR ', ' FOO_bar '],
+            ['FÒÔ BÀŘ', 'fòô bàř', 'UTF-8'],
+            [' FÒÔ_BÀŘ ', ' FÒÔ_bàř ', 'UTF-8'],
+            ['ΑΥΤΟΚΊΝΗΤΟ', 'αυτοκίνητο', 'UTF-8'],
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+            @list($expected, $str, $encoding) = $value;
+
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->toUpperCase();
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
 });

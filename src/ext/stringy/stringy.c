@@ -3395,6 +3395,33 @@ PHP_METHOD(Stringy, underscored)
     call_user_function(NULL, getThis(), &func, return_value, 1, args);
 }
 
+PHP_METHOD(Stringy, toUpperCase)
+{
+    zval rv;
+    zval *str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 1, &rv);
+
+
+    zval func, args[] = {
+        *str,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "mb_strtoupper");
+    call_user_function(NULL, NULL, &func, return_value, 2, args);
+
+    zval instance;
+    object_init_ex(&instance, stringy_ce);
+
+    zval args_construct[] = {
+        *return_value,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &instance, &func, return_value, 2, args_construct);
+
+    RETURN_ZVAL(&instance, 0, 1);
+}
+
 
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -3475,6 +3502,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, langSpecificCharsArray, arginfo_langSpecificCharsArray, ZEND_ACC_PROTECTED)
     PHP_ME(Stringy, toSpaces, arginfo_toSpaces, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, underscored, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, toUpperCase, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

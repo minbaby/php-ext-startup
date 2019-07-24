@@ -982,4 +982,10 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $stringy->str = $truncated . $substring;
         return $stringy;
     }
+
+    public function toTitleCase()
+    {
+        $str = \mb_convert_case($this->str, \MB_CASE_TITLE, $this->encoding);
+        return static::create($str, $this->encoding);
+    }
 }

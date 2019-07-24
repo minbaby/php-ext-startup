@@ -6,7 +6,6 @@ use function Kahlan\context;
 use function Kahlan\it;
 use function Kahlan\describe;
 
-
 \describe('Stringy Test', function () {
     \beforeAll(function () {
         _ns(NS_STRINGY);
@@ -1872,6 +1871,29 @@ use function Kahlan\describe;
 
             $stringy = __('Stringy')::create($str, $encoding);
             $result = $stringy->truncate($length, $substring);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
+
+    context('test toTitleCase', function () {
+        $data = [
+            ['Foo Bar', 'foo bar'],
+            [' Foo_Bar ', ' foo_bar '],
+            ['Fòô Bàř', 'fòô bàř', 'UTF-8'],
+            [' Fòô_Bàř ', ' fòô_bàř ', 'UTF-8'],
+            ['Αυτοκίνητο Αυτοκίνητο', 'αυτοκίνητο αυτοκίνητο', 'UTF-8'],
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+            @list($expected, $str, $encoding) = $value;
+
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->toTitleCase();
 
             \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
             \expect((string) $stringy)->toBe($str);

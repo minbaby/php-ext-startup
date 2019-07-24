@@ -3485,6 +3485,35 @@ ZEND_BEGIN_ARG_INFO(arginfo_truncate, 0)
     ZEND_ARG_INFO(0, substring)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, toTitleCase)
+{
+    zval *str, *encoding, rv;
+    str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    // ZVAL_STRING(&const_mb_case_title, "MB_CASE_TITLE");
+    zval *const_mb_case_title = zend_get_constant_str(ZEND_STRL("MB_CASE_TITLE"));
+
+    zval method, args[] = {
+        *str,
+        *const_mb_case_title,
+        *encoding,
+    };
+    ZVAL_STRING(&method, "mb_convert_case");
+    call_user_function(NULL, NULL, &method, return_value, 3, args);
+
+    zval obj;
+    object_init_ex(&obj, stringy_ce);
+    zval args_construct[] = {
+        *return_value,
+        *encoding,
+    };
+    ZVAL_STRING(&method, "__construct");
+    call_user_function(NULL, &obj, &method, return_value, 2, args_construct);
+    
+    RETURN_ZVAL(&obj, 0, 1);
+}
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -3566,6 +3595,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, underscored, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, toUpperCase, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, truncate, arginfo_truncate, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, toTitleCase, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

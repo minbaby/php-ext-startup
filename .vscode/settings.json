@@ -1,6 +1,11 @@
 {
     "files.associations": {
-        "*.h": "c"
+      "*.inc": "php",
+      "*.h": "c",
+      "__locale": "c",
+      "__string": "c",
+      "string": "c",
+      "string_view": "c"
     },
     "editor.mouseWheelZoom": false,
     "files.autoSave": "onFocusChange",

@@ -968,4 +968,18 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $str = \mb_strtoupper($this->str, $this->encoding);
         return static::create($str, $this->encoding);
     }
+
+    public function truncate($length, $substring = '')
+    {
+        $stringy = static::create($this->str, $this->encoding);
+        if ($length >= $stringy->length()) {
+            return $stringy;
+        }
+        // Need to further trim the string so we can append the substring
+        $substringLength = \mb_strlen($substring, $stringy->encoding);
+        $length = $length - $substringLength;
+        $truncated = \mb_substr($stringy->str, 0, $length, $stringy->encoding);
+        $stringy->str = $truncated . $substring;
+        return $stringy;
+    }
 }

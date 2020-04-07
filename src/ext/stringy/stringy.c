@@ -3514,6 +3514,55 @@ PHP_METHOD(Stringy, toTitleCase)
     RETURN_ZVAL(&obj, 0, 1);
 }
 
+PHP_METHOD(Stringy, toTabs)
+{
+    zval *tabLength;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(tabLength)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (tabLength == NULL) {
+        tabLength = malloc(sizeof(zval));
+        ZVAL_LONG(tabLength, 4);
+    }
+
+    zval empty;
+    ZVAL_STRING(&empty, " ");
+
+    zval func, args[] = {
+        empty,
+        *tabLength
+    };
+    ZVAL_STRING(&func, "str_repeat");
+    call_user_function(NULL, NULL, &func, return_value, 2, args);
+
+    zval *str, *encoding, rv;
+    str = zend_read_property(stringy_ce, getThis(), ZEND_STRL("str"), 0, &rv);
+    encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+    
+    zval tab;
+    ZVAL_STRING(&tab, "\t");
+
+    zval args_str_replace[] = {
+        *return_value,
+        tab,
+        *str    
+    };
+    ZVAL_STRING(&func, "str_replace");
+    call_user_function(NULL, NULL, &func, return_value, 3, args_str_replace);
+
+    zval obj;
+    object_init_ex(&obj, stringy_ce);
+    zval args_construct[] = {
+        *return_value,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &obj, &func, return_value, 2, args_construct);
+    
+    RETURN_ZVAL(&obj, 0, 1);
+}
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -3596,6 +3645,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, toUpperCase, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, truncate, arginfo_truncate, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, toTitleCase, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, toTabs, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

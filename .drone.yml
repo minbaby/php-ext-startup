@@ -1,0 +1,50 @@
+---
+kind: pipeline
+type: docker
+name: php-ext-startup test
+
+steps:
+  - name: install vendor
+    image: composer:1
+    commands:
+      - php -v
+      - composer install -vvv --profile --no-interaction --prefer-source
+  - name: build-ext(7.1)
+    image: php:7.1-cli
+    commands:
+      - php -v
+      - ./vendor/bin/kahlan
+      - phpize && ./configure && make && make install 
+      - cp .circleci/docker-php-ext-startup.ini /usr/local/etc/php/conf.d/
+      - ./vendor/bin/kahlan
+  - name: build-ext(7.2)
+    image: php:7.2-cli
+    commands:
+      - php -v
+      - ./vendor/bin/kahlan
+      - phpize && ./configure && make && make install 
+      - cp .circleci/docker-php-ext-startup.ini /usr/local/etc/php/conf.d/
+      - ./vendor/bin/kahlan
+  - name: build-ext(7.3)
+    image: php:7.3-cli
+    commands:
+      - php -v
+      - ./vendor/bin/kahlan
+      - phpize && ./configure && make && make install 
+      - cp .circleci/docker-php-ext-startup.ini /usr/local/etc/php/conf.d/
+      - ./vendor/bin/kahlan
+  # - name: build-ext(7.4)
+  #   image: php:7.4-cli
+  #   commands:
+  #     - php -v
+  #     - ./vendor/bin/kahlan
+  #     - phpize && ./configure && make && make install 
+  #     - cp .circleci/docker-php-ext-startup.ini /usr/local/etc/php/conf.d/
+  #     - ./vendor/bin/kahlan
+  - name: send-wechat
+    image: erguotou/drone-instant-access
+    settings:
+      channel:
+        from_secret: CHANNEL
+      head: Drone Build Status
+      body: "${DRONE_BUILD_STATUS} at ${DRONE_REPO_BRANCH} branch"

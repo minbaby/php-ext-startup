@@ -988,4 +988,11 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $str = \mb_convert_case($this->str, \MB_CASE_TITLE, $this->encoding);
         return static::create($str, $this->encoding);
     }
+
+    public function toTabs($tabLength = 4)
+    {
+        $spaces = str_repeat(' ', $tabLength);
+        $str = str_replace($spaces, "\t", $this->str);
+        return static::create($str, $this->encoding);
+    }
 }

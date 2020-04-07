@@ -1924,6 +1924,29 @@ use function Kahlan\describe;
             \expect((string) $result)->toBe($expected);
             });
         }
+    });
 
+    context('test toLowerCase', function () {
+        $data = [
+            ['foo bar', 'FOO BAR'],
+            [' foo_bar ', ' FOO_bar '],
+            ['fòô bàř', 'FÒÔ BÀŘ', 'UTF-8'],
+            [' fòô_bàř ', ' FÒÔ_bàř ', 'UTF-8'],
+            ['αυτοκίνητο', 'ΑΥΤΟΚΊΝΗΤΟ', 'UTF-8'],
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+            @list($expected, $str, $tabLength) = $value;
+            $tabLength = $tabLength ?? 4;
+
+            $stringy = __('Stringy')::create($str);
+            $result = $stringy->toLowerCase($tabLength);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+            });
+        }
     });
 });

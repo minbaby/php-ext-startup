@@ -14,3 +14,5 @@ export MINBABY_TEST_EXT=0
 phpbrew ext enable startup
 export MINBABY_TEST_EXT=1
 ./vendor/bin/kahlan
+
+export MINBABY_TEST_EXT=0

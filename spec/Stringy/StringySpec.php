@@ -1901,4 +1901,29 @@ use function Kahlan\describe;
             });
         }
     });
+
+    context('test toTabs', function () {
+        $data = [
+            ['	foo	bar	', '    foo    bar    '],
+            ['	foo	bar	', '     foo     bar     ', 5],
+            ['		foo	bar	', '    foo  bar  ', 2],
+            ["	foo\n	bar", "    foo\n    bar"],
+            ["	fòô\n	bàř", "    fòô\n    bàř"]
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+            @list($expected, $str, $tabLength) = $value;
+            $tabLength = $tabLength ?? 4;
+
+            $stringy = __('Stringy')::create($str);
+            $result = $stringy->toTabs($tabLength);
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+            });
+        }
+
+    });
 });

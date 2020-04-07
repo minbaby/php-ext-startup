@@ -9,20 +9,20 @@
     "packages-dev": [
         {
             "name": "kahlan/kahlan",
-            "version": "4.4.0",
+            "version": "4.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kahlan/kahlan.git",
-                "reference": "6a2f0d1dd1a45b518010bf8d2a3a9bae9e1bd7a9"
+                "reference": "025114b7f13985abceff3ba0e28cca71cb0d40e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kahlan/kahlan/zipball/6a2f0d1dd1a45b518010bf8d2a3a9bae9e1bd7a9",
-                "reference": "6a2f0d1dd1a45b518010bf8d2a3a9bae9e1bd7a9",
+                "url": "https://api.github.com/repos/kahlan/kahlan/zipball/025114b7f13985abceff3ba0e28cca71cb0d40e8",
+                "reference": "025114b7f13985abceff3ba0e28cca71cb0d40e8",
                 "shasum": "",
                 "mirrors": [
                     {
-                        "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
                         "preferred": true
                     }
                 ]
@@ -31,7 +31,7 @@
                 "php": ">=5.5"
             },
             "require-dev": {
-                "squizlabs/php_codesniffer": "^3.3"
+                "squizlabs/php_codesniffer": "^3.4"
             },
             "bin": [
                 "bin/kahlan"
@@ -65,7 +65,7 @@
                 "testing",
                 "unit test"
             ],
-            "time": "2018-12-01T00:19:49+00:00"
+            "time": "2020-01-25T16:39:06+00:00"
         }
     ],
     "aliases": [],
@@ -77,5 +77,6 @@
         "php": "^7.0",
         "ext-json": "*"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }

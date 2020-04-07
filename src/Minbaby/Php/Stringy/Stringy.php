@@ -995,4 +995,11 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
         $str = str_replace($spaces, "\t", $this->str);
         return static::create($str, $this->encoding);
     }
+
+    public function toLowerCase()
+    {
+        $str = \mb_strtolower($this->str, $this->encoding);
+
+        return static::create($str, $this->encoding);
+    }
 }

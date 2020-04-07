@@ -47,4 +47,4 @@ steps:
       channel:
         from_secret: CHANNEL
       head: Drone Build Status
-      body: "${DRONE_BUILD_STATUS} at ${DRONE_REPO_BRANCH} branch"
+      body: "[${DRONE_REPO}] ${DRONE_BUILD_STATUS} at ${DRONE_REPO_BRANCH} branch"

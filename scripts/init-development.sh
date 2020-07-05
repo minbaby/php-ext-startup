@@ -4,31 +4,42 @@ set -e -x
 
 export PATH=/usr/bin:$PATH
 
-export PHP_VERSION=php-7.1.23
+export PHP_VERSION=php-7.1.33
 
 export SYSTEM_NAME=`uname`
 
-[ "$SYSTEM_NAME" == "Darwin" ] && LIB_BZ2='/usr/local/opt/bzip2/'
-[ "$SYSTEM_NAME" == "Darwin" ] && LIB_ZIP='/usr/local/opt/zlib/'
-[ "$SYSTEM_NAME" == "Darwin" ] && LIB_SSL='/usr/local/opt/openssl/'
+export SCRIPT_DIR=`dirname $0`
 
-# sudo apt install libxml2-dev
-# sudo apt install libssh-dev
-# sudo apt install libbz2-dev
-# sudo apt install libcurl4-openssl-dev
-# sudo apt install libmcrypt-dev
-# sudo apt install libreadline-dev
-# sudo apt install libxslt1-dev 
-# sudo apt install autoconf
+[ "$SYSTEM_NAME" == "Darwin" ] && LIB_BZ2='=/usr/local/opt/bzip2/'
+[ "$SYSTEM_NAME" == "Darwin" ] && LIB_ZIP='=/usr/local/opt/zlib/'
+[ "$SYSTEM_NAME" == "Darwin" ] && LIB_SSL='=/usr/local/opt/openssl/'
+
+if [ ! -x "$(command -v icu-config)" ]; then
+    sudo cp $SCRIPT_DIR/resources/icu-config /usr/bin/icu-config
+fi
+
+if [ "$SYSTEM_NAME" == "Linux" ]; then
+    sudo apt install \
+        libxml2-dev \
+        libssh-dev \
+        libbz2-dev \
+        libcurl4-openssl-dev \
+        libmcrypt-dev \
+        libreadline-dev \
+        libxslt1-dev \
+        autoconf \
+        valgrind
+fi
 
 phpbrew --debug install \
-    --mirror=http://cn2.php.net -j 4 \
+    -j 4 \
     $PHP_VERSION \
     +default \
-    +bz2=$LIB_BZ2 \
-    +zlib=$LIB_ZIP \
+    +bz2$LIB_BZ2 \
+    +zlib$LIB_ZIP \
     +mb \
-    +openssl=$LIB_SSL +intl \
+    +openssl$LIB_SSL \
+    +intl \
     +mysql \
     +pdo \
     +xml

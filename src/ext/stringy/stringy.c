@@ -3588,6 +3588,68 @@ PHP_METHOD(Stringy, toLowerCase)
     RETURN_ZVAL(&obj, 0, 1);
 }
 
+PHP_METHOD(Stringy, toBoolean)
+{
+    zval map, T, F;
+    ZVAL_TRUE(&T);
+    ZVAL_FALSE(&F);
+
+    convert_to_array(&map);
+    char* trueList[] = {
+        "true", 
+        "1",
+        "on",
+        "yes"
+    };
+    for (size_t i = 0; i < 4; i++)
+    {
+        add_assoc_zval(&map, trueList[i], &T);
+    }
+
+    char* falseList[] = {
+        "false", 
+        "0",
+        "off",
+        "no"
+    };
+    for (size_t i = 0; i < 4; i++)
+    {
+        add_assoc_zval(&map, falseList[i], &F);
+    }
+
+    zval func, rv;
+    ZVAL_STRING(&func, "toLowerCase");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+    
+    zval *str = zend_read_property(stringy_ce, return_value, ZEND_STRL("str"), 0, &rv);
+
+    zend_string *key = Z_STR(*str);
+    HashTable *ht = Z_ARRVAL(map);
+    if (zend_symtable_exists_ind(ht, key)){
+        RETURN_ZVAL(zend_symtable_find(ht, key), 0, 0)
+    }
+    
+    if (is_numeric_string(Z_STRVAL_P(str),  Z_STRLEN_P(str), NULL, NULL, 0) == IS_LONG) {
+        convert_to_long(str);
+        RETURN_BOOL(Z_LVAL_P(str) > 0);
+    }
+
+    zval regex, empty;
+    ZVAL_STRING(&regex, "[[:space:]]");
+    ZVAL_STRING(&func, "regexReplace");
+    ZVAL_EMPTY_STRING(&empty);
+    zval args_regex[] =  {
+        regex,
+        empty,
+    };
+    call_user_function(NULL, getThis(), &func, return_value, 2, args_regex);
+
+    str = zend_read_property(stringy_ce, return_value, ZEND_STRL("str"), 0, &rv);
+
+    convert_to_boolean(str);
+    RETURN_ZVAL(str, 0, 0);
+}
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -3672,6 +3734,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, toTitleCase, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, toTabs, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, toLowerCase, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, toBoolean, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

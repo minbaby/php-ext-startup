@@ -28,6 +28,28 @@
 2. 查看 `src/Minbaby/` 目录下的 php 实现
 3. 查看 `src/ext` 目录下的 c 实现
 
+## 常用命令
+
+1. 测试所有
+
+```bash
+composer run test
+```
+
+2. 测试 php 部分代码
+
+```bash
+composer run test-php
+```
+
+3. 测试 ext 部分代码
+
+```bash
+composer run test-ext
+```
+
+4. 其他
+
 ## TODO
 
 - [ ] [stringy](https://github.com/danielstjules/Stringy)

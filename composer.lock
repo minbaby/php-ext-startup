@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e9af6fb6f2ce506d427232984d336f64",
+    "content-hash": "fb818576c980ca61900205c0af9fafc2",
     "packages": [],
     "packages-dev": [
         {
             "name": "kahlan/kahlan",
-            "version": "4.7.2",
+            "version": "4.7.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kahlan/kahlan.git",
-                "reference": "025114b7f13985abceff3ba0e28cca71cb0d40e8"
+                "reference": "c529ef24201053ba76d3c8c3531acd76b629ce87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kahlan/kahlan/zipball/025114b7f13985abceff3ba0e28cca71cb0d40e8",
-                "reference": "025114b7f13985abceff3ba0e28cca71cb0d40e8",
+                "url": "https://api.github.com/repos/kahlan/kahlan/zipball/c529ef24201053ba76d3c8c3531acd76b629ce87",
+                "reference": "c529ef24201053ba76d3c8c3531acd76b629ce87",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -65,7 +65,7 @@
                 "testing",
                 "unit test"
             ],
-            "time": "2020-01-25T16:39:06+00:00"
+            "time": "2020-04-25T21:27:19+00:00"
         }
     ],
     "aliases": [],

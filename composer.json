@@ -35,6 +35,12 @@
         "sort-packages": true,
         "optimize-autoloader": true
     },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://mirrors.aliyun.com/composer/"
+        }
+    },
     "scripts": {
         "init-dev": "./scripts/init-development.sh",
         "prepare": "./scripts/prepare.sh",

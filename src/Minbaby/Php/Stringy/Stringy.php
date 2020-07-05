@@ -1002,4 +1002,27 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
 
         return static::create($str, $this->encoding);
     }
+
+    public function toBoolean()
+    {
+        $key = $this->toLowerCase()->str;
+        $map = [
+            'true'  => true,
+            '1'     => true,
+            'on'    => true,
+            'yes'   => true,
+            'false' => false,
+            '0'     => false,
+            'off'   => false,
+            'no'    => false
+        ];
+
+        if (array_key_exists($key, $map)) {
+            return $map[$key];
+        } elseif (is_numeric($this->str)) {
+            return (intval($this->str) > 0);
+        }
+
+        return (bool) $this->regexReplace('[[:space:]]', '')->str;
+    }
 }

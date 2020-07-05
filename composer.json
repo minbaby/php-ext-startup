@@ -29,5 +29,28 @@
     },
     "require-dev": {
         "kahlan/kahlan": "^4.3"
+    },
+    "scripts": {
+        "init-dev": "./scripts/init-development.sh",
+        "prepare": "./scripts/prepare.sh",
+        "build": "./scripts/build.sh",
+        "test": [
+            "@test-php",
+            "@test-ext"
+        ],
+        "test-php": [
+            "phpbrew ext disable startup",
+            "MINBABY_TEST_EXT=0 ./vendor/bin/kahlan"
+        ],
+        "test-ext": [
+            "@build",
+            "phpbrew ext enable startup",
+            "MINBABY_TEST_EXT=1 ./vendor/bin/kahlan"
+        ],
+        "test-ext-vagrind": [
+            "@build",
+            "phpbrew ext enable startup",
+            "MINBABY_TEST_EXT=1 USE_ZEND_ALLOC=0 valgrind --log-file=/tmp/valgrind.log php ./vendor/bin/kahlan"
+        ]
     }
 }

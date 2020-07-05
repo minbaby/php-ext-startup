@@ -1949,4 +1949,37 @@ use function Kahlan\describe;
             });
         }
     });
+
+    context('test toBoolean', function () {
+        $data = [
+            [true, 'true'],
+            [true, '1'],
+            [true, 'on'],
+            [true, 'ON'],
+            [true, 'yes'],
+            [true, '999'],
+            [false, 'false'],
+            [false, '0'],
+            [false, 'off'],
+            [false, 'OFF'],
+            [false, 'no'],
+            [false, '-999'],
+            [false, ''],
+            [false, ' '],
+            [false, '  ', 'UTF-8'] // narrow no-break space (U+202F)
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+            @list($expected, $str, $encoding) = $value;
+
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->toBoolean();
+
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((bool) $result)->toBe($expected);
+            });
+        }
+    });
 });

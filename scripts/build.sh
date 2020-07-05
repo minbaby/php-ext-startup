@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -e
-set -x
 
 pwd
 
@@ -12,5 +11,5 @@ rm -f $PHPBREW_ROOT/php/$PHPBREW_PHP/var/db/start.ini
 echo "build"
 make && make install
 
-echo "enabled startup"
-phpbrew ext enable startup
+# echo "enabled startup"
+# phpbrew ext enable startup

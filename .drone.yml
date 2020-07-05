@@ -8,7 +8,7 @@ steps:
     image: composer:1
     commands:
       - php -v
-      - composer install -vvv --profile --no-interaction --prefer-source
+      - composer install -vvv --profile --no-interaction
   - name: build-ext(7.1)
     image: php:7.1-cli
     commands:

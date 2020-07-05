@@ -30,6 +30,11 @@
     "require-dev": {
         "kahlan/kahlan": "^4.3"
     },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
     "scripts": {
         "init-dev": "./scripts/init-development.sh",
         "prepare": "./scripts/prepare.sh",

@@ -42,9 +42,13 @@
         }
     },
     "scripts": {
-        "init-dev": "./scripts/init-development.sh",
+        "init-dev": [
+          "Composer\\Config::disableProcessTimeout",
+          "./scripts/init-development.sh"
+        ],
         "prepare": "./scripts/prepare.sh",
         "build": "./scripts/build.sh",
+        "no": "phpbrew ext disable startup",
         "test": [
             "@test-php",
             "@test-ext"

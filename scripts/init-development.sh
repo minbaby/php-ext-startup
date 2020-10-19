@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-set -e -x
+set -e -x -u
 
 export PATH=/usr/bin:$PATH
 
-export PHP_VERSION=php-7.1.33
+export PHP_VERSION=php-7.2.34
 
 export SYSTEM_NAME=`uname`
 
@@ -32,7 +32,7 @@ if [ "$SYSTEM_NAME" == "Linux" ]; then
 fi
 
 phpbrew --debug install \
-    -j 4 \
+    -j $(nproc) \
     $PHP_VERSION \
     +default \
     +bz2$LIB_BZ2 \

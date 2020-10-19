@@ -3650,6 +3650,20 @@ PHP_METHOD(Stringy, toBoolean)
     RETURN_ZVAL(str, 0, 0);
 }
 
+PHP_METHOD(Stringy, titleize)
+{
+    zval *ignore;
+    ZEND_PARSE_PARAMETERS_START(0, 1)
+        Z_PARAM_ZVAL(*ignore)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval *rv;
+    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_titleize, 1)
+    ZEND_ARG_ARRAY_INFO(0, ignore, 1)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -3735,6 +3749,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, toTabs, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, toLowerCase, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, toBoolean, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, titleize, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

@@ -1982,4 +1982,32 @@ use function Kahlan\describe;
             });
         }
     });
+
+
+
+    xcontext('test titleize', function () {
+        $ignore = ['at', 'by', 'for', 'in', 'of', 'on', 'out', 'to', 'the'];
+
+        $data = [
+            ['Title Case', 'TITLE CASE'],
+            ['Testing The Method', 'testing the method'],
+            ['Testing the Method', 'testing the method', $ignore],
+            ['I Like to Watch Dvds at Home', 'i like to watch DVDs at home',
+                $ignore],
+            ['Θα Ήθελα Να Φύγει', '  Θα ήθελα να φύγει  ', null, 'UTF-8']
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+            @list($expected, $str, $ignore, $encoding) = $value;
+
+            $stringy = __('Stringy')::create($str, $encoding);
+            $result = $stringy->titleize($ignore);
+var_dump($result);
+            \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+            \expect((string) $stringy)->toBe($str);
+            \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
 });

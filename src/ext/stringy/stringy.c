@@ -960,7 +960,6 @@ static void preg_replace_callback_handler(INTERNAL_FUNCTION_PARAMETERS)
     call_user_function(NULL, NULL, &func, return_value, 2, args);
 }
 
-
 static void preg_replace_callback_2_handler(INTERNAL_FUNCTION_PARAMETERS)
 {
     zval *arr = NULL;
@@ -1323,7 +1322,6 @@ ZEND_BEGIN_ARG_INFO(arginfo_containsAll, 2)
     ZEND_ARG_INFO(0, caseSensitive)
 ZEND_END_ARG_INFO();
 
-
 PHP_METHOD(Stringy, containsAny)
 {
     zval *needles = NULL, *caseSensitive = NULL;
@@ -1648,8 +1646,6 @@ ZEND_BEGIN_ARG_INFO(arginfo_startsWith, 0)
     ZEND_ARG_INFO(0, substring)
     ZEND_ARG_INFO(0, caseSensitive)
 ZEND_END_ARG_INFO();
-
-
 
 PHP_METHOD(Stringy, ensureLeft)
 {
@@ -3756,4 +3752,4 @@ void php_startup_register_stringy()
         spl_ce_Aggregate,
         spl_ce_ArrayAccess
     );
-}
+} 

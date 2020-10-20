@@ -4,4 +4,4 @@ set -e
 set -x
 
 echo "clean..."
-make clean && phpize --clean
+[[ -f Makefile ]] && make clean && phpize --clean

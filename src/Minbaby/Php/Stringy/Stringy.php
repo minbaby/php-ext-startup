@@ -1025,4 +1025,26 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
 
         return (bool) $this->regexReplace('[[:space:]]', '')->str;
     }
+
+    public function titleize($ignore = null)
+    {
+        $stringy = static::create($this->trim(), $this->encoding);
+        $encoding = $this->encoding;
+
+        $stringy->str = preg_replace_callback(
+            '/([\S]+)/u',
+            function ($match) use ($encoding, $ignore) {
+                if ($ignore && in_array($match[0], $ignore)) {
+                    return $match[0];
+                }
+
+                $stringy = new Stringy($match[0], $encoding);
+
+                return (string) $stringy->toLowerCase()->upperCaseFirst();
+            },
+            $stringy->str
+        );
+
+        return $stringy;
+    }
 }

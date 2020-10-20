@@ -10,6 +10,15 @@ export SYSTEM_NAME=`uname`
 
 export SCRIPT_DIR=`dirname $0`
 
+LIB_BZ2=
+LIB_ZIP=
+LIB_SSL=
+if [ "$SYSTEM_NAME" == "Darwin" ] ;then
+    LIB_BZ2='=/usr/local/opt/bzip2/'
+    LIB_ZIP='=/usr/local/opt/zlib/'
+    LIB_SSL='=/usr/local/opt/openssl/'
+fi
+
 [ "$SYSTEM_NAME" == "Darwin" ] && LIB_BZ2='=/usr/local/opt/bzip2/'
 [ "$SYSTEM_NAME" == "Darwin" ] && LIB_ZIP='=/usr/local/opt/zlib/'
 [ "$SYSTEM_NAME" == "Darwin" ] && LIB_SSL='=/usr/local/opt/openssl/'
@@ -19,7 +28,7 @@ if [ ! -x "$(command -v icu-config)" ]; then
 fi
 
 if [ "$SYSTEM_NAME" == "Linux" ]; then
-    sudo apt install \
+    sudo apt install -y \
         libxml2-dev \
         libssh-dev \
         libbz2-dev \

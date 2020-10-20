@@ -960,7 +960,6 @@ static void preg_replace_callback_handler(INTERNAL_FUNCTION_PARAMETERS)
     call_user_function(NULL, NULL, &func, return_value, 2, args);
 }
 
-
 static void preg_replace_callback_2_handler(INTERNAL_FUNCTION_PARAMETERS)
 {
     zval *arr = NULL;
@@ -1323,7 +1322,6 @@ ZEND_BEGIN_ARG_INFO(arginfo_containsAll, 2)
     ZEND_ARG_INFO(0, caseSensitive)
 ZEND_END_ARG_INFO();
 
-
 PHP_METHOD(Stringy, containsAny)
 {
     zval *needles = NULL, *caseSensitive = NULL;
@@ -1648,8 +1646,6 @@ ZEND_BEGIN_ARG_INFO(arginfo_startsWith, 0)
     ZEND_ARG_INFO(0, substring)
     ZEND_ARG_INFO(0, caseSensitive)
 ZEND_END_ARG_INFO();
-
-
 
 PHP_METHOD(Stringy, ensureLeft)
 {
@@ -3650,20 +3646,6 @@ PHP_METHOD(Stringy, toBoolean)
     RETURN_ZVAL(str, 0, 0);
 }
 
-PHP_METHOD(Stringy, titleize)
-{
-    zval *ignore;
-    ZEND_PARSE_PARAMETERS_START(0, 1)
-        Z_PARAM_ZVAL(*ignore)
-    ZEND_PARSE_PARAMETERS_END();
-
-    zval *rv;
-    zval *encoding = zend_read_property(stringy_ce, getThis(), ZEND_STRL("encoding"), 0, &rv);
-}
-ZEND_BEGIN_ARG_INFO(arginfo_titleize, 1)
-    ZEND_ARG_ARRAY_INFO(0, ignore, 1)
-ZEND_END_ARG_INFO();
-
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -3749,7 +3731,6 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, toTabs, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, toLowerCase, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, toBoolean, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(Stringy, titleize, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 
@@ -3771,4 +3752,4 @@ void php_startup_register_stringy()
         spl_ce_Aggregate,
         spl_ce_ArrayAccess
     );
-}
+} 

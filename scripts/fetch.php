@@ -19,7 +19,6 @@ $data = [
     'async-ext'     => 'https://github.com/swoole/async-ext.git',
     'pthreads'      => 'https://github.com/krakjoe/pthreads',
     'SeasLog'       => 'https://github.com/SeasX/SeasLog',
-    'phpdbg'        => 'https://github.com/krakjoe/phpdbg',
     'php-rdkafka'   => 'https://github.com/arnaud-lb/php-rdkafka',
     'runkit'        => 'https://github.com/zenovich/runkit',
     'php-git'       => 'https://github.com/libgit2/php-git',

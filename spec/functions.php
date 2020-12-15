@@ -42,7 +42,7 @@ function __(string $str): string
 
 function __formatMessage(string $message, array $data): string
 {
-    return sprintf('%s: ==> %s <==', $message, json_encode($data, JSON_UNESCAPED_UNICODE));
+    return sprintf('%s: ==> %s <==', $message, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_IGNORE));
 }
 
 function __debug_array(array $arr): string

@@ -26,4 +26,4 @@ ext-test-ext:
 	MINBABY_TEST_EXT=1 php ./vendor/bin/kahlan
 	
 ext-first:ext-prepare ext-build ext-test ext-test-ext
-	@echo 1
+	@echo Done

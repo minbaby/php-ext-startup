@@ -2003,10 +2003,34 @@ use function Kahlan\describe;
 
             $stringy = __('Stringy')::create($str, $encoding);
             $result = $stringy->titleize($ignore);
-var_dump($result);
+
             \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
             \expect((string) $stringy)->toBe($str);
             \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
+
+    context('x', function () {
+        $data = [
+            ['', ''],
+            ['raboof', 'foobar'],
+            ['řàbôòf', 'fòôbàř', 'UTF-8'],
+            ['řàb ôòf', 'fòô bàř', 'UTF-8'],
+            ['∂∆ ˚åß', 'ßå˚ ∆∂', 'UTF-8']
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+
+                @list($str, $expected, $encoding) = $value;
+
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->reverse();
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
             });
         }
     });

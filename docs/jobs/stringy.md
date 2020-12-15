@@ -1,5 +1,6 @@
 # stringy
 
+## 进度
 
 Stringy library
 
@@ -32,8 +33,8 @@ https://github.com/danielstjules/Stringy
 - [x] countSubstr
 
 - [x] delimit
-- [x] dasherize
 
+- [x] dasherize
 
 - [x] endsWith
 

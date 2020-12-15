@@ -1047,4 +1047,17 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
 
         return $stringy;
     }
+
+    public function reverse()
+    {
+        $strLength = $this->length();
+        $reversed = '';
+
+        // Loop from last index of string to first
+        for ($i = $strLength - 1; $i >= 0; $i--) {
+            $reversed .= \mb_substr($this->str, $i, 1, $this->encoding);
+        }
+
+        return static::create($reversed, $this->encoding);
+    }
 }

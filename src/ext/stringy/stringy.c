@@ -3696,6 +3696,119 @@ PHP_METHOD(Stringy, reverse) {
     RETURN_ZVAL(&obj, 0, 1);
 }
 
+PHP_METHOD(Stringy, safeTruncate)  {
+    zval *length;
+    zval *substring;
+
+    substring = malloc(sizeof(zval));
+
+    ZVAL_STRING(substring, "");
+
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_ZVAL(length)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(substring)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval *str = zend_read_property(NULL, getThis(), ZEND_STRL("str"), 0, &rv);
+    zval *encoding = zend_read_property(NULL, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval obj;
+    object_init_ex(&obj, stringy_ce);
+    zval args_construct[] = {
+        *str,
+        *encoding,
+    };
+    zval func;
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &obj, &func, return_value, 2, args_construct);
+    
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, &obj, &func, return_value, 0, NULL);
+
+    int length_o = Z_LVAL_P(length);
+    int length_n = Z_LVAL_P(return_value);
+    if (length_o >= length_n) {
+        RETURN_ZVAL(&obj, 0, 0);
+    }
+
+    ZVAL_STRING(&func, "mb_strlen");
+    zval args_mb_strlen[] = {
+        *substring,
+        *encoding,
+    };
+    call_user_function(NULL, NULL, &func, return_value, 2, args_mb_strlen);
+    length_o = length_n - Z_LVAL_P(return_value);
+
+    ZVAL_STRING(&func, "mb_substr");
+    zval zval_0;
+    ZVAL_BOOL(&zval_0, 0);
+    zval zval_length;
+    ZVAL_LONG(&zval_length, length_o);
+    zval args_mb_substr[] = {
+        *str,
+        zval_0,
+        zval_length,
+        *encoding,
+    };
+    zval truncated;
+    call_user_function(NULL, NULL, &func, &truncated, 4, args_mb_substr);
+
+    ZVAL_STRING(&func, "mb_strpos");
+    zval estr;
+    ZVAL_STRING(&estr, " ");
+    zval length_1;
+    ZVAL_LONG(&length_1, length_o-1);
+    zval args_mb_strpos[] = {
+        *str,
+        estr,
+        length_1,
+        *encoding,
+    };
+    call_user_function(NULL, NULL, &func, return_value, 4, args_mb_strpos);
+
+    if (Z_LVAL_P(return_value) != length_o) {
+        ZVAL_STRING(&func, "mb_strrpos");
+        ZVAL_STRING(&estr, " ");
+        zval length_1;
+        ZVAL_LONG(&length_1, length_o-1);
+        zval args_mb_strrpos[] = {
+            truncated,
+            estr,
+            zval_0,
+            *encoding,
+        };
+        call_user_function(NULL, NULL, &func, return_value, 4, args_mb_strrpos);
+        if (Z_TYPE_P(return_value) != IS_FALSE) {
+                ZVAL_STRING(&func, "mb_substr");
+                zval zval_0;
+                ZVAL_BOOL(&zval_0, 0);
+                zval args_mb_substr1[] = {
+                    truncated,
+                    zval_0,
+                    *return_value,
+                    *encoding,
+                };
+                call_user_function(NULL, NULL, &func, &truncated, 4, args_mb_substr1);
+        }
+    }
+
+    concat_function(return_value, &truncated, substring);
+
+    zend_string *str_name = zend_string_init(ZEND_STRL("str"), 0);
+    zend_update_property_ex(NULL, &obj, str_name, return_value);
+
+
+
+    RETURN_ZVAL(&obj, 1, 0);
+
+}
+ZEND_BEGIN_ARG_INFO(arginfo_safeTruncate, 0)
+    ZEND_ARG_INFO(0, length)
+    ZEND_ARG_INFO(0, substring)
+ZEND_END_ARG_INFO();
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -3782,6 +3895,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, toLowerCase, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, toBoolean, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, reverse, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, safeTruncate, arginfo_safeTruncate, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

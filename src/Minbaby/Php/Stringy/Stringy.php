@@ -1088,4 +1088,17 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
 
         return $stringy;
     }
+
+    public function shuffle()
+    {
+        $indexes = range(0, $this->length() - 1);
+        shuffle($indexes);
+
+        $shuffledStr = '';
+        foreach ($indexes as $i) {
+            $shuffledStr .= \mb_substr($this->str, $i, 1, $this->encoding);
+        }
+
+        return static::create($shuffledStr, $this->encoding);
+    }
 }

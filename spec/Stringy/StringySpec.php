@@ -1,5 +1,4 @@
 <?php
-
 namespace Minbaby\Startup\Spec\Stringy;
 
 use function Kahlan\context;
@@ -2065,7 +2064,6 @@ use function Kahlan\describe;
             it(__formatMessage($key, $value), function () use ($value) {
 
                 @list($expected, $str, $length, $substring, $encoding) = $value;
-                
                 $stringy = __('Stringy')::create($str, $encoding);
                 $result = $stringy->safeTruncate($length, $substring);
 

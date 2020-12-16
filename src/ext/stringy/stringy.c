@@ -3590,7 +3590,7 @@ PHP_METHOD(Stringy, toBoolean)
     ZVAL_TRUE(&T);
     ZVAL_FALSE(&F);
 
-    convert_to_array(&map);
+    array_init(&map);
     char* trueList[] = {
         "true", 
         "1",
@@ -3739,7 +3739,7 @@ PHP_METHOD(Stringy, safeTruncate)  {
         *encoding,
     };
     call_user_function(NULL, NULL, &func, return_value, 2, args_mb_strlen);
-    length_o = length_n - Z_LVAL_P(return_value);
+    length_o = length_o - Z_LVAL_P(return_value);
 
     ZVAL_STRING(&func, "mb_substr");
     zval zval_0;
@@ -3758,19 +3758,17 @@ PHP_METHOD(Stringy, safeTruncate)  {
     ZVAL_STRING(&func, "mb_strpos");
     zval estr;
     ZVAL_STRING(&estr, " ");
-    zval length_1;
-    ZVAL_LONG(&length_1, length_o-1);
+    ZVAL_LONG(&zval_length, length_o - 1);
     zval args_mb_strpos[] = {
         *str,
         estr,
-        length_1,
+        zval_length,
         *encoding,
     };
     call_user_function(NULL, NULL, &func, return_value, 4, args_mb_strpos);
 
     if (Z_LVAL_P(return_value) != length_o) {
         ZVAL_STRING(&func, "mb_strrpos");
-        ZVAL_STRING(&estr, " ");
         zval length_1;
         ZVAL_LONG(&length_1, length_o-1);
         zval args_mb_strrpos[] = {
@@ -3798,8 +3796,6 @@ PHP_METHOD(Stringy, safeTruncate)  {
 
     zend_string *str_name = zend_string_init(ZEND_STRL("str"), 0);
     zend_update_property_ex(NULL, &obj, str_name, return_value);
-
-
 
     RETURN_ZVAL(&obj, 1, 0);
 

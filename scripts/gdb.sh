@@ -14,7 +14,7 @@
 
 # MINBABY_TEST_EXT=1 php -f startup.php
 
-# ulimit -c 0
+# ulimit -c unlimited
 
 # gdb -c core php
 

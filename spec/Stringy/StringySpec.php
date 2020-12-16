@@ -659,7 +659,7 @@ use function Kahlan\describe;
         }
     });
 
-    xit('test CollapseWhitespace', function () {
+    it('test CollapseWhitespace', function () {
         $data = [
             ['foo bar', '  foo   bar  '],
             ['test string', 'test string'],
@@ -1524,7 +1524,7 @@ use function Kahlan\describe;
             it(__formatMessage($key, $value), function () use ($value) {
                 @list($expected, $str, $otherStr, $encoding) = $value;
 
-                $stringy = __('Stringy')::create($str);
+                $stringy = __('Stringy')::create($str, $encoding);
                 $result = $stringy->longestCommonSubstring($otherStr);
 
                 \expect($stringy)->toBeAnInstanceOf(__('Stringy'));

@@ -47,7 +47,7 @@ bool zval_str_equal(zval *first, zval *second)
 
 bool m_array_set(zval *array, const char *key, zval *value)
 {
-
+  return true;
 }
 
 zval m_array_get(zval *array, const char *key)

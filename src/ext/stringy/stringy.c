@@ -127,7 +127,7 @@ PHP_METHOD(Stringy, create)
     object_init_ex(&instance, stringy_ce);
 
     if (encoding == NULL) {
-        encoding = malloc(sizeof(zval));
+        encoding = emalloc(sizeof(zval));
         ZVAL_STRING(encoding, "UTF-8");
     }
 
@@ -465,7 +465,7 @@ PHP_METHOD(Stringy, regexReplace)
     ZEND_PARSE_PARAMETERS_END();
 
     if (options == NULL) {
-        options = malloc(sizeof(zval));
+        options = emalloc(sizeof(zval));
         ZVAL_STRING(options, "msr");
     }
 
@@ -520,7 +520,7 @@ PHP_METHOD(Stringy, trim)
     {
         convert_to_string(chars);
         if (Z_STRLEN_P(chars) == 0) {
-            chars = malloc(sizeof(zval));
+            chars = emalloc(sizeof(zval));
             ZVAL_STRING(chars, "[:space:]");
         } else {
             zval func, delimiter;
@@ -534,7 +534,7 @@ PHP_METHOD(Stringy, trim)
     }
     else
     {
-        chars = malloc(sizeof(zval));
+        chars = emalloc(sizeof(zval));
         ZVAL_STRING(chars, "[:space:]");
 
     }
@@ -586,7 +586,7 @@ PHP_METHOD(Stringy, eregReplace)
     ZVAL_STRING(&func, "mb_ereg_replace");
 
     if (option == NULL) {
-        option = malloc(sizeof(zval));
+        option = emalloc(sizeof(zval));
         ZVAL_EMPTY_STRING(option);
     }
 
@@ -658,14 +658,14 @@ PHP_METHOD(Stringy, swapCase)
 
     zend_string *f = zend_string_init(ZEND_STRL("callback"), 0);
 
-    zendFunction.type = ZEND_INTERNAL_FUNCTION;
-    zendFunction.common.num_args = 1;
-    zendFunction.common.required_num_args = 1;
-    zendFunction.common.arg_info = zai;
-    zendFunction.common.prototype = NULL;
-    zendFunction.common.scope = NULL;
-    zendFunction.common.fn_flags = ZEND_ACC_CLOSURE;
-    zendFunction.common.function_name = f;
+    // zendFunction.type = ZEND_INTERNAL_FUNCTION;
+    // zendFunction.common.num_args = 1;
+    // zendFunction.common.required_num_args = 1;
+    // zendFunction.common.arg_info = zai;
+    // zendFunction.common.prototype = NULL;
+    // zendFunction.common.scope = NULL;
+    // zendFunction.common.fn_flags = ZEND_ACC_CLOSURE;
+    zendFunction.internal_function.function_name = f;
     zendFunction.internal_function.handler = swap_case_handler;
     zendFunction.internal_function.type = ZEND_INTERNAL_FUNCTION;
     zendFunction.internal_function.fn_flags = ZEND_ACC_CLOSURE;
@@ -1019,14 +1019,14 @@ PHP_METHOD(Stringy, camelize)
 #pragma region first
     zend_string *f = zend_string_init(ZEND_STRL("callback"), 0);
 
-    zendFunction.type = ZEND_INTERNAL_FUNCTION;
-    zendFunction.common.num_args = 1;
-    zendFunction.common.required_num_args = 1;
-    zendFunction.common.arg_info = zai;
-    zendFunction.common.prototype = NULL;
-    zendFunction.common.scope = NULL;
-    zendFunction.common.fn_flags = ZEND_ACC_CLOSURE;
-    zendFunction.common.function_name = f;
+    // zendFunction.type = ZEND_INTERNAL_FUNCTION;
+    // zendFunction.common.num_args = 1;
+    // zendFunction.common.required_num_args = 1;
+    // zendFunction.common.arg_info = zai;
+    // zendFunction.common.prototype = NULL;
+    // zendFunction.common.scope = NULL;
+    // zendFunction.common.fn_flags = ZEND_ACC_CLOSURE;
+    zendFunction.internal_function.function_name = f;
     zendFunction.internal_function.handler = preg_replace_callback_handler;
     zendFunction.internal_function.type = ZEND_INTERNAL_FUNCTION;
     zendFunction.internal_function.fn_flags = ZEND_ACC_CLOSURE;
@@ -1085,7 +1085,7 @@ PHP_METHOD(Stringy, trimLeft)
     {
         convert_to_string(chars);
         if (Z_STRLEN_P(chars) == 0) {
-            chars = malloc(sizeof(zval));
+            chars = emalloc(sizeof(zval));
             ZVAL_STRING(chars, "[:space:]");
         } else {
             zval func, delimiter;
@@ -1099,7 +1099,7 @@ PHP_METHOD(Stringy, trimLeft)
     }
     else
     {
-        chars = malloc(sizeof(zval));
+        chars = emalloc(sizeof(zval));
         ZVAL_STRING(chars, "[:space:]");
 
     }
@@ -1131,7 +1131,7 @@ PHP_METHOD(Stringy, trimRight)
     {
         convert_to_string(chars);
         if (Z_STRLEN_P(chars) == 0) {
-            chars = malloc(sizeof(zval));
+            chars = emalloc(sizeof(zval));
             ZVAL_STRING(chars, "[:space:]");
         } else {
             zval func, delimiter;
@@ -1145,7 +1145,7 @@ PHP_METHOD(Stringy, trimRight)
     }
     else
     {
-        chars = malloc(sizeof(zval));
+        chars = emalloc(sizeof(zval));
         ZVAL_STRING(chars, "[:space:]");
 
     }
@@ -1484,7 +1484,7 @@ PHP_METHOD(Stringy, endsWith)
     ZEND_PARSE_PARAMETERS_END();
 
     if (caseSensitive == NULL) {
-        caseSensitive = malloc(sizeof(zval));
+        caseSensitive = emalloc(sizeof(zval));
         ZVAL_BOOL(caseSensitive, IS_TRUE);
     }
 
@@ -1556,7 +1556,7 @@ PHP_METHOD(Stringy, endsWithAny)
     ZEND_PARSE_PARAMETERS_END();
 
     if (caseSensitive == NULL) {
-        caseSensitive = malloc(sizeof(zval));
+        caseSensitive = emalloc(sizeof(zval));
         ZVAL_BOOL(caseSensitive, IS_TRUE);
     }
 
@@ -1592,7 +1592,7 @@ PHP_METHOD(Stringy, startsWith)
     ZEND_PARSE_PARAMETERS_END();
 
     if (caseSensitive == NULL) {
-        caseSensitive = malloc(sizeof(zval));
+        caseSensitive = emalloc(sizeof(zval));
         ZVAL_BOOL(caseSensitive, IS_TRUE);
     }
 
@@ -1731,7 +1731,7 @@ PHP_METHOD(Stringy, first)
     ZEND_PARSE_PARAMETERS_END();
     
     if (n == NULL) {
-        n = malloc(sizeof(zval));
+        n = emalloc(sizeof(zval));
         ZVAL_LONG(n, 0);
     }
 
@@ -1776,7 +1776,7 @@ PHP_METHOD(Stringy, last)
     ZEND_PARSE_PARAMETERS_END();
     
     if (n == NULL) {
-        n = malloc(sizeof(zval));
+        n = emalloc(sizeof(zval));
         ZVAL_LONG(n, 0);
     }
 
@@ -2606,12 +2606,12 @@ PHP_METHOD(Stringy, pad)
     ZEND_PARSE_PARAMETERS_END();
 
     if (padStr == NULL) {
-        padStr = malloc(sizeof(zval));
+        padStr = emalloc(sizeof(zval));
         ZVAL_STRING(padStr, " ");
     }
 
     if (padType == NULL) {
-        padType = malloc(sizeof(zval));
+        padType = emalloc(sizeof(zval));
         ZVAL_STRING(padType, "right");
     }
 
@@ -2667,7 +2667,7 @@ PHP_METHOD(Stringy, applyPadding)
     ZVAL_LONG(&zero, 0);
 
     if (left == NULL) {
-        left = malloc(sizeof(zval));
+        left = emalloc(sizeof(zval));
         ZVAL_LONG(left, 0);
     }
 
@@ -2676,7 +2676,7 @@ PHP_METHOD(Stringy, applyPadding)
     }
 
     if (right == NULL) {
-        right = malloc(sizeof(zval));
+        right = emalloc(sizeof(zval));
         ZVAL_LONG(right, 0);
     }
 
@@ -2685,7 +2685,7 @@ PHP_METHOD(Stringy, applyPadding)
     }
 
     if (padStr == NULL) {
-        padStr = malloc(sizeof(zval));
+        padStr = emalloc(sizeof(zval));
         ZVAL_STRING(padStr, " ");
     }
 
@@ -2789,7 +2789,7 @@ PHP_METHOD(Stringy, padLeft)
     ZEND_PARSE_PARAMETERS_END();
 
     if (padStr == NULL) {
-        padStr = malloc(sizeof(zval));
+        padStr = emalloc(sizeof(zval));
         ZVAL_STRING(padStr, " ");
     }
 
@@ -2825,7 +2825,7 @@ PHP_METHOD(Stringy, padRight)
     ZEND_PARSE_PARAMETERS_END();
 
     if (padStr == NULL) {
-        padStr = malloc(sizeof(zval));
+        padStr = emalloc(sizeof(zval));
         ZVAL_STRING(padStr, " ");
     }
 
@@ -2861,7 +2861,7 @@ PHP_METHOD(Stringy, padBoth)
     ZEND_PARSE_PARAMETERS_END();
 
     if (padStr == NULL) {
-        padStr = malloc(sizeof(zval));
+        padStr = emalloc(sizeof(zval));
         ZVAL_STRING(padStr, " ");
     }
 
@@ -2959,12 +2959,12 @@ PHP_METHOD(Stringy, toAscii)
     ZEND_PARSE_PARAMETERS_END();
 
     if (language == NULL) {
-        language = (zval *) malloc(sizeof(zval));
+        language = (zval *) emalloc(sizeof(zval));
         ZVAL_STRING(language, "en");
     }
 
     if (removeUnsupported == NULL) {
-        removeUnsupported = (zval *) malloc(sizeof(zval));
+        removeUnsupported = (zval *) emalloc(sizeof(zval));
         ZVAL_BOOL(removeUnsupported, IS_TRUE);
     }
 
@@ -3254,7 +3254,7 @@ PHP_METHOD(Stringy, langSpecificCharsArray)
     ZEND_PARSE_PARAMETERS_END();
 
     if (language == NULL) {
-        language = malloc(sizeof(zval));
+        language = emalloc(sizeof(zval));
         ZVAL_STRING(language, "en");
     }
 
@@ -3518,7 +3518,7 @@ PHP_METHOD(Stringy, toTabs)
     ZEND_PARSE_PARAMETERS_END();
 
     if (tabLength == NULL) {
-        tabLength = malloc(sizeof(zval));
+        tabLength = emalloc(sizeof(zval));
         ZVAL_LONG(tabLength, 4);
     }
 
@@ -3646,6 +3646,124 @@ PHP_METHOD(Stringy, toBoolean)
     RETURN_ZVAL(str, 0, 0);
 }
 
+static zval __ignore;
+static zval __encoding;
+static void titleize_handler(INTERNAL_FUNCTION_PARAMETERS)
+{
+    zval *arr;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ARRAY(arr)
+    ZEND_PARSE_PARAMETERS_END();
+
+    bool flag = false;
+    zval *first = zend_hash_index_find(Z_ARRVAL_P(arr), 0);
+    
+    zval func, args[] = {
+        *first,
+        __ignore,
+    };
+    ZVAL_STRING(&func, "in_array");
+    call_user_function(NULL, NULL, &func, return_value, 2, args);
+    convert_to_boolean(return_value);
+    
+    if (IS_NULL != Z_TYPE(__ignore) && Z_TYPE_P(return_value)==IS_TRUE) {
+        RETURN_ZVAL(first, 1, 1);
+    }
+
+    zval obj;
+    convert_to_string(return_value);
+    object_init_ex(&obj, stringy_ce);
+    zval args_construct[] = {
+        *first,
+        __encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &obj, &func, return_value, 2, args_construct);
+ 
+    ZVAL_STRING(&func, "toLowerCase");
+    call_user_function(NULL, &obj, &func, return_value, 0, NULL);
+
+    ZVAL_STRING(&func, "upperCaseFirst");
+    call_user_function(NULL, return_value, &func, return_value, 0, NULL);
+
+    convert_to_string(return_value);
+}
+PHP_METHOD(Stringy, titleize) {
+    zval *ignore;
+    ignore = emalloc(sizeof(zval));
+    ZVAL_NULL(ignore);
+
+    ZEND_PARSE_PARAMETERS_START(0, 1)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_ZVAL(ignore)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval rv;
+    zval *str = zend_read_property(NULL, getThis(), ZEND_STRL("str"), 0, &rv);
+    zval *encoding = zend_read_property(NULL, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval func;
+    ZVAL_STRING(&func, "trim");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+
+    zval obj;
+    convert_to_string(return_value);
+    object_init_ex(&obj, stringy_ce);
+    zval args_construct[] = {
+        *return_value,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &obj, &func, return_value, 2, args_construct);
+  
+    str = zend_read_property(NULL, &obj, ZEND_STRL("str"), 0, &rv);
+
+
+    zend_internal_arg_info zai[] = {
+        ZEND_ARG_ARRAY_INFO(0, "matches", 0)
+    };
+
+    zend_string *f = zend_string_init(ZEND_STRL("callback"), 0);
+
+    zend_function zendFunction;
+    zendFunction.internal_function.function_name = f;
+    zendFunction.internal_function.handler = titleize_handler;
+    zendFunction.internal_function.type = ZEND_INTERNAL_FUNCTION;
+    zendFunction.internal_function.fn_flags = ZEND_ACC_CLOSURE;
+    zendFunction.internal_function.arg_info = zai;
+    zendFunction.internal_function.required_num_args =1;
+    zendFunction.internal_function.num_args = 1;
+
+    
+    zval callback;
+    zend_create_closure(&callback, &zendFunction, NULL, NULL, NULL);
+    // 这个不知道怎么模拟use
+    if (Z_TYPE_P(ignore) == IS_NULL) {
+        array_init(ignore);
+    }
+
+    __ignore = *ignore;
+    __encoding = *encoding;
+
+    ZVAL_STRING(&func, "preg_replace_callback");
+    zval reg;
+    ZVAL_STRING(&reg, "/([\\S]+)/u");
+    zval args_preg_replace_callback[] = {
+        reg,
+        callback,
+        *str,
+    };
+    call_user_function(NULL, NULL, &func, return_value, 3, args_preg_replace_callback);
+
+    zend_update_property(NULL, &obj, ZEND_STRL("str"), return_value);
+
+    RETURN_ZVAL(&obj, 1, 1);
+}
+ZEND_BEGIN_ARG_INFO(arginfo_titleize, 1)
+    ZEND_ARG_INFO(0, ignore)
+ZEND_END_ARG_INFO();
+
 PHP_METHOD(Stringy, reverse) {
     zval func = {};
     ZVAL_STRING(&func, "length");
@@ -3700,7 +3818,7 @@ PHP_METHOD(Stringy, safeTruncate)  {
     zval *length;
     zval *substring;
 
-    substring = malloc(sizeof(zval));
+    substring = emalloc(sizeof(zval));
 
     ZVAL_STRING(substring, "");
 
@@ -3890,6 +4008,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, toTabs, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, toLowerCase, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, toBoolean, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, titleize, arginfo_titleize, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, reverse, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, safeTruncate, arginfo_safeTruncate, ZEND_ACC_PUBLIC)
     PHP_FE_END

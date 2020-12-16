@@ -1060,4 +1060,32 @@ class Stringy implements \Countable, \IteratorAggregate, \ArrayAccess
 
         return static::create($reversed, $this->encoding);
     }
+
+    public function safeTruncate($length, $substring = '')
+    {
+        $stringy = static::create($this->str, $this->encoding);
+        if ($length >= $stringy->length()) {
+            return $stringy;
+        }
+
+        // Need to further trim the string so we can append the substring
+        $encoding = $stringy->encoding;
+        $substringLength = \mb_strlen($substring, $encoding);
+        $length = $length - $substringLength;
+
+        $truncated = \mb_substr($stringy->str, 0, $length, $encoding);
+
+        // If the last word was truncated
+        if (mb_strpos($stringy->str, ' ', $length - 1, $encoding) != $length) {
+            // Find pos of the last occurrence of a space, get up to that
+            $lastPos = \mb_strrpos($truncated, ' ', 0, $encoding);
+            if ($lastPos !== false) {
+                $truncated = \mb_substr($truncated, 0, $lastPos, $encoding);
+            }
+        }
+
+        $stringy->str = $truncated . $substring;
+
+        return $stringy;
+    }
 }

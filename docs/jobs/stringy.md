@@ -128,9 +128,9 @@ https://github.com/danielstjules/Stringy
 
 - [x] replace
 
-- [ ] reverse
+- [x] reverse
 
-- [ ] safeTruncate
+- [x] safeTruncate
 
 - [ ] shuffle
 

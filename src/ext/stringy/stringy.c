@@ -435,21 +435,22 @@ ZEND_END_ARG_INFO();
 
 PHP_METHOD(Stringy, collapseWhiteSpace)
 {
-    zval retval, func, args[3], args_trim[1];
+    zval retval, func;
     zval pattern, replacement, options, chars;
 
     ZVAL_STRING(&pattern, "[[:space:]]+");
     ZVAL_STRING(&replacement, " ");
 
-    args[0] = pattern;
-    args[1] = replacement;
-    args[2] = options;
+    zval args[] = {
+        pattern,
+        replacement,
+    };
 
     ZVAL_STRING(&func, "regexReplace");
-    call_user_function(NULL, getThis(), &func, &retval, 3, args);
+    call_user_function(NULL, getThis(), &func, return_value, 2, args);
 
     ZVAL_STRING(&func, "trim");
-    call_user_function(NULL, &retval, &func, return_value, 0, NULL);
+    call_user_function(NULL, return_value, &func, return_value, 0, NULL);
 }
 
 PHP_METHOD(Stringy, regexReplace)
@@ -2529,18 +2530,19 @@ PHP_METHOD(Stringy, longestCommonSubstring)
     zval strChar, otherChar, i_tmp, j_tmp, const_substr_len;
     ZVAL_LONG(&const_substr_len, 1);
     for(int i = 1; i < Z_LVAL(strLen); i++) {
-        ZVAL_LONG(&i_tmp, i - 1);
-        zval args_mb_strlen[] = {
-                *str,
-                i_tmp,
-                const_substr_len,
-                *encoding,
-        };
-        ZVAL_STRING(&func, "mb_substr");
-        call_user_function(NULL, NULL, &func, &strChar, 4, args_mb_strlen);
-        
+
         zend_array *ht = Z_ARRVAL(table);
         for(int j = 1; j < Z_LVAL(otherLength); j++) {
+            ZVAL_LONG(&i_tmp, i - 1);
+            zval args_mb_strlen[] = {
+                    *str,
+                    i_tmp,
+                    const_substr_len,
+                    *encoding,
+            };
+            ZVAL_STRING(&func, "mb_substr");
+            call_user_function(NULL, NULL, &func, &strChar, 4, args_mb_strlen);
+
             ZVAL_LONG(&j_tmp, j - 1);
             zval args_mb_strlen2[] = {
                 *otherStr,

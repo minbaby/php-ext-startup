@@ -8,4 +8,4 @@ include __DIR__.'/vendor/autoload.php';
 _ns(NS_STRINGY);
 
 
-echo __('Stringy')::create("testing the method")->titleize(['at', 'by', 'for', 'in', 'of', 'on', 'out', 'to', 'the']);
+echo __('Stringy')::create("testing the method")->collapseWhitespace();

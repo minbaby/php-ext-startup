@@ -2071,4 +2071,33 @@ use function Kahlan\describe;
             });
         }
     });
+
+    context('test shuffle', function () {
+        $data = [
+            ['foo bar'],
+            ['∂∆ ˚åß', 'UTF-8'],
+            ['å´¥©¨ˆßå˚ ∆∂˙©å∑¥øœ¬', 'UTF-8']
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+
+                @list($str, $encoding) = $value;
+                $encoding = $encoding ?: mb_internal_encoding();
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->shuffle();
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect(mb_strlen($str, $encoding))->toBe(mb_strlen((string) $result, $encoding));
+
+                for ($i = 0; $i < mb_strlen($str, $encoding); $i++) {
+                    $char = mb_substr($str, $i, 1, $encoding);
+                    $countBefore = mb_substr_count($str, $char, $encoding);
+                    $countAfter = mb_substr_count($result, $char, $encoding);
+                    \expect($countBefore)->toBe($countAfter);
+                }
+            });
+        }
+    });
 });

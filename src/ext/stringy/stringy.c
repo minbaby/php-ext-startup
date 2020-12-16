@@ -3925,6 +3925,75 @@ ZEND_BEGIN_ARG_INFO(arginfo_safeTruncate, 0)
     ZEND_ARG_INFO(0, substring)
 ZEND_END_ARG_INFO();
 
+PHP_METHOD(Stringy, shuffle)
+{
+    zval zval_0;
+    ZVAL_LONG(&zval_0, 0);
+
+    zval func;
+    ZVAL_STRING(&func, "length");
+    call_user_function(NULL, getThis(), &func, return_value, 0, NULL);
+    
+    long l = Z_LVAL_P(return_value);
+
+    zval indexes;
+    zval zval_len;
+    ZVAL_LONG(&zval_len, l - 1);
+    zval args[] = {
+        zval_0,
+        zval_len
+    };
+    ZVAL_STRING(&func, "range");
+    call_user_function(NULL, NULL, &func, &indexes, 2, args);
+    
+    zval ref;
+    ZVAL_NEW_REF(&ref, &indexes);
+
+    ZVAL_STRING(&func, "shuffle");
+    zval args_shuffle[] = {
+        ref,
+    };
+    call_user_function(NULL, NULL, &func, return_value, 1, args_shuffle);
+    
+    zval shuffledStr;
+
+    zval rv;
+    zval *str = zend_read_property(NULL, getThis(), ZEND_STRL("str"), 0, &rv);
+    zval *encoding = zend_read_property(NULL, getThis(), ZEND_STRL("encoding"), 0, &rv);
+
+    zval *value;
+    zend_string *key;
+    zval x;
+    ulong idx;
+    ZEND_HASH_REVERSE_FOREACH_KEY_VAL_IND(Z_ARRVAL(indexes), idx, key, value)
+        zval zval_1;
+        ZVAL_LONG(&zval_1, 1);
+
+        zval args_mb_substr[] = {
+            *str,
+            *value,
+            zval_1,
+            *encoding,
+        };
+        ZVAL_STRING(&func, "mb_substr");
+        call_user_function(NULL, NULL, &func, return_value, 4, args_mb_substr);
+
+        concat_function(&shuffledStr, &shuffledStr, return_value);
+    ZEND_HASH_FOREACH_END();
+
+    zval obj;
+    object_init_ex(&obj, stringy_ce);
+    zval args_construct[] = {
+        shuffledStr,
+        *encoding,
+    };
+    ZVAL_STRING(&func, "__construct");
+    call_user_function(NULL, &obj, &func, return_value, 2, args_construct);
+    
+    
+    RETURN_ZVAL(&obj, 0, 0);
+}
+
 static zend_function_entry methods[] = {
     PHP_ME(Stringy, __construct, arginfo___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(Stringy, __toString, NULL, ZEND_ACC_PUBLIC)
@@ -4013,6 +4082,7 @@ static zend_function_entry methods[] = {
     PHP_ME(Stringy, titleize, arginfo_titleize, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, reverse, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Stringy, safeTruncate, arginfo_safeTruncate, ZEND_ACC_PUBLIC)
+    PHP_ME(Stringy, shuffle, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

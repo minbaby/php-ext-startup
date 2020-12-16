@@ -132,7 +132,7 @@ https://github.com/danielstjules/Stringy
 
 - [x] safeTruncate
 
-- [ ] shuffle
+- [x] shuffle
 
 - [ ] slugify
 
@@ -162,7 +162,7 @@ https://github.com/danielstjules/Stringy
 
 - [x] toLowerCase
 
-- [ ] toSpaces
+- [x] toSpaces
 
 - [x] toTabs
 

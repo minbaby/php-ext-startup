@@ -1,5 +1,4 @@
 <?php
-
 namespace Minbaby\Startup\Spec\Stringy;
 
 use function Kahlan\context;
@@ -2003,10 +2002,74 @@ use function Kahlan\describe;
 
             $stringy = __('Stringy')::create($str, $encoding);
             $result = $stringy->titleize($ignore);
-var_dump($result);
+
             \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
             \expect((string) $stringy)->toBe($str);
             \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
+
+    context('test reverse', function () {
+        $data = [
+            ['', ''],
+            ['raboof', 'foobar'],
+            ['řàbôòf', 'fòôbàř', 'UTF-8'],
+            ['řàb ôòf', 'fòô bàř', 'UTF-8'],
+            ['∂∆ ˚åß', 'ßå˚ ∆∂', 'UTF-8']
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+
+                @list($str, $expected, $encoding) = $value;
+
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->reverse();
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
+            });
+        }
+    });
+
+    context('test safeTruncate', function () {
+        $data = [
+            ['Test foo bar', 'Test foo bar', 12],
+            ['Test foo', 'Test foo bar', 11],
+            ['Test foo', 'Test foo bar', 8],
+            ['Test', 'Test foo bar', 7],
+            ['Test', 'Test foo bar', 4],
+            ['Test foo bar', 'Test foo bar', 12, '...'],
+            ['Test foo...', 'Test foo bar', 11, '...'],
+            ['Test...', 'Test foo bar', 8, '...'],
+            ['Test...', 'Test foo bar', 7, '...'],
+            ['T...', 'Test foo bar', 4, '...'],
+            ['Test....', 'Test foo bar', 11, '....'],
+            ['Tëst fòô bàř', 'Tëst fòô bàř', 12, '', 'UTF-8'],
+            ['Tëst fòô', 'Tëst fòô bàř', 11, '', 'UTF-8'],
+            ['Tëst fòô', 'Tëst fòô bàř', 8, '', 'UTF-8'],
+            ['Tëst', 'Tëst fòô bàř', 7, '', 'UTF-8'],
+            ['Tëst', 'Tëst fòô bàř', 4, '', 'UTF-8'],
+            ['Tëst fòô bàř', 'Tëst fòô bàř', 12, 'ϰϰ', 'UTF-8'],
+            ['Tëst fòôϰϰ', 'Tëst fòô bàř', 11, 'ϰϰ', 'UTF-8'],
+            ['Tëstϰϰ', 'Tëst fòô bàř', 8, 'ϰϰ', 'UTF-8'],
+            ['Tëstϰϰ', 'Tëst fòô bàř', 7, 'ϰϰ', 'UTF-8'],
+            ['Tëϰϰ', 'Tëst fòô bàř', 4, 'ϰϰ', 'UTF-8'],
+            ['What are your plans...', 'What are your plans today?', 22, '...']
+        ];
+
+        foreach ($data as $key => $value) {
+            it(__formatMessage($key, $value), function () use ($value) {
+
+                @list($expected, $str, $length, $substring, $encoding) = $value;
+                $stringy = __('Stringy')::create($str, $encoding);
+                $result = $stringy->safeTruncate($length, $substring);
+
+                \expect($stringy)->toBeAnInstanceOf(__('Stringy'));
+                \expect((string) $stringy)->toBe($str);
+                \expect((string) $result)->toBe($expected);
             });
         }
     });

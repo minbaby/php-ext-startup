@@ -14,12 +14,13 @@
 
 # MINBABY_TEST_EXT=1 php -f startup.php
 
-# ulimit -c 0
+# ulimit -c unlimited
 
 # gdb -c core php
 
 # git clone https://github.com/snare/voltron
 sudo apt install gdb -f
-git clone https://github.com/longld/peda.git ~/peda
-echo "source ~/peda/peda.py" >> ~/.gdbinit
+mkdir -p ~/code/repos/
+git clone https://github.com/longld/peda.git ~/code/repos/peda
+echo "source ~/code/repos/peda/peda.py" >> ~/.gdbinit
 echo "DONE! debug your program with gdb and enjoy"

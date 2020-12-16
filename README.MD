@@ -34,21 +34,38 @@
 
 ```bash
 composer run test
+# or
+make ext-first
 ```
 
 2. 测试 php 部分代码
 
 ```bash
 composer run test-php
+# or
+make ext-test
 ```
 
 3. 测试 ext 部分代码
 
 ```bash
 composer run test-ext
+# or
+make ext-test-ext
 ```
 
-4. 其他
+4. 其他命令
+
+```bash
+make ext-clean # clean code
+
+make ext-fetch # fetch configure ext code from github
+
+make ext-prepare # phpize & configure
+
+make ext-buidl
+```
+
 
 ## TODO
 
@@ -56,12 +73,14 @@ composer run test-ext
 
 ## 说明
 
+- 本项目只是学习实践使用
 - 使用 `@` 抑制符不是一个好习惯，尽量不要使用。
 - 依赖 `mb_string` 扩展
 
 ## 已知问题
 
-- 0.0
+- 0.0 很多
+- memory leak (可能使用改方案来排查 https://github.com/arnaud-lb/php-memory-profiler)
 
 ### skip ci
 

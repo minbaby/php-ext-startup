@@ -31,14 +31,22 @@ jobs:
         - run:
             name: run test
             command: ./vendor/bin/kahlan
-  test-php71:
+  test-php74:
     <<: *common-test
     docker:
-      - image: circleci/php:7.1-browsers
+      - image: circleci/php:7.4-browsers
+  test-php73:
+    <<: *common-test
+    docker:
+      - image: circleci/php:7.3-browsers
   test-php72:
     <<: *common-test
     docker:
       - image: circleci/php:7.2-browsers
+  test-php71:
+    <<: *common-test
+    docker:
+      - image: circleci/php:7.1-browsers
   test-php70:
     <<: *common-test
     docker:
@@ -50,4 +58,6 @@ workflows:
       - test-php70
       - test-php71
       - test-php72
+      - test-php73
+      - test-php74
 

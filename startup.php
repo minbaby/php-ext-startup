@@ -8,4 +8,4 @@ include __DIR__.'/vendor/autoload.php';
 _ns(NS_STRINGY);
 
 
-echo __('Stringy')::create("afds\tafsd")->toSpaces();
+echo __('Stringy')::create("Test foo bar")->safeTruncate(7);

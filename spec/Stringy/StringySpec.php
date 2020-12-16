@@ -1982,9 +1982,7 @@ use function Kahlan\describe;
         }
     });
 
-
-
-    xcontext('test titleize', function () {
+    context('test titleize', function () {
         $ignore = ['at', 'by', 'for', 'in', 'of', 'on', 'out', 'to', 'the'];
 
         $data = [
